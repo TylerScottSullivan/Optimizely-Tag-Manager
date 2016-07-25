@@ -1,1 +1,15 @@
 <h1>REDIRECT SUCCESS</h1>
+<script>
+  var params = parseQueryString(location.hash.substring(1));
+  console.log(params);
+  $.ajax({
+    url: "https://www.optimizelyapis.com/experiment/v1/projects/",
+    headers: {'Authorization': 'Bearer ' + params.access_token},
+    success: function(success) {
+      console.log('sucess', success)
+    },
+    error: function(error) {
+      console.log('error', error)
+    }
+  })
+</script>
