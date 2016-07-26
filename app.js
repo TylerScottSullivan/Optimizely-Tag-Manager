@@ -5,7 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var request = require('request')
+var mongoose = require('mongoose');
 
+var connect = process.env.MONGODB_URI;
+mongoose.connect(connect);
+// var canvas-sdk = require('optimizely-canvas-sdk')
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
