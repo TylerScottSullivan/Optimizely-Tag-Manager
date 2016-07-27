@@ -4,14 +4,14 @@
 
 <form id ='colorForm' method='post'>
   <div class="form-group">
-    <label for="exampleInputEmail1">What's your favoraite color?</label>
-    <input type="text" class="form-control" name='color' placeholder="red">
+    <label for="exampleInputEmail1">What's your tracking ID?</label>
+    <input type="text" class="form-control" name='trackingID'>
   </div>
-  <div class="form-group">
-    <input type="hidden" class="form-control" name='data' value="{{{project_id}}}">
+  <div>
+    <select class="form-control" name='trackingTrigger'>
+      <option value='inHeader'>In header</option>
+      <option value='onPageLoad'>On page load</option>
+    </select>
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
-
-<script>
-  $('#colorForm').append('<input type="hidden" value=' + ' + "></input>')

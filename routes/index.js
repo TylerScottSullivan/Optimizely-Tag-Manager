@@ -14,13 +14,15 @@ router.post('/', function(req, res, next) {
   // console.log('req', JSON.stringify(req))
   // var data = req.query.data
   var signedRequest = req.query.signed_request
-  console.log(signedRequest)
-  console.log(process.env.SECRET)
+  // console.log(signedRequest)
+  // console.log(process.env.SECRET)
   var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
+  console.log('req.body.trackingTri', req.body.trackingTrigger)
   var project = new Project({
       projectId: userContext.context.environment.current_project,
       accountId: userContext.context.environment.current_account,
-      color: req.body.color
+      trackingID: req.body.trackingID,
+      trackingTrigger: req.body.trackingTrigger
     })
     project.save(function(err) {
       if (err) next(err)
@@ -29,20 +31,38 @@ router.post('/', function(req, res, next) {
 });
 
 router.get('/project/:id', (req, res, next) => {
-  Project.find(req.params.id, function(err, project) {
-    console.log('err', err)
+  //find or create
+  Project.findOne({'projectId': req.params.id}, function(err, project) {
     if (err) {
       next(err)
     } else {
-      console.log("token", process.env.API_TOKEN)
+      var javascript = '';
+
+      if (project.trackingTrigger === 'onPageLoad') {
+        javascript = "$(document).ready(function(){(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ \
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');\
+ga('create', '"+ project.trackingID + "', 'auto');\
+ga('send', 'pageview')});\
+console.log('I just loaded GA');"
+      } else if (project.trackingTrigger === 'inHeader') {
+        javascript = "(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){ \
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),\
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)\
+})(window,document,'script','https://www.google-analytics.com/analytics.js','ga');\
+ga('create', '"+ project.trackingID + "', 'auto');\
+ga('send', 'pageview');"
+      } else {
+        console.log('you got an err')
+      }
       var token = process.env.API_TOKEN;
       request({
            url: "https://www.optimizelyapis.com/experiment/v1/projects/" + req.params.id,
            method: 'PUT',
            json: {
              include_jquery: true,
-             project_javascript: "var thisThing = function() { console.log('color:', project.color) }; thisThing()"
-           },
+             project_javascript: javascript},
            headers: {
              "Token": token,
              "Content-Type": "application/json"
@@ -54,7 +74,7 @@ router.get('/project/:id', (req, res, next) => {
            if (error) {
                console.log('Error sending messages: ', error)
            } else {
-             next(response)
+             res.status(200).send('I am alright')
            }
        })
     }
