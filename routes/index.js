@@ -5,24 +5,22 @@ var Project = require('../models/models').projectSchema;
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  console.log('req', req)
-  var signedRequest = req.query.signed_request
-    var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
-    var project = new Project({
-      projectId: userContext.environment.current_project,
-      accountId: userContext.environment.current_account,
-    })
-    project.save(function(err) {
-      if (err) next(err)
-    })
   res.render('index', { title: 'Express' });
 });
 
 router.post('/', function(req, res, next) {
-  var color = req.body.color
-  Project.find
-  user.save()
-  res.render('index', { title: 'Express' });
+  console.log('req', req)
+  var data = JSON.parse(req.query.data)
+  var signedRequest = req.query.signed_request
+  var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
+  var project = new Project({
+      projectId: userContext.environment.current_project,
+      accountId: userContext.environment.current_account,
+      color: req.body.color
+    })
+    project.save(function(err) {
+      if (err) next(err)
+    })
 });
 
 /* GET redirect page. */

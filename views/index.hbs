@@ -7,8 +7,11 @@
     <label for="exampleInputEmail1">What's your favoraite color?</label>
     <input type="text" class="form-control" name='color' placeholder="red">
   </div>
+  <div class="form-group">
+    <input type="hidden" class="form-control" name='data' value="{{{project_id}}}">
+  </div>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
 
 <script>
-  $('#colorForm').append('<input type='hidden'></input>')
+  $('#colorForm').append('<input type="hidden" value=' + ' + "></input>')
