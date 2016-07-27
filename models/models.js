@@ -1,8 +1,11 @@
 var mongoose = require('mongoose');
 
 var projectSchema = mongoose.Schema({
-  
-  imageUri: String
+  projectId: String,
+  accountId: String,
+  // tags: Array, //of objects of the tags
+  color: String
 })
 
-module.exports = mongoose.model('Product', productSchema);
+
+module.exports = mongoose.model('Product', projectSchema);
