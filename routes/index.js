@@ -26,6 +26,15 @@ router.get('/', function(req, res, next) {
 
 router.get('/request', function(req, res, next) {
   res.render('request')
+});
+
+router.post('/request', function(req, res, next) {
+  var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription}
+  var t = new Tag({
+    name: req.body.type,
+    tagDescription: req.body.tagDescription,
+    fields: fields
+  })
 })
 
 router.post('/', function(req, res, next) {
@@ -55,6 +64,7 @@ router.post('/', function(req, res, next) {
                               t = new Tag({
                                 name: req.body.type,
                                 fields: fields,
+                                approved: true,
                                 tagDescription: master.tagDescription,
                                 trackingTrigger: req.body.trackingTrigger,
                                 custom: req.body.custom,
