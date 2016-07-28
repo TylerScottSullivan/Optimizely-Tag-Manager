@@ -13,7 +13,8 @@ var tagSchema = mongoose.Schema({
   trackingTrigger: String,
   custom: String,
   rank: Number,
-  projectId: String
+  projectId: String,
+  active: Boolean
 })
 
 projectSchema.plugin(findOneOrCreate);
