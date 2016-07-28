@@ -4,12 +4,16 @@ var findOneOrCreate = require('mongoose-find-one-or-create')
 var projectSchema = mongoose.Schema({
   projectId: String,
   accountId: String,
-  tags: Array
+  tags: [{
+    type: mongoose.Schema.Type.ObjectId,
+    ref: 'Tag'
+  }]
 })
 
 var tagSchema = mongoose.Schema({
   name: String,
-  trackingId: String,
+  description: String,
+  accessToken: Array,
   trackingTrigger: String,
   custom: String,
   rank: Number,
