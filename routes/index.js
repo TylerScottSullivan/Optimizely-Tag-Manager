@@ -1,29 +1,42 @@
 var express = require('express');
 var router = express.Router();
 var canvasSdk = require('optimizely-canvas-sdk');
-var Project = require('../models/models');
+var Project = require('../models/models').Project;
+var Master = require('../models/models').Master;
+var Tag = require('../models/models').Tag;
 var request = require('request');
 var snippets = require('../snippets')
 var findOrCreate = require('mongoose-findorcreate')
 
+//TODO this is going to need to be promised
+// var fieldBuilder = function(data) {
+//   Master.findOne({_id: '[INSERTID]'}, function(err, master) {
+//     //assuming data.type exists for all tags
+//     var toReturn = [];
+//     for(var i = 0; i < master[data.type].length; i++) {
+//       toReturn.push({'name': master[data.type][i], 'value': data[master[data.type][i]]})
+//     }
+//     return toReturn;
+//   })
+// }
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
 });
 
+router.get('/request', function(req, res, next) {
+  res.render('request')
+})
+
 router.post('/', function(req, res, next) {
-  // console.log('req', JSON.stringify(req))
-  // var data = req.query.data
-  var signedRequest = req.query.signed_request
-  // console.log(signedRequest)
-  // console.log(process.env.SECRET)
+
+  //getting the signedRequest from Optimizely
+  var signedRequest = req.query.signed_request;
+
+  //decoding the signedRequest using the secret
   var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
-  console.log('req.body.trackingTri', req.body.custom)
-                    //Check if a project already exists
-  //YES                                                             //NO
-  //make new tag                                                    //create project
-  //append new tag id to tags of found project                      //create new tag
-                                                                    //append new tag id to tags of created project
+
+  //either find or create a new project object, to which we will append a new tag w/appropriate fields
   Project.findOrCreate({'projectId': userContext.context.environment.current_project},
                        {'accountId': userContext.context.environment.current_account,
                        'tags': [],
@@ -33,83 +46,94 @@ router.post('/', function(req, res, next) {
                             console.log('Error at line 32 of index.js finding project', err)
                           }
                           else {
-                            t = new Tag({
-                              name: req.body.tag,
-                              trackingId: req.body.trackingID,
-                              trackingTrigger: req.body.trackingTrigger,
-                              custom: req.body.custom,
-                              rank: req.body.rank, //add this
-                              projectId: project.projectId,
-                              active: req.body.active //add this
+                            Master.findOne({name: req.body.type}, function(err, master) {
+                              //assuming data.type exists for all tags
+                              var fields = [];
+                              for(var i = 0; i < master.tokens.length; i++) {
+                                fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': req.body[master.tokens[i]['tokenName']]})
+                              }
+                              t = new Tag({
+                                name: req.body.type,
+                                fields: fields,
+                                tagDescription: master.tagDescription,
+                                trackingTrigger: req.body.trackingTrigger,
+                                custom: req.body.custom,
+                                rank: req.body.rank,
+                                projectId: project.projectId,
+                                active: req.body.active
+                              }).save(function(err, tag) {
+                                if (err) {
+                                  console.log("Error at line 46 saving tag", err)
+                                }
+                                else {
+                                  project.tags.push(tag._id);
+                                  project.save(function(err, updatedProject) {
+                                    if (err) {
+                                      console.log("Error at line 75 of index.js saving updated project", err)
+                                      res.send('Error')
+                                    }
+                                    else {
+                                      console.log('Successfully updated project')
+                                      res.send('<3 thx optimizely')
+                                    }
+                                  })
+                                }
+                              })
                             })
+
                           }
                         }
 )
 
-
-
-
-  // Project.find({'projectId': userContext.context.environment.current_project}, function(err, project) {
-  //   if (project) {
-  //
-  //   }
-  // })
-  //
-  // Project.findOrCreate({'projectId': userContext.context.environment.current_project},
-  //                     {'accountId': userContext.context.environment.current_account,
-  //                      'trackingId': req.body.trackingID,
-  //                      'trackingTrigger': req.body.trackingTrigger,
-  //                      'tag': req.body.tag,
-  //                      'custom': req.body.custom},
-  //                      function(err, project, created) {
-  //                        if (err) {
-  //                          console.log(err);
-  //                        }
-  //                        else {
-  //                          if (created) {
-  //                            res.send("<3 thx optimizely, I made an object")
-  //                          }
-  //                          else {
-  //                            res.send("<3 thx optimizely, but I didn't make an object")
-  //                          }
-  //                        }
-  //                      });
 });
 
 router.get('/project/:id', (req, res, next) => {
-  //find or create
-  Project.findOne({'projectId': req.params.id}, function(err, project, created) {
-    if (err) {
-      next(err)
-    } else {
-      if(snippets[project.tag]) {
-        var javascript = snippets[project.tag](project.trackingID, project.trackingTrigger === 'onPageLoad')
-      }
-      else {
-        var javascript = project.custom
-      }
-      console.log('THIS IS YOUR JAVASCRIPT', javascript);
-      console.log('THIS IS YOUR CUSTOM', project.custom);
-      var token = process.env.API_TOKEN;
-      request({
-           url: "https://www.optimizelyapis.com/experiment/v1/projects/" + req.params.id,
-           method: 'PUT',
-           json: {
-             include_jquery: true,
-             project_javascript: javascript},
-           headers: {
-             "Token": token,
-             "Content-Type": "application/json"
-           }
-         }, function(error, response) {
-           console.log("send resp", response.body)
-           if (error) {
-               console.log('Error sending messages: ', error)
-           } else {
-             res.status(200).send('I am alright')
-           }
-       })
-    }
+  //find all tags for a project
+  //compile the project_javascript
+  //make the request
+
+  Project.findOne({'projectId': req.params.id})
+         .populate('tags')
+         .exec(function(err, project) {
+          if (err) {
+            next(err)
+          } else {
+
+            //sort tags array by value
+            project.tags.sort(function(a, b) {
+              return a.rank-b.rank
+            })
+
+            //make a string of optimizely javascript and add tags in order
+            var javascript = '';
+            for(var i = 0; i < project.tags.length; i++) {
+              if(snippets[project.tags[i]['name']]) {
+                javascript += snippets[project.tags[i]['name']](project.tags[i]['fields'], project.trackingTrigger === 'onPageLoad')
+              }
+              else {
+                javascript += project.tags[i].custom
+              }
+            }
+
+            //making the request to insert code into optimizely site
+            var token = process.env.API_TOKEN;
+            request({
+                 url: "https://www.optimizelyapis.com/experiment/v1/projects/" + req.params.id,
+                 method: 'PUT',
+                 json: {
+                   include_jquery: true,
+                   project_javascript: javascript},
+                 headers: {
+                   "Token": token,
+                   "Content-Type": "application/json"
+                 }
+               }, function(error, response) {
+                 if (error) {
+                 } else {
+                   res.status(200).send('I am alright')
+                 }
+             })
+          }
   })
 })
 

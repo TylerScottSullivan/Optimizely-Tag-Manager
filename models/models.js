@@ -5,15 +5,15 @@ var projectSchema = mongoose.Schema({
   projectId: String,
   accountId: String,
   tags: [{
-    type: mongoose.Schema.Type.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Tag'
   }]
 })
 
 var tagSchema = mongoose.Schema({
   name: String,
-  description: String,
-  accessToken: Array,
+  tagDescription: String,
+  fields: Array,
   trackingTrigger: String,
   custom: String,
   rank: Number,
@@ -21,8 +21,15 @@ var tagSchema = mongoose.Schema({
   active: Boolean
 })
 
-projectSchema.plugin(findOneOrCreate);
-module.exports = mongoose.model({
-  'Project': projectSchema,
-  'Tag': tagSchema
-});
+var masterSchema = mongoose.Schema({
+  name: String,
+  tokens: Array,
+  tagDescription: String
+})
+
+projectSchema.plugin(findOrCreate);
+module.exports = {
+  'Project': mongoose.model('Project', projectSchema),
+  'Tag': mongoose.model('Tag', tagSchema),
+  'Master': mongoose.model('Master', masterSchema)
+  }
