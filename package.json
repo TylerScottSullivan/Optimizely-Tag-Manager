@@ -13,6 +13,8 @@
     "hbs": "^4.0.0",
     "jade": "~1.11.0",
     "mongoose": "^4.5.7",
+    "mongoose-find-one-or-create": "^0.2.0",
+    "mongoose-findorcreate": "^0.1.2",
     "morgan": "~1.6.1",
     "optimizely-canvas-sdk": "0.0.2",
     "request": "^2.74.0",
