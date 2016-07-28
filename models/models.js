@@ -1,13 +1,14 @@
 var mongoose = require('mongoose');
-var findOneOrCreate = require('mongoose-find-one-or-create')
+var findOrCreate = require('mongoose-findorcreate')
 
 var projectSchema = mongoose.Schema({
   projectId: String,
   accountId: String,
   tag: String,
   trackingID: String,
-  trackingTrigger: String
+  trackingTrigger: String,
+  custom: String
 })
 
-projectSchema.plugin(findOneOrCreate);
+projectSchema.plugin(findOrCreate);
 module.exports = mongoose.model('Project', projectSchema);

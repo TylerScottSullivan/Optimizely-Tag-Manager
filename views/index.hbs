@@ -7,6 +7,7 @@
     <select class="form-control" name='tag'>
       <option value='GOOGLE_UNIVERSAL'>Google Analytics Universal</option>
       <option value='GOOGLE_CLASSIC'>Google Analytics Classic</option>
+      <option value='CUSTOM'>Custom Snippet</option>
     </select>
   </div>
   <div class="form-group">
@@ -19,5 +20,12 @@
       <option value='onPageLoad'>On page load</option>
     </select>
   </div>
+  <div class="form-group">
+  <label for="comment">Enter your own snippet</label>
+  <textarea name="custom" class="form-control" rows="5" id="comment"></textarea>
+  </div>
+<div class="checkbox">
+  <label><input type="checkbox" value="">Active?</label>
+</div>
   <button type="submit" class="btn btn-default">Submit</button>
 </form>
