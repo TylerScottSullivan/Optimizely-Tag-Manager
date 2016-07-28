@@ -4,11 +4,25 @@ var findOrCreate = require('mongoose-findorcreate')
 var projectSchema = mongoose.Schema({
   projectId: String,
   accountId: String,
-  tag: String,
-  trackingID: String,
-  trackingTrigger: String,
-  custom: String
+  tags: [{
+    type: mongoose.Schema.Type.ObjectId,
+    ref: 'Tag'
+  }]
 })
 
-projectSchema.plugin(findOrCreate);
-module.exports = mongoose.model('Project', projectSchema);
+var tagSchema = mongoose.Schema({
+  name: String,
+  description: String,
+  accessToken: Array,
+  trackingTrigger: String,
+  custom: String,
+  rank: Number,
+  projectId: String,
+  active: Boolean
+})
+
+projectSchema.plugin(findOneOrCreate);
+module.exports = mongoose.model({
+  'Project': projectSchema,
+  'Tag': tagSchema
+});
