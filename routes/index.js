@@ -33,11 +33,16 @@ router.post('/request', function(req, res, next) {
   var t = new Tag({
     name: req.body.type,
     tagDescription: req.body.tagDescription,
-    fields: fields
+    fields: fields,
+    approved: false,
+    custom: req.body.snippet
+  })
+  t.save(function(err) {
+    if (err) console.log(err)
   })
 })
 
-router.post('/', function(req, res, next) {
+router.post('/addtag/:projectid', function(req, res, next) {
 
   //getting the signedRequest from Optimizely
   var signedRequest = req.query.signed_request;
@@ -147,12 +152,16 @@ router.get('/project/:id', (req, res, next) => {
   })
 })
 
-/* GET redirect page. */
-router.get('/redirect', function(req, res, next) {
-  res.render('redirect', { title: 'REDIRECT SUCCESS' });
-});
-
-
+router.get('/master', (req, res, next) => {
+  Master.find(function(err, masters) {
+    if (err) {
+      console.log("err found in finding masters", err)
+    } else {
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(masters)); //send an array of masters
+    }
+  })
+})
 
 
 
