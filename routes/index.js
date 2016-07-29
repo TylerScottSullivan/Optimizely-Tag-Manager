@@ -146,55 +146,6 @@ router.post('/', function(req, res, next) {
 
 });
 
-// router.get('/project/:id', (req, res, next) => {
-//   //find all tags for a project
-//   //compile the project_javascript
-//   //make the request
-//
-//   Project.findOne({'projectId': req.params.id})
-//          .populate('tags')
-//          .exec(function(err, project) {
-//           if (err) {
-//             next(err)
-//           } else {
-//
-//             //sort tags array by value
-//             project.tags.sort(function(a, b) {
-//               return a.rank-b.rank
-//             })
-//
-//             //make a string of optimizely javascript and add tags in order
-//             var javascript = '';
-//             for(var i = 0; i < project.tags.length; i++) {
-//               if(snippets[project.tags[i]['name']]) {
-//                 javascript += snippets[project.tags[i]['name']](project.tags[i]['fields'], project.trackingTrigger === 'onPageLoad')
-//               }
-//               else {
-//                 javascript += project.tags[i].custom
-//               }
-//             }
-//
-//             //making the request to insert code into optimizely site
-//             var token = process.env.API_TOKEN;
-//             request({
-//                  url: "https://www.optimizelyapis.com/experiment/v1/projects/" + req.params.id,
-//                  method: 'PUT',
-//                  json: {
-//                    include_jquery: true,
-//                    project_javascript: javascript},
-//                  headers: {
-//                    "Token": token,
-//                    "Content-Type": "application/json"
-//                  }
-//                }, function(error, response) {
-//                  if (error) {
-//                  } else {
-//                    res.status(200).send('I am alright')
-//                  }
-//              })
-//           }
-//   })
-// })
 
 /* GET redirect page. */
 router.get('/redirect', function(req, res, next) {
