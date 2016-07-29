@@ -152,6 +152,8 @@ router.get('/project/:id', (req, res, next) => {
   })
 })
 
+// /masters
+// GET: gets all current master templates
 router.get('/master', (req, res, next) => {
   Master.find(function(err, masters) {
     if (err) {
@@ -162,6 +164,53 @@ router.get('/master', (req, res, next) => {
     }
   })
 })
+
+// /download/:projectid
+// GET: gets all current tags, find project by project id, return all tags from a current project
+router.get('/download/:projectid', (req, res, next) => {
+  Tag.find({'projectId': req.params.projectid}, function(err, tags) {
+    if (err) {
+      console.log('err finding tags in download/:projectid', err)
+    } else {
+      console.log(tags)
+      res.setHeader('Content-Type', 'application/json');
+      res.send(JSON.stringify(tags)); //send an array of masters
+    }
+  })
+})
+
+// /updatetag/:projectid/:tagid
+// Post: updated information for tag
+router.post('/updatetag/:tagid', (req, res, next) => {
+  Tag.findById(req.params.tagid, function(err, tag) {
+    if (err) {
+      console.log('err updating tags', err)
+    } else {
+      tag.name = req.body.name;
+      tag.fields = req.body.fields;
+      tag.approved = req.body.approved;
+      tag.tagDescription = req.body.tagDescription;
+      tag.trackingTrigger = req.body.trackingTrigger;
+      tag.custom = req.body.custom;
+      tag.rank = req.body.rank;
+      tag.projectId = req.body.projectId;
+      tag.active = req.body.active;
+      tag.save(function(err, t) {
+        if (err) {
+          console.log("err saving tag in update", err)
+        } else {
+          res.send("update success", t)
+        }
+      })
+    }
+  })
+})
+
+// /deletetag/:tagid
+// Post: delete tag
+
+
+
 
 
 
