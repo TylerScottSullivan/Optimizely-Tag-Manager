@@ -33,7 +33,17 @@ router.post('/request', function(req, res, next) {
   var t = new Tag({
     name: req.body.type,
     tagDescription: req.body.tagDescription,
-    fields: fields
+    fields: fields,
+    approved: false,
+    custom: req.body.snippet
+  })
+  t.save(function(err, tag) {
+    if (err) {
+      console.log("Error in index.js line 42 saving snippet tag", err)
+    }
+    else {
+      res.status(200).send("Okay with saving the tag")
+    }
   })
 })
 
@@ -52,7 +62,7 @@ router.post('/', function(req, res, next) {
                        'projectId': userContext.context.environment.current_project},
                         function(err, project) {
                           if (err) {
-                            console.log('Error at line 32 of index.js finding project', err)
+                            console.log('Error at line 65 of index.js finding project', err)
                           }
                           else {
                             Master.findOne({name: req.body.type}, function(err, master) {
@@ -73,18 +83,57 @@ router.post('/', function(req, res, next) {
                                 active: req.body.active
                               }).save(function(err, tag) {
                                 if (err) {
-                                  console.log("Error at line 46 saving tag", err)
+                                  console.log("Error saving tag", err)
                                 }
                                 else {
                                   project.tags.push(tag._id);
                                   project.save(function(err, updatedProject) {
                                     if (err) {
-                                      console.log("Error at line 75 of index.js saving updated project", err)
+                                      console.log("Error saving updated project", err)
                                       res.send('Error')
                                     }
                                     else {
-                                      console.log('Successfully updated project')
-                                      res.send('<3 thx optimizely')
+                                      updatedProject.populate('tags', function(err, populatedProject) {
+                                        if (err) {
+                                          console.log("Error populating project", err)
+                                        }
+                                        else {
+                                          //sort tags array by value
+                                          project.tags.sort(function(a, b) {
+                                            return a.rank-b.rank
+                                          })
+
+                                          //make a string of optimizely javascript and add tags in order
+
+                                          var javascript = '';
+                                          for(var i = 0; i < project.tags.length; i++) {
+                                            if(snippets[project.tags[i]['name']]) {
+                                              javascript += snippets[project.tags[i]['name']](project.tags[i]['fields'], project.trackingTrigger === 'onPageLoad')
+                                            }
+                                            else {
+                                              javascript += project.tags[i].custom
+                                            }
+                                          }
+                                          //making the request to insert code into optimizely site
+                                          var token = process.env.API_TOKEN;
+                                          request({
+                                               url: "https://www.optimizelyapis.com/experiment/v1/projects/" + project.projectId,
+                                               method: 'PUT',
+                                               json: {
+                                                 include_jquery: true,
+                                                 project_javascript: javascript},
+                                               headers: {
+                                                 "Token": token,
+                                                 "Content-Type": "application/json"
+                                               }
+                                             }, function(error, response) {
+                                               if (error) {
+                                               } else {
+                                                 res.status(200).send('I am alright')
+                                               }
+                                           })
+                                        }
+                                      })
                                     }
                                   })
                                 }
@@ -97,55 +146,55 @@ router.post('/', function(req, res, next) {
 
 });
 
-router.get('/project/:id', (req, res, next) => {
-  //find all tags for a project
-  //compile the project_javascript
-  //make the request
-
-  Project.findOne({'projectId': req.params.id})
-         .populate('tags')
-         .exec(function(err, project) {
-          if (err) {
-            next(err)
-          } else {
-
-            //sort tags array by value
-            project.tags.sort(function(a, b) {
-              return a.rank-b.rank
-            })
-
-            //make a string of optimizely javascript and add tags in order
-            var javascript = '';
-            for(var i = 0; i < project.tags.length; i++) {
-              if(snippets[project.tags[i]['name']]) {
-                javascript += snippets[project.tags[i]['name']](project.tags[i]['fields'], project.trackingTrigger === 'onPageLoad')
-              }
-              else {
-                javascript += project.tags[i].custom
-              }
-            }
-
-            //making the request to insert code into optimizely site
-            var token = process.env.API_TOKEN;
-            request({
-                 url: "https://www.optimizelyapis.com/experiment/v1/projects/" + req.params.id,
-                 method: 'PUT',
-                 json: {
-                   include_jquery: true,
-                   project_javascript: javascript},
-                 headers: {
-                   "Token": token,
-                   "Content-Type": "application/json"
-                 }
-               }, function(error, response) {
-                 if (error) {
-                 } else {
-                   res.status(200).send('I am alright')
-                 }
-             })
-          }
-  })
-})
+// router.get('/project/:id', (req, res, next) => {
+//   //find all tags for a project
+//   //compile the project_javascript
+//   //make the request
+//
+//   Project.findOne({'projectId': req.params.id})
+//          .populate('tags')
+//          .exec(function(err, project) {
+//           if (err) {
+//             next(err)
+//           } else {
+//
+//             //sort tags array by value
+//             project.tags.sort(function(a, b) {
+//               return a.rank-b.rank
+//             })
+//
+//             //make a string of optimizely javascript and add tags in order
+//             var javascript = '';
+//             for(var i = 0; i < project.tags.length; i++) {
+//               if(snippets[project.tags[i]['name']]) {
+//                 javascript += snippets[project.tags[i]['name']](project.tags[i]['fields'], project.trackingTrigger === 'onPageLoad')
+//               }
+//               else {
+//                 javascript += project.tags[i].custom
+//               }
+//             }
+//
+//             //making the request to insert code into optimizely site
+//             var token = process.env.API_TOKEN;
+//             request({
+//                  url: "https://www.optimizelyapis.com/experiment/v1/projects/" + req.params.id,
+//                  method: 'PUT',
+//                  json: {
+//                    include_jquery: true,
+//                    project_javascript: javascript},
+//                  headers: {
+//                    "Token": token,
+//                    "Content-Type": "application/json"
+//                  }
+//                }, function(error, response) {
+//                  if (error) {
+//                  } else {
+//                    res.status(200).send('I am alright')
+//                  }
+//              })
+//           }
+//   })
+// })
 
 /* GET redirect page. */
 router.get('/redirect', function(req, res, next) {
