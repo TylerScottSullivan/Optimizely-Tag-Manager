@@ -8,17 +8,6 @@ var request = require('request');
 var snippets = require('../snippets')
 var findOrCreate = require('mongoose-findorcreate')
 
-//TODO this is going to need to be promised
-// var fieldBuilder = function(data) {
-//   Master.findOne({_id: '[INSERTID]'}, function(err, master) {
-//     //assuming data.type exists for all tags
-//     var toReturn = [];
-//     for(var i = 0; i < master[data.type].length; i++) {
-//       toReturn.push({'name': master[data.type][i], 'value': data[master[data.type][i]]})
-//     }
-//     return toReturn;
-//   })
-// }
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
