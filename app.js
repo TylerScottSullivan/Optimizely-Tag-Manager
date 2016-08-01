@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var request = require('request')
 var mongoose = require('mongoose');
+var _ = require('underscore');
 
 var connect = process.env.MONGODB_URI;
 mongoose.connect(connect);
