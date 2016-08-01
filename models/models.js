@@ -18,7 +18,8 @@ var tagSchema = mongoose.Schema({
   custom: String,
   rank: Number,
   projectId: String,
-  active: Boolean
+  active: Boolean,
+  approved: Boolean
 })
 
 var masterSchema = mongoose.Schema({
@@ -26,6 +27,7 @@ var masterSchema = mongoose.Schema({
   tokens: Array,
   tagDescription: String
 })
+
 
 projectSchema.plugin(findOrCreate);
 module.exports = {
