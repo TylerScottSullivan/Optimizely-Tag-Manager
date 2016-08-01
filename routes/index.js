@@ -206,9 +206,6 @@ router.post('/updatetag/:tagid', (req, res, next) => {
   })
 })
 
-// /deletetag/:tagid
-// Post: delete tag
-
 
 
 
