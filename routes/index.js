@@ -54,6 +54,7 @@ router.post('/', function(req, res, next) {
                             console.log('Error at line 65 of index.js finding project', err)
                           }
                           else {
+                            console.log(req.body.type)
                             Master.findOne({name: req.body.type}, function(err, master) {
                               //assuming data.type exists for all tags
                               var fields = [];
@@ -134,6 +135,13 @@ router.post('/', function(req, res, next) {
 )
 
 });
+
+router.post('deletetag/:tagid', function(req, res, next) {
+  db.collection('tags').deleteOne({"_id": req.params.tagid}, function(err, results) {
+    console.log(results);
+    res.status(200).send("ITS ALL GOOD IN THE HOOD")
+  })
+})
 
 
 /* GET redirect page. */
