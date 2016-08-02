@@ -15,13 +15,81 @@ var App = React.createClass({
 
 		getInitialState: function getInitialState() {
 				return {
-						null: null
+						masters: [],
+						downloadedProject: [],
+						currentProject: "6668600890",
+						splicedArray: [],
+						sidePanel: {}
 				};
+		},
+
+		onAddTag: function onAddTag() {
+				return null;
+		},
+
+		onSelect: function onSelect(item, rowinfo) {
+				this.setState({
+						sidePanel: rowinfo
+				});
+				console.log(sidePanel);
+		},
+
+		onUpdate: function onUpdate() {
+				return null;
+		},
+
+		onDelete: function onDelete() {
+				return null;
 		},
 
 		componentDidUpdate: function componentDidUpdate(nextProps, nextState) {},
 
-		componentDidMount: function componentDidMount() {},
+		componentDidMount: function componentDidMount() {
+				console.log('mounted');
+				var that = this;
+				fetch('/master').then(function (response) {
+						return response.json();
+				}).then(function (r) {
+						console.log(r);
+						that.setState({
+								master: r
+						});
+						console.log(that.state.master);
+				}).catch(function (e) {
+						console.log("Err: ", e);
+				}).then(fetch('/download/' + that.state.currentProject).then(function (response) {
+						return response.json();
+				}).then(function (r) {
+						console.log(r, 'downloaded project');
+						that.setState({
+								downloadedProject: r
+						});
+						console.log(that.state.downloadedProject, 'from state');
+				}).catch(function (e) {
+						console.log("Err: ", e);
+				}).then(function (r) {
+						console.log("ere");
+						var newArray = [];
+						var newObj = {};
+						for (var i = 0; i < that.state.downloadedProject.length; i++) {
+								for (var j = 0; j < that.state.master.length; j++) {
+										console.log('here');
+										console.log(that.state.downloadedProject[i].name, that.state.master[j].name);
+										if (that.state.downloadedProject[i].name === that.state.master[j].name) {
+												newObj = $.extend({}, that.state.master[j], that.state.downloadedProject[i]);
+												newArray.push(newObj);
+												console.log('merged');
+										}
+								}
+						};
+						console.log(newArray, "newArray");
+						that.setState({
+								splicedArray: newArray
+						});
+
+						console.log(that.state.splicedArray, "spliced array from state");
+				}));
+		},
 
 		render: function render() {
 				return React.createElement(
@@ -44,6 +112,7 @@ var App = React.createClass({
 												'Available Tags'
 										)
 								),
+								'//table one',
 								React.createElement(
 										'div',
 										{ className: 'flex height--1-1' },
@@ -179,10 +248,11 @@ var App = React.createClass({
 																)
 														)
 												),
+												'//table two',
 												React.createElement(
 														'h1',
 														{ className: 'header1' },
-														' Available Tags '
+														' My Tags '
 												),
 												React.createElement(
 														'table',
@@ -301,111 +371,400 @@ var App = React.createClass({
 																		)
 																)
 														)
-												)
+												),
+												'//table three',
+												React.createElement(
+														'h1',
+														{ className: 'header1' },
+														' My Tags '
+												),
+												React.createElement(
+														'table',
+														{ className: 'table table--rule table--hover' },
+														React.createElement(
+																'thead',
+																null,
+																React.createElement(
+																		'tr',
+																		null,
+																		React.createElement(
+																				'th',
+																				{ className: 'cell-collapse' },
+																				'Logo'
+																		),
+																		React.createElement(
+																				'th',
+																				null,
+																				'Name'
+																		),
+																		React.createElement(
+																				'th',
+																				null,
+																				'Category'
+																		),
+																		React.createElement(
+																				'th',
+																				null,
+																				'Called On'
+																		),
+																		React.createElement(
+																				'th',
+																				{ className: 'cell-collapse' },
+																				'Rank'
+																		),
+																		React.createElement(
+																				'th',
+																				{ className: 'cell-collapse' },
+																				'Status'
+																		)
+																)
+														),
+														React.createElement(
+																'tbody',
+																null,
+																this.state.splicedArray.map(function (rowinfo, item) {
+																		return React.createElement(TableColumnMyTags, { onClick: this.onSelect.bind(this, item, rowinfo), key: item, name: rowinfo.name, called: rowinfo.trackingTrigger });
+																}.bind(this)),
+																React.createElement(
+																		'tr',
+																		{ className: 'table-row--active' },
+																		React.createElement(
+																				'td',
+																				null,
+																				'Experiment name two that runs longer'
+																		),
+																		React.createElement(
+																				'td',
+																				{ className: 'numerical', id: 'row-centered' },
+																				'19'
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				'Down'
+																		)
+																),
+																React.createElement(
+																		'tr',
+																		null,
+																		React.createElement(
+																				'td',
+																				null,
+																				'Experiment name three'
+																		),
+																		React.createElement(
+																				'td',
+																				{ className: 'numerical', id: 'row-centered' },
+																				'400'
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				'Up'
+																		)
+																)
+														)
+												),
+												'//table four',
+												React.createElement(
+														'h1',
+														{ className: 'header1' },
+														' My Tags '
+												),
+												React.createElement(
+														'table',
+														{ className: 'table table--rule table--hover' },
+														React.createElement(
+																'thead',
+																null,
+																React.createElement(
+																		'tr',
+																		null,
+																		React.createElement(
+																				'th',
+																				{ className: 'cell-collapse' },
+																				'Logo'
+																		),
+																		React.createElement(
+																				'th',
+																				null,
+																				'Name'
+																		),
+																		React.createElement(
+																				'th',
+																				null,
+																				'Category'
+																		),
+																		React.createElement(
+																				'th',
+																				null,
+																				'Called On'
+																		),
+																		React.createElement(
+																				'th',
+																				{ className: 'cell-collapse' },
+																				'Rank'
+																		),
+																		React.createElement(
+																				'th',
+																				{ className: 'cell-collapse' },
+																				'Status'
+																		)
+																)
+														),
+														React.createElement(
+																'tbody',
+																null,
+																React.createElement(
+																		'tr',
+																		null,
+																		React.createElement(
+																				'td',
+																				null,
+																				'GA LOGO'
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				'Universal Analytics'
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				' Analytics '
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				' Page Load '
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				' 1 '
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				' Enabled '
+																		)
+																),
+																React.createElement(
+																		'tr',
+																		{ className: 'table-row--active' },
+																		React.createElement(
+																				'td',
+																				null,
+																				'Experiment name two that runs longer'
+																		),
+																		React.createElement(
+																				'td',
+																				{ className: 'numerical', id: 'row-centered' },
+																				'19'
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				'Down'
+																		)
+																),
+																React.createElement(
+																		'tr',
+																		null,
+																		React.createElement(
+																				'td',
+																				null,
+																				'Experiment name three'
+																		),
+																		React.createElement(
+																				'td',
+																				{ className: 'numerical', id: 'row-centered' },
+																				'400'
+																		),
+																		React.createElement(
+																				'td',
+																				{ id: 'row-centered' },
+																				'Up'
+																		)
+																)
+														)
+												),
+												'//end of tables'
 										),
-										React.createElement(
-												'div',
-												{ className: 'sidepanel background--faint' },
-												React.createElement(
-														'h2',
-														{ className: 'push-double--bottom' },
-														'Experiment Details'
-												),
-												React.createElement(
-														'div',
-														null,
-														' Logo and Name Here '
-												),
-												React.createElement(
-														'label',
-														{ className: 'label label--rule' },
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1' },
-																		'Description'
-																)
-														)
-												),
-												React.createElement(
-														'div',
-														null,
-														' Universal Analytics will make your site amazing please follow the instrucitons below. '
-												),
-												React.createElement(
-														'label',
-														{ className: 'label label--rule' },
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1' },
-																		'Field 1'
-																)
-														)
-												),
-												React.createElement(
-														'div',
-														null,
-														' This is the field for Universal Analytics please put your token here '
-												),
-												React.createElement('input', { placeholder: 'Token here' }),
-												React.createElement(
-														'div',
-														null,
-														' Whether its X or Y '
-												),
-												React.createElement(
-														'select',
-														{ className: 'form-control', name: 'trackingTrigger' },
-														React.createElement(
-																'option',
-																{ value: 'inHeader' },
-																'In header'
-														),
-														React.createElement(
-																'option',
-																{ value: 'onPageLoad' },
-																'On page load'
-														)
-												),
-												React.createElement(
-														'div',
-														null,
-														' Rank Rank Rank'
-												),
-												React.createElement('input', { placeholder: 'Rank here' }),
-												React.createElement(
-														'div',
-														null,
-														' Enabled or Disabled? '
-												),
-												React.createElement(
-														'select',
-														{ className: 'form-control', name: 'trackingTrigger' },
-														React.createElement(
-																'option',
-																{ value: 'inHeader' },
-																'Enabled'
-														),
-														React.createElement(
-																'option',
-																{ value: 'onPageLoad' },
-																'Disabled'
-														)
-												),
-												React.createElement(
-														'button',
-														{ className: 'button button--highlight' },
-														'Create Custom Tag'
-												)
-										)
+										React.createElement(SidePanelEditable, null)
 								)
 						)
 				);
+		}
+});
+
+var TableColumnMyTags = React.createClass({
+		displayName: 'TableColumnMyTags',
+
+		render: function render() {
+				return React.createElement(
+						'tr',
+						null,
+						React.createElement(
+								'td',
+								null,
+								'GA LOGO'
+						),
+						React.createElement(
+								'td',
+								{ id: 'row-centered' },
+								this.props.name
+						),
+						React.createElement(
+								'td',
+								{ id: 'row-centered' },
+								' Analytics '
+						),
+						React.createElement(
+								'td',
+								{ id: 'row-centered' },
+								this.props.called,
+								' '
+						),
+						React.createElement(
+								'td',
+								{ id: 'row-centered' },
+								' 1 '
+						),
+						React.createElement(
+								'td',
+								{ id: 'row-centered' },
+								' Enabled '
+						)
+				);
+		}
+});
+
+var TableColumnAvailable = React.createClass({
+		displayName: 'TableColumnAvailable',
+
+		render: function render() {
+				React.createElement('div', null);
+		}
+});
+
+var SidePanelEditable = React.createClass({
+		displayName: 'SidePanelEditable',
+
+		render: function render() {
+				return React.createElement(
+						'div',
+						{ className: 'sidepanel background--faint' },
+						React.createElement(
+								'h2',
+								{ className: 'push-double--bottom' },
+								'Experiment Details'
+						),
+						React.createElement(
+								'div',
+								null,
+								' Logo and Name Here '
+						),
+						React.createElement(
+								'label',
+								{ className: 'label label--rule' },
+								React.createElement(
+										'div',
+										{ className: 'flex' },
+										React.createElement(
+												'div',
+												{ className: 'flex--1' },
+												'Description'
+										)
+								)
+						),
+						React.createElement(
+								'div',
+								null,
+								' Universal Analytics will make your site amazing please follow the instrucitons below. '
+						),
+						React.createElement(
+								'label',
+								{ className: 'label label--rule' },
+								React.createElement(
+										'div',
+										{ className: 'flex' },
+										React.createElement(
+												'div',
+												{ className: 'flex--1' },
+												'Field 1'
+										)
+								)
+						),
+						React.createElement(
+								'div',
+								null,
+								' This is the field for Universal Analytics please put your token here '
+						),
+						React.createElement('input', { placeholder: 'Token here' }),
+						React.createElement(
+								'div',
+								null,
+								' Whether its X or Y '
+						),
+						React.createElement(
+								'select',
+								{ className: 'form-control', name: 'trackingTrigger' },
+								React.createElement(
+										'option',
+										{ value: 'inHeader' },
+										'In header'
+								),
+								React.createElement(
+										'option',
+										{ value: 'onPageLoad' },
+										'On page load'
+								)
+						),
+						React.createElement(
+								'div',
+								null,
+								' Rank Rank Rank'
+						),
+						React.createElement('input', { placeholder: 'Rank here' }),
+						React.createElement(
+								'div',
+								null,
+								' Enabled or Disabled? '
+						),
+						React.createElement(
+								'select',
+								{ className: 'form-control', name: 'trackingTrigger' },
+								React.createElement(
+										'option',
+										{ value: 'inHeader' },
+										'Enabled'
+								),
+								React.createElement(
+										'option',
+										{ value: 'onPageLoad' },
+										'Disabled'
+								)
+						),
+						React.createElement(
+								'button',
+								{ className: 'button button--highlight' },
+								'Update'
+						),
+						React.createElement(
+								'button',
+								{ className: 'button button--highlight' },
+								'Delete'
+						)
+				);
+		}
+});
+
+var SidePanelAdding = React.createClass({
+		displayName: 'SidePanelAdding',
+
+		render: function render() {
+				React.createElement('div', null);
 		}
 });
 
