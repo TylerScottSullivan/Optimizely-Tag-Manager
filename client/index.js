@@ -22,11 +22,16 @@ var App = React.createClass({
   	return null
   },
 
+  onTabSelect: function() {
+  	return null
+  },
+
   onSelect: function(item, rowinfo) {
   	this.setState({
   		sidePanel: rowinfo //this is an object
   	});
-  	console.log(sidePanel);
+  	console.log(rowinfo, "rowinfo")
+  	console.log(this.state.sidePanel, " sidePanel in state");
   },
 
   onUpdate: function() {
@@ -119,14 +124,14 @@ var App = React.createClass({
 				        </thead>
 				        <tbody>
 				        	{this.state.splicedArray.map(function(rowinfo, item) {
-				        		return <TableColumnMyTags onClick={this.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+				        		return <TableColumnMyTags onSelect={this.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
 				        		}.bind(this))
 				        	}
                 </tbody>
               </table>
 			      </div>
-			    <SidePanelEditable/>
-			  </div>
+          <SidePanelEditable info={this.state.sidePanel} />
+        </div>
 		  </div>
 	</div>
     );
@@ -136,7 +141,7 @@ var App = React.createClass({
 var TableColumnMyTags = React.createClass({
 	render: function() {
 		return (
-		         		 <tr>
+		         		 <tr onClick={this.props.onSelect}>
 				            <td>GA LOGO</td>
 				            <td id="row-centered">{this.props.name}</td>
 				            <td id="row-centered"> Analytics </td>
@@ -158,39 +163,57 @@ var TableColumnAvailable = React.createClass({
 
 var SidePanelEditable = React.createClass({
 	render: function() {
+			console.log("here")
+			console.log(this.props, "this.props")
+		if (this.props.info.name) {
+					return (
+						<div className="sidepanel background--faint">
+					      <h2 className="push-double--bottom">Experiment Details</h2>
+					      <div> Logo and {this.props.info.name} </div>
+					      <label className="label label--rule">
+					          <div className="flex">
+					            <div className="flex--1">Description</div>
+					          </div>
+					        </label>
+					        <div> {this.props.info.tagDescription} </div>
+					        {this.props.info.fields.map(function(field, item) {
+					        	return <InputFieldsEditable key={item} field={field}/>
+					        })}
+					        <div> Whether its X or Y </div>
+						    <select className="form-control" name='trackingTrigger'>
+						      <option value='inHeader'>In header</option>
+						      <option value='onPageLoad'>On page load</option>
+						    </select>
+					        <div> Rank Rank Rank</div>
+					        <input placeholder="Rank here" />
+					        <div> Enabled or Disabled? </div>
+						    <select className="form-control" name='trackingTrigger'>
+						      <option value='inHeader'>Enabled</option>
+						      <option value='onPageLoad'>Disabled</option>
+						    </select>
+						  <button className="button button--highlight">Update</button>
+						  <button className="button button--highlight">Delete</button>
+					    </div>
+					)
+		} else {
+			return <div> </div>;
+		}
+	}
+})
+
+var InputFieldsEditable = React.createClass({
+	render: function () {
 		return (
-					<div className="sidepanel background--faint">
-				      <h2 className="push-double--bottom">Experiment Details</h2>
-				      <div> Logo and Name Here </div>
-				      <label className="label label--rule">
-				          <div className="flex">
-				            <div className="flex--1">Description</div>
-				          </div>
+				<div>
+					    <label className="label label--rule">
+			            <div className="flex">
+			               <div className="flex--1">{this.props.field.name}</div>
+			            </div>
 				        </label>
-				        <div> Universal Analytics will make your site amazing please follow the instrucitons below. </div>
-				        <label className="label label--rule">
-				          <div className="flex">
-				            <div className="flex--1">Field 1</div>
-				          </div>
-				        </label>
-				        <div> This is the field for Universal Analytics please put your token here </div>
-				        <input placeholder="Token here" />
-				        <div> Whether its X or Y </div>
-					    <select className="form-control" name='trackingTrigger'>
-					      <option value='inHeader'>In header</option>
-					      <option value='onPageLoad'>On page load</option>
-					    </select>
-				        <div> Rank Rank Rank</div>
-				        <input placeholder="Rank here" />
-				        <div> Enabled or Disabled? </div>
-					    <select className="form-control" name='trackingTrigger'>
-					      <option value='inHeader'>Enabled</option>
-					      <option value='onPageLoad'>Disabled</option>
-					    </select>
-					  <button className="button button--highlight">Update</button>
-					  <button className="button button--highlight">Delete</button>
-				    </div>
-				)
+				        <div> {this.props.field.descripton} </div>
+				        <input placeholder={this.props.field.value} />
+		        </div>
+		        )
 	}
 })
 
@@ -201,6 +224,10 @@ var SidePanelAdding = React.createClass({
 	}
 })
 
+
+var Page = React.createClass({
+
+})
 
 
 ReactDOM.render(<App />, document.getElementById('root'));

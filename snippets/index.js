@@ -4,5 +4,7 @@ module.exports = {
   ADOBE: require('./adobe'),
   FB: require('./fb'),
   // AMPLITUDE: require('./amplitude'),
+
   // MIXPANEL: require('./mixpanel')
+
 }
