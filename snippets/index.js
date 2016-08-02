@@ -3,6 +3,6 @@ module.exports = {
   GC: require('./google_classic'),
   ADOBE: require('./adobe'),
   FB: require('./fb'),
-  AMPLITUDE: require('./amplitude'),
-  MIXPANEL: require('./mixpanel')
+  // AMPLITUDE: require('./amplitude'),
+  // MIXPANEL: require('./mixpanel')
 }
