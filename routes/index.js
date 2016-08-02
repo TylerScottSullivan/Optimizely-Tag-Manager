@@ -131,9 +131,7 @@ router.post('/', function(req, res, next) {
                             })
 
                           }
-                        }
-)
-
+                        })
 });
 
 router.post('deletetag/:tagid', function(req, res, next) {
