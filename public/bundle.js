@@ -1,0 +1,1 @@
+console.error("SyntaxError: /Users/MOMO/Desktop/tag_manager/client/index.js: \"React\" is read-only while parsing file: /Users/MOMO/Desktop/tag_manager/client/index.js");
