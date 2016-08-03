@@ -117,7 +117,6 @@ var App = React.createClass({
 						'Available Tags'
 					)
 				),
-				'//table one',
 				React.createElement(
 					'div',
 					{ className: 'flex height--1-1' },
@@ -160,223 +159,8 @@ var App = React.createClass({
 								)
 							)
 						),
-						React.createElement(
-							'h1',
-							{ className: 'header1' },
-							' My Tags '
-						),
-						React.createElement(
-							'table',
-							{ className: 'table table--rule table--hover' },
-							React.createElement(
-								'thead',
-								null,
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'th',
-										null,
-										'Experiment'
-									),
-									React.createElement(
-										'th',
-										{ className: 'numerical' },
-										'Numbers'
-									),
-									React.createElement(
-										'th',
-										{ className: 'cell-collapse' },
-										'Status'
-									)
-								)
-							),
-							React.createElement(
-								'tbody',
-								null,
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'td',
-										null,
-										'Experiment name one'
-									),
-									React.createElement(
-										'td',
-										{ className: 'numerical' },
-										'258'
-									),
-									React.createElement(
-										'td',
-										null,
-										'Up'
-									)
-								),
-								React.createElement(
-									'tr',
-									{ className: 'table-row--active' },
-									React.createElement(
-										'td',
-										null,
-										'Experiment name two that runs longer'
-									),
-									React.createElement(
-										'td',
-										{ className: 'numerical' },
-										'19'
-									),
-									React.createElement(
-										'td',
-										null,
-										'Down'
-									)
-								),
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'td',
-										null,
-										'Experiment name three'
-									),
-									React.createElement(
-										'td',
-										{ className: 'numerical' },
-										'400'
-									),
-									React.createElement(
-										'td',
-										null,
-										'Up'
-									)
-								)
-							)
-						),
-						'//table two',
-						React.createElement(
-							'h1',
-							{ className: 'header1' },
-							' My Tags '
-						),
-						React.createElement(
-							'table',
-							{ className: 'table table--rule table--hover' },
-							React.createElement(
-								'thead',
-								null,
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'th',
-										{ className: 'cell-collapse' },
-										'Logo'
-									),
-									React.createElement(
-										'th',
-										null,
-										'Name'
-									),
-									React.createElement(
-										'th',
-										null,
-										'Category'
-									),
-									React.createElement(
-										'th',
-										null,
-										'Called On'
-									),
-									React.createElement(
-										'th',
-										{ className: 'cell-collapse' },
-										'Rank'
-									),
-									React.createElement(
-										'th',
-										{ className: 'cell-collapse' },
-										'Status'
-									)
-								)
-							),
-							React.createElement(
-								'tbody',
-								null,
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'td',
-										null,
-										'GA LOGO'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										'Universal Analytics'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' Analytics '
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' Page Load '
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' 1 '
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' Enabled '
-									)
-								),
-								React.createElement(
-									'tr',
-									{ className: 'table-row--active' },
-									React.createElement(
-										'td',
-										null,
-										'Experiment name two that runs longer'
-									),
-									React.createElement(
-										'td',
-										{ className: 'numerical', id: 'row-centered' },
-										'19'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										'Down'
-									)
-								),
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'td',
-										null,
-										'Experiment name three'
-									),
-									React.createElement(
-										'td',
-										{ className: 'numerical', id: 'row-centered' },
-										'400'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										'Up'
-									)
-								)
-							)
-						),
+						React.createElement(Table1, null),
+						React.createElement(Table2, null),
 						'//table three',
 						React.createElement(
 							'h1',
@@ -470,130 +254,7 @@ var App = React.createClass({
 								)
 							)
 						),
-						'//table four',
-						React.createElement(
-							'h1',
-							{ className: 'header1' },
-							' My Tags '
-						),
-						React.createElement(
-							'table',
-							{ className: 'table table--rule table--hover' },
-							React.createElement(
-								'thead',
-								null,
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'th',
-										{ className: 'cell-collapse' },
-										'Logo'
-									),
-									React.createElement(
-										'th',
-										null,
-										'Name'
-									),
-									React.createElement(
-										'th',
-										null,
-										'Category'
-									),
-									React.createElement(
-										'th',
-										null,
-										'Called On'
-									),
-									React.createElement(
-										'th',
-										{ className: 'cell-collapse' },
-										'Rank'
-									),
-									React.createElement(
-										'th',
-										{ className: 'cell-collapse' },
-										'Status'
-									)
-								)
-							),
-							React.createElement(
-								'tbody',
-								null,
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'td',
-										null,
-										'GA LOGO'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										'Universal Analytics'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' Analytics '
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' Page Load '
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' 1 '
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										' Enabled '
-									)
-								),
-								React.createElement(
-									'tr',
-									{ className: 'table-row--active' },
-									React.createElement(
-										'td',
-										null,
-										'Experiment name two that runs longer'
-									),
-									React.createElement(
-										'td',
-										{ className: 'numerical', id: 'row-centered' },
-										'19'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										'Down'
-									)
-								),
-								React.createElement(
-									'tr',
-									null,
-									React.createElement(
-										'td',
-										null,
-										'Experiment name three'
-									),
-									React.createElement(
-										'td',
-										{ className: 'numerical', id: 'row-centered' },
-										'400'
-									),
-									React.createElement(
-										'td',
-										{ id: 'row-centered' },
-										'Up'
-									)
-								)
-							)
-						),
+						React.createElement(Table4, null),
 						'//end of tables'
 					),
 					React.createElement(SidePanelEditable, { info: this.state.sidePanel })
@@ -804,7 +465,387 @@ var SidePanelAdding = React.createClass({
 });
 
 var Page = React.createClass({
-	displayName: 'Page'
+	displayName: 'Page',
+
+	render: function render() {
+		React.createElement(
+			'div',
+			null,
+			' '
+		);
+	}
+});
+
+var Table1 = React.createClass({
+	displayName: 'Table1',
+
+	render: function render() {
+		return React.createElement(
+			'div',
+			null,
+			React.createElement(
+				'h1',
+				{ className: 'header1' },
+				' My Tags '
+			),
+			React.createElement(
+				'table',
+				{ className: 'table table--rule table--hover' },
+				React.createElement(
+					'thead',
+					null,
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'th',
+							null,
+							'Experiment'
+						),
+						React.createElement(
+							'th',
+							{ className: 'numerical' },
+							'Numbers'
+						),
+						React.createElement(
+							'th',
+							{ className: 'cell-collapse' },
+							'Status'
+						)
+					)
+				),
+				React.createElement(
+					'tbody',
+					null,
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'td',
+							null,
+							'Experiment name one'
+						),
+						React.createElement(
+							'td',
+							{ className: 'numerical' },
+							'258'
+						),
+						React.createElement(
+							'td',
+							null,
+							'Up'
+						)
+					),
+					React.createElement(
+						'tr',
+						{ className: 'table-row--active' },
+						React.createElement(
+							'td',
+							null,
+							'Experiment name two that runs longer'
+						),
+						React.createElement(
+							'td',
+							{ className: 'numerical' },
+							'19'
+						),
+						React.createElement(
+							'td',
+							null,
+							'Down'
+						)
+					),
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'td',
+							null,
+							'Experiment name three'
+						),
+						React.createElement(
+							'td',
+							{ className: 'numerical' },
+							'400'
+						),
+						React.createElement(
+							'td',
+							null,
+							'Up'
+						)
+					)
+				)
+			)
+		);
+	}
+});
+
+var Table2 = React.createClass({
+	displayName: 'Table2',
+
+	render: function render() {
+		return React.createElement(
+			'div',
+			null,
+			React.createElement(
+				'h1',
+				{ className: 'header1' },
+				' My Tags '
+			),
+			React.createElement(
+				'table',
+				{ className: 'table table--rule table--hover' },
+				React.createElement(
+					'thead',
+					null,
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'th',
+							{ className: 'cell-collapse' },
+							'Logo'
+						),
+						React.createElement(
+							'th',
+							null,
+							'Name'
+						),
+						React.createElement(
+							'th',
+							null,
+							'Category'
+						),
+						React.createElement(
+							'th',
+							null,
+							'Called On'
+						),
+						React.createElement(
+							'th',
+							{ className: 'cell-collapse' },
+							'Rank'
+						),
+						React.createElement(
+							'th',
+							{ className: 'cell-collapse' },
+							'Status'
+						)
+					)
+				),
+				React.createElement(
+					'tbody',
+					null,
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'td',
+							null,
+							'GA LOGO'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							'Universal Analytics'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' Analytics '
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' Page Load '
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' 1 '
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' Enabled '
+						)
+					),
+					React.createElement(
+						'tr',
+						{ className: 'table-row--active' },
+						React.createElement(
+							'td',
+							null,
+							'Experiment name two that runs longer'
+						),
+						React.createElement(
+							'td',
+							{ className: 'numerical', id: 'row-centered' },
+							'19'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							'Down'
+						)
+					),
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'td',
+							null,
+							'Experiment name three'
+						),
+						React.createElement(
+							'td',
+							{ className: 'numerical', id: 'row-centered' },
+							'400'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							'Up'
+						)
+					)
+				)
+			)
+		);
+	}
+});
+
+var Table4 = React.createClass({
+	displayName: 'Table4',
+
+	render: function render() {
+		return React.createElement(
+			'div',
+			null,
+			React.createElement(
+				'h1',
+				{ className: 'header1' },
+				' My Tags '
+			),
+			React.createElement(
+				'table',
+				{ className: 'table table--rule table--hover' },
+				React.createElement(
+					'thead',
+					null,
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'th',
+							{ className: 'cell-collapse' },
+							'Logo'
+						),
+						React.createElement(
+							'th',
+							null,
+							'Name'
+						),
+						React.createElement(
+							'th',
+							null,
+							'Category'
+						),
+						React.createElement(
+							'th',
+							null,
+							'Called On'
+						),
+						React.createElement(
+							'th',
+							{ className: 'cell-collapse' },
+							'Rank'
+						),
+						React.createElement(
+							'th',
+							{ className: 'cell-collapse' },
+							'Status'
+						)
+					)
+				),
+				React.createElement(
+					'tbody',
+					null,
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'td',
+							null,
+							'GA LOGO'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							'Universal Analytics'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' Analytics '
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' Page Load '
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' 1 '
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							' Enabled '
+						)
+					),
+					React.createElement(
+						'tr',
+						{ className: 'table-row--active' },
+						React.createElement(
+							'td',
+							null,
+							'Experiment name two that runs longer'
+						),
+						React.createElement(
+							'td',
+							{ className: 'numerical', id: 'row-centered' },
+							'19'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							'Down'
+						)
+					),
+					React.createElement(
+						'tr',
+						null,
+						React.createElement(
+							'td',
+							null,
+							'Experiment name three'
+						),
+						React.createElement(
+							'td',
+							{ className: 'numerical', id: 'row-centered' },
+							'400'
+						),
+						React.createElement(
+							'td',
+							{ id: 'row-centered' },
+							'Up'
+						)
+					)
+				)
+			)
+		);
+	}
 });
 
 ReactDOM.render(React.createElement(App, null), document.getElementById('root'));
