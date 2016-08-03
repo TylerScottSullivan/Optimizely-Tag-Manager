@@ -3,6 +3,12 @@ var ReactDOM = require('react-dom');
 var moment = require('moment');
 var _ = require('underscore');
 import { Button, Table } from 'optimizely-oui';
+import { Router, Route, Link } from 'react-router'
+
+// not using an ES6 transpiler
+var Router = require('react-router').Router
+var Route = require('react-router').Route
+var Link = require('react-router').Link
 
 var App = React.createClass({
 
@@ -12,7 +18,8 @@ var App = React.createClass({
     	downloadedProject: [],
     	currentProject: "6668600890", //this needs to be fetched
     	splicedArray: [], //merge master templates and the downloaded project
-    	sidePanel: {}
+    	sidePanel: {},
+      currentTab: null
     }
   },
 
@@ -45,7 +52,11 @@ var App = React.createClass({
     // POST 'deletetag/:tagid'
   	return null
   },
-
+  click: function(tab) {
+    this.setState({
+      currentTab: tab
+    })
+  },
   // componentDidUpdate: function(nextProps, nextState) {
   // },
 
@@ -68,7 +79,6 @@ var App = React.createClass({
 			var newObj = {};
 			for (var i = 0; i < this.state.downloadedProject.length; i++) {
 				for (var j = 0; j < this.state.master.length; j++) {
-          console.log('i am here')
 					console.log(this.state.downloadedProject[i].name, this.state.master[j].name)
 					if (this.state.downloadedProject[i].name === this.state.master[j].name) {
 						newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
@@ -76,7 +86,6 @@ var App = React.createClass({
 					}
 				}
 			};
-			console.log(newArray, "newArray");
 			this.setState({
 				splicedArray: newArray
 			})
@@ -86,77 +95,122 @@ var App = React.createClass({
   },
 
   render: function() {
+    console.log("app state upon render", this.state);
     return (
     	<div>
-			  <div className="tabs tabs--small tabs--sub" data-oui-tabs>
-			    <ul className="tabs-nav soft-double--sides">
-			      <li className="tabs-nav__item is-active" data-oui-tabs-nav-item>My Tags</li>
-			      <li className="tabs-nav__item" data-oui-tabs-nav-item>Available Tags</li>
-            <li className="tabs-nav__item" data-oui-tabs-nav-item>Create Tag</li>
-			    </ul>
-          <div className="flex height--1-1">
-            <div className="flex--1 soft-double--sides">
-              <ul className="flex push-double--ends">
-                <li className="push-triple--right">
-                  <div className="button-group">
-                    <div> Need to put filter here </div>
-                    <div className="search">
-                      <input type="text" className="text-input text-input--search width--200" placeholder="Filter by Name"/>
-                    </div>
-                    <button className="button" type="button">Search</button>
-                  </div>
-                </li>
-                <li className="anchor--right">
-                  <button className="button button--highlight">Create Custom Tag</button>
-                </li>
-              </ul>
-
-				      <h1 className='header1'> My Tags </h1>
-				      <table className="table table--rule table--hover">
-				        <thead>
-				          <tr>
-				            <th className = "cell-collapse">Logo</th>
-				            <th>Name</th>
-				            <th>Category</th>
-				            <th>Called On</th>
-				            <th className="cell-collapse">Status</th>
-				          </tr>
-				        </thead>
-				        <tbody>
-				        	{this.state.splicedArray.map(function(rowinfo, item) {
-				        		return <TableColumnMyTags onSelect={this.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
-				        		}.bind(this))
-				        	}
-                </tbody>
-              </table>
-			      </div>
-          <SidePanelEditable info={this.state.sidePanel} />
-        </div>
-		  </div>
-	</div>
+        <Tab/>
+        <SearchBar/>
+        <TagsPage splicedArray={this.state.splicedArray} onSelect={this.onSelect} info={this.state.sidePanel}/>
+	    </div>
     );
   }
 });
 
+var TagsPage = React.createClass({
+  render() {
+    return (
+      <div className="flex height--1-1">
+        <TableContent splicedArray={this.props.splicedArray} onSelect={this.props.onSelect}/>
+        <SidePanelEditable info={this.props.info} />
+      </div>
+      )
+  }
+})
+
+var Tab = React.createClass({
+  render: function() {
+    return (
+      <div className="tabs tabs--small tabs--sub" data-oui-tabs>
+        <ul className="tabs-nav soft-double--sides">
+          <li className="tabs-nav__item is-active" data-oui-tabs-nav-item onClick={this.click}>My Tags</li>
+          <li className="tabs-nav__item" data-oui-tabs-nav-item onClick={this.click}>Available Tags</li>
+          <li className="tabs-nav__item" data-oui-tabs-nav-item onClick={this.click}>Create Tag</li>
+        </ul>
+      </div>
+    )
+  }
+})
+
+var SearchBar = React.createClass({
+  render: function() {
+    return (
+      <div className="flex--1 soft-double--sides">
+        <ul className="flex push-double--ends">
+          <li className="push-triple--right">
+            <div className="button-group">
+              <div> Need to put filter here </div>
+              <div className="search">
+                <input type="text" className="text-input text-input--search width--200" placeholder="Filter by Name"/>
+              </div>
+              <button className="button" type="button">Search</button>
+            </div>
+          </li>
+          <li className="anchor--right">
+            <button className="button button--highlight">Create Custom Tag</button>
+          </li>
+        </ul>
+      </div>
+    )
+  }
+})
+
+var TableContent = React.createClass({
+
+  render: function() {
+    console.log("table content", this.props);
+    return (
+      <div>
+        <h1 className='header1'> My Tags </h1>
+        <table className="table table--rule table--hover">
+          <thead>
+            <tr>
+              <th className = "cell-collapse">Logo</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Called On</th>
+              <th className="cell-collapse">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.props.splicedArray.map((rowinfo, item) => {
+                // this.props.onClick ?? the state is the tag
+                return <TableColumnMyTags onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+})
+
 var TableColumnMyTags = React.createClass({
 	render: function() {
 		return (
-		         		 <tr onClick={this.props.onSelect}>
-				            <td>GA LOGO</td>
-				            <td id="row-centered">{this.props.name}</td>
-				            <td id="row-centered"> Analytics </td>
-				            <td id="row-centered">{this.props.called} </td>
-				            // <td id="row-centered"> 1 </td>
-				            <td id="row-centered"> Enabled </td>
-				         </tr>
-      	)
+   		 <tr onClick={this.props.onSelect}>
+          <td>GA LOGO</td>
+          <td id="row-centered">{this.props.name}</td>
+          <td id="row-centered"> Analytics </td>
+          <td id="row-centered">{this.props.called} </td>
+          // <td id="row-centered"> 1 </td>
+          <td id="row-centered"> Enabled </td>
+       </tr>
+    )
 	}
 })
 
 var TableColumnAvailable = React.createClass({
 	render: function() {
-		<div>
-		</div>
+    return (
+   		 <tr onClick={this.props.onSelect}>
+          <td>LOGO</td>
+          <td id="row-centered">{this.props.name}</td>
+          <td id="row-centered"> Analytics </td>
+          <td id="row-centered">{this.props.called} </td>
+          <td id="row-centered"> Enabled </td>
+       </tr>
+     )
 	}
 })
 
@@ -193,7 +247,7 @@ var SidePanelEditable = React.createClass({
 						    </select>
 						  <button className="button button--highlight">Update</button>
 						  <button className="button button--highlight">Delete</button>
-					    </div>
+					  </div>
 					)
 		} else {
 			return <div> </div>;
@@ -213,7 +267,7 @@ var InputFieldsEditable = React.createClass({
 				        <div> {this.props.field.descripton} </div>
 				        <input placeholder={this.props.field.value} />
 		        </div>
-		        )
+		)
 	}
 })
 
@@ -226,7 +280,10 @@ var SidePanelAdding = React.createClass({
 
 
 var Page = React.createClass({
-
+  render: function() {
+    <div>
+    </div>
+  }
 })
 
 

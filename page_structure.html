@@ -1,0 +1,46 @@
+<div>
+    <div className="tabs tabs--small tabs--sub" data-oui-tabs>
+        <ul className="tabs-nav soft-double--sides">
+            <li className="tabs-nav__item is-active" data-oui-tabs-nav-item>My Tags</li>
+            <li className="tabs-nav__item" data-oui-tabs-nav-item>Available Tags</li>
+            <li className="tabs-nav__item" data-oui-tabs-nav-item>Create Tag</li>
+        </ul>
+        <div className="flex height--1-1">
+            <div className="flex--1 soft-double--sides">
+                <ul className="flex push-double--ends">
+                    <li className="push-triple--right">
+                        <div className="button-group">
+                            <div> Need to put filter here </div>
+                            <div className="search">
+                                <input type="text" className="text-input text-input--search width--200" placeholder="Filter by Name"/>
+                            </div>
+                            <button className="button" type="button">Search</button>
+                        </div>
+                    </li>
+                    <li className="anchor--right">
+                        <button className="button button--highlight">Create Custom Tag</button>
+                    </li>
+                </ul>
+                <h1 className='header1'> My Tags </h1>
+                <table className="table table--rule table--hover">
+                    <thead>
+                        <tr>
+                            <th className = "cell-collapse">Logo</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Called On</th>
+                            <th className="cell-collapse">Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {this.state.splicedArray.map(function(rowinfo, item) {
+                        return <TableColumnMyTags onSelect={this.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+                        }.bind(this))
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <SidePanelEditable info={this.state.sidePanel} />
+        </div>
+    </div>
+</div>
