@@ -2,13 +2,13 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var moment = require('moment');
 var _ = require('underscore');
-import { Button, Table } from 'optimizely-oui';
-import { Router, Route, Link } from 'react-router'
+// import { Button, Table } from 'optimizely-oui';
+// import { Router, Route, Link } from 'react-router'
 
 // not using an ES6 transpiler
-var Router = require('react-router').Router
-var Route = require('react-router').Route
-var Link = require('react-router').Link
+// var Router = require('react-router').Router
+// var Route = require('react-router').Route
+// var Link = require('react-router').Link
 
 var App = React.createClass({
 

@@ -25,7 +25,7 @@
     "moment": "^2.14.1",
     "mongoose": "^4.5.7",
     "mongoose-find-one-or-create": "^0.2.0",
-    "mongoose-findorcreate": "^0.1.2",
+    "mongoose-findorcreate": "github:clarkieryan/mongoose-findorcreate",
     "morgan": "~1.6.1",
     "optimizely-canvas-sdk": "0.0.2",
     "optimizely-oui": "^13.1.1",
