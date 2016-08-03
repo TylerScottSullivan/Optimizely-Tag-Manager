@@ -174,7 +174,6 @@ var TableContent = React.createClass({
           <tbody>
             {
               this.props.splicedArray.map((rowinfo, item) => {
-                // this.props.onClick ?? the state is the tag
                 return <TableColumnMyTags onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
               })
             }
