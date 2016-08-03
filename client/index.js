@@ -2,7 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var moment = require('moment');
 var _ = require('underscore');
-// import { Button, Table } from 'optimizely-oui';
+import { Button, Table } from 'optimizely-oui';
 // import { Router, Route, Link } from 'react-router'
 
 // not using an ES6 transpiler
@@ -113,7 +113,7 @@ var TagsPage = React.createClass({
         <TableContent splicedArray={this.props.splicedArray} onSelect={this.props.onSelect}/>
         <SidePanelEditable info={this.props.info} />
       </div>
-      )
+    )
   }
 })
 
@@ -216,7 +216,6 @@ var TableColumnAvailable = React.createClass({
 
 var SidePanelEditable = React.createClass({
 	render: function() {
-			console.log("here")
 			console.log(this.props, "this.props")
 		if (this.props.info.name) {
 					return (
