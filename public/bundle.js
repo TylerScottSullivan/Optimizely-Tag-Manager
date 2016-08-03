@@ -1,1 +1,1 @@
-console.error("SyntaxError: /Users/MOMO/Desktop/tag_manager/client/index.js: \"React\" is read-only while parsing file: /Users/MOMO/Desktop/tag_manager/client/index.js");
+console.error("TypeError: /Users/julierubin/Horizons/Optimizely_tag_manager/client/index.js: Duplicate declaration \"Router\" while parsing file: /Users/julierubin/Horizons/Optimizely_tag_manager/client/index.js");
