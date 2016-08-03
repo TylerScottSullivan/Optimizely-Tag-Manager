@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
 var findOrCreate = require('mongoose-findorcreate')
+var snippets = require('../snippets')
 
 var projectSchema = mongoose.Schema({
   projectId: String,

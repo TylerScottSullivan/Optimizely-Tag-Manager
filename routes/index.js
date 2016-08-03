@@ -51,12 +51,12 @@ router.post('/', function(req, res, next) {
                        {'accountId': userContext.context.environment.current_account,
                        'tags': [],
                        'projectId': userContext.context.environment.current_project})
-        .then(utils.findMaster)
-        .then(utils.createTag)
-        .then(utils.updateProject)
-        .then(utils.populateProject)
-        .then(utils.getJavascript)
-        .then(utils.buildJavascript)
+        .then(utils.findMaster.bind(utils))
+        .then(utils.createTag.bind(utils))
+        .then(utils.updateProject.bind(utils))
+        .then(utils.populateProject.bind(utils))
+        .then(utils.getJavascript.bind(utils))
+        .then(utils.buildJavascript.bind(utils))
         .then(function(response) {
           res.status(200).send('I am alright')
         })

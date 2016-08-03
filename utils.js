@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
 var canvasSdk = require('optimizely-canvas-sdk');
-var Project = require('../models/models').Project;
-var Master = require('../models/models').Master;
-var Tag = require('../models/models').Tag;
-var request = require('request-promise');
-var snippets = require('../snippets')
+var Project = require('./models/models').Project;
+var Master = require('./models/models').Master;
+var Tag = require('./models/models').Tag;
+var rp = require('request-promise');
+var snippets = require('./snippets')
 var findOrCreate = require('mongoose-findorcreate')
 
 module.exports = {
@@ -43,18 +43,19 @@ module.exports = {
               trackerTag.callbacks.push(tag.name)
               return trackerTag.save()
             }.bind(this))
-           .then(()=>resolve(project.save()))
+           .then(()=>resolve(this.project.save()))
            .catch(err=>reject(err))
+      }
       else {
-        resolve(project.save())
+        resolve(this.project.save())
         }
-      })
-    }
+      }.bind(this))
   },
   populateProject: function(updatedProject) {
-    return updatedProject.populate('tags')
+    return updatedProject.populate({path: 'tags'}).execPopulate()
   },
   getJavascript: function(populatedProject) {
+    var tags = this.project.tags;
     var inHeaders = tags.filter(function(item){
                     return item.trackingTrigger === "inHeader";
                   })
@@ -63,9 +64,13 @@ module.exports = {
                             })
 
     var inHeaderJavascript = '';
+    console.log('EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE', tags)
+    console.log('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM', inHeaders)
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
+      console.log('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
       inHeaderJavascript += inHeaders[i].render();
+      console.log(inHeaderJavascript)
     }
     var onDocumentReadyJavascript = '';
     for(var i = 0; i < onDocumentReadys; i++) {
@@ -77,17 +82,15 @@ module.exports = {
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '})'
 
     //combine inHeaders and onDocumentReadys
-    var combinedJavascript = inHeaders + onDocumentReadys;
+    this.combinedJavascript = inHeaders + onDocumentReadys;
+
 
     //getting original Javascript sections
     var token = process.env.API_TOKEN;
-
-    return request({
-                     url: "https://www.optimizelyapis.com/experiment/v1/projects/" + project.projectId,
+    console.log("PROJECT ID++++++++++++++++++++++++++++++++++++++++++++++++", token)
+    return rp({
+                     uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
                      method: 'GET',
-                     json: {
-                       include_jquery: true,
-                       project_javascript: javascript},
                      headers: {
                        "Token": token,
                        "Content-Type": "application/json"
@@ -95,21 +98,27 @@ module.exports = {
      })
   },
   buildJavascript: function(response) {
-    var j = response.responseText.project_javascript;
+    console.log("************************************", response)
+    var j = JSON.parse(response).project_javascript;
+
 
     //get start section
     originalJavascriptStartSectionIndex = j.indexOf('//--------------------HorizonsJavascriptStart--------------------');
-    var originalJavascriptStartSection = j.slice(0, originalJavascriptStartSectionIndex);
+    var originalJavascriptStartSection = ''
+    if (originalJavascriptStartSectionIndex !== -1) {
+      originalJavascriptStartSection = j.slice(0, originalJavascriptStartSectionIndex);
+    }
 
     //add our javascript piece to the originalJavascriptStartSection
-    var finalJavascript = originalJavascriptStartSection + "//--------------------HorizonsJavascriptStart--------------------\n" + combinedJavascript + "//--------------------HorizonsJavascriptEnd--------------------\n";
-
-    return request({
-         url: "https://www.optimizelyapis.com/experiment/v1/projects/" + project.projectId,
+    var finalJavascript = originalJavascriptStartSection + "//--------------------HorizonsJavascriptStart--------------------\n" + this.combinedJavascript;
+    var token = process.env.API_TOKEN;
+    console.log("Javascript", finalJavascript)
+    return rp({
+         uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
          method: 'PUT',
          json: {
            include_jquery: true,
-           project_javascript: javascript},
+           project_javascript: finalJavascript},
          headers: {
            "Token": token,
            "Content-Type": "application/json"
