@@ -20,7 +20,7 @@ router.get('/request', function(req, res, next) {
 router.post('/request', function(req, res, next) {
   var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription}
   var t = new Tag({
-    name: req.body.type,
+    name: req.body.name,
     tagDescription: req.body.tagDescription,
     fields: fields,
     approved: false,
