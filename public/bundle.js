@@ -15,6 +15,7 @@ var App = React.createClass({
   displayName: 'App',
 
   getInitialState: function getInitialState() {
+    console.log("window", window.location.search);
     return {
       masters: [],
       downloadedProject: [],
@@ -456,7 +457,7 @@ var MySidePanel = React.createClass({
       projectId: "6668600890",
       trackingTrigger: 'inHeader',
       active: false,
-      tagId: null
+      tagId: this.props.info._id
     };
   },
 
@@ -464,29 +465,26 @@ var MySidePanel = React.createClass({
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
-        tokens: nextProps.info.tokens
+        tokens: nextProps.info.fields
       });
     }
   },
 
   onUpdateTag: function onUpdateTag() {
     var data = {};
-    this.state.tokens.map(function (token) {
-      data[token.tokenName] = token.value;
+    data.fields = this.state.tokens.map(function (token) {
+      var field = {};
+      field[token.name] = token.value;
+      return field;
     });
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.name = this.props.info.name;
-    data.tagDescription = this.props.info.tagDescription;
-    data.custom = this.props.info.custom;
     data.projectId = this.state.projectId;
-    data.hasCallback = this.props.info.hasCallback;
-    data.callBacks = this.props.info.callBacks;
-    data.approved = true;
+
     console.log('dataaaaa', data);
 
     return $.ajax({
-      url: '/updatetag:' + this.state.tagId,
+      url: '/updatetag/' + this.props.info._id,
       type: 'POST',
       data: data,
       success: function success(data) {
@@ -499,12 +497,13 @@ var MySidePanel = React.createClass({
   },
 
   onDelete: function onDelete() {
-    //delete a tag
-    // POST 'deletetag/:tagid'
+
     return $.ajax({
       url: '/',
       type: 'deletetag/' + this.state.tagId,
-      data: data,
+      data: {
+        tagid: this.state.tagId
+      },
       success: function success(data) {
         console.log('delete tag successful');
       },
@@ -550,7 +549,7 @@ var MySidePanel = React.createClass({
         ),
         React.createElement('label', { className: 'label label--rule' }),
         this.state.tokens.map(function (field, index) {
-          return React.createElement(MyInputFields, { key: index, field: field, onChange: this.onChangeTokens.bind(this, index) });
+          return React.createElement(MyInputFields, { key: index, field: field, value: this.state.info.fields[index].value, onChange: this.onChangeTokens.bind(this, index) });
         }.bind(this)),
         React.createElement(
           'div',
@@ -592,8 +591,13 @@ var MySidePanel = React.createClass({
         ),
         React.createElement(
           'button',
-          { className: 'button button--highlight', onClick: this.onAddTag },
-          'Add'
+          { className: 'button button--highlight', onClick: this.onUpdateTag },
+          'Update'
+        ),
+        React.createElement(
+          'button',
+          { className: 'button button--highlight', onClick: this.onDelete },
+          'Delete'
         )
       );
     } else {
@@ -637,7 +641,7 @@ var AvailableSidePanel = React.createClass({
     });
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.name = this.props.info.name;
+    data.type = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.custom = this.props.info.custom;
     data.projectId = this.state.projectId;
@@ -647,7 +651,7 @@ var AvailableSidePanel = React.createClass({
     console.log('dataaaaa', data);
 
     return $.ajax({
-      url: '/',
+      url: '/' + window.location.search,
       type: 'POST',
       data: data,
       success: function success(data) {
@@ -777,7 +781,7 @@ var MyInputFields = React.createClass({
           this.props.field.description,
           ' '
         ),
-        React.createElement('input', { placeholder: this.props.field.value })
+        React.createElement('input', { value: this.props.field.value, onChange: this.props.onChange })
       )
     );
   }
@@ -812,14 +816,6 @@ var AvailableInputFields = React.createClass({
         React.createElement('input', { value: this.props.field.value, onChange: this.props.onChange })
       )
     );
-  }
-});
-
-var SidePanelAdding = React.createClass({
-  displayName: 'SidePanelAdding',
-
-  render: function render() {
-    React.createElement('div', null);
   }
 });
 

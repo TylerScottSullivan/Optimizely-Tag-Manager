@@ -21,7 +21,7 @@ module.exports = {
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
     }
     t = new Tag({
-      name: this.body.type,
+      name: master.name,
       fields: fields,
       approved: true,
       tagDescription: master.tagDescription,

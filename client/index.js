@@ -7,6 +7,7 @@ import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
 
 var App = React.createClass({
   getInitialState: function() {
+    console.log("window", window.location.search)
     return {
     	masters: [],
     	downloadedProject: [],
@@ -284,7 +285,7 @@ var MySidePanel = React.createClass({
       projectId: "6668600890",
       trackingTrigger: 'inHeader',
       active: false,
-      tagId: null
+      tagId: this.props.info._id
     };
   },
 
@@ -292,29 +293,26 @@ var MySidePanel = React.createClass({
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
-        tokens: nextProps.info.tokens
+        tokens: nextProps.info.fields
       })
     }
   },
 
   onUpdateTag: function() {
     var data = {};
-    this.state.tokens.map(function(token){
-      data[token.tokenName] = token.value
+    data.fields = this.state.tokens.map(function(token){
+      var field = {};
+      field[token.name] = token.value
+      return field
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.name = this.props.info.name;
-    data.tagDescription = this.props.info.tagDescription;
-    data.custom = this.props.info.custom;
     data.projectId = this.state.projectId;
-    data.hasCallback = this.props.info.hasCallback;
-    data.callBacks = this.props.info.callBacks;
-    data.approved = true;
+
     console.log('dataaaaa', data)
 
     return $.ajax({
-      url: '/updatetag:' + this.state.tagId,
+      url: '/updatetag/' + this.props.info._id,
       type: 'POST',
       data: data,
       success: function(data) {
@@ -326,12 +324,13 @@ var MySidePanel = React.createClass({
   },
 
   onDelete: function() {
-    //delete a tag
-    // POST 'deletetag/:tagid'
+
     return $.ajax({
       url: '/',
       type: 'deletetag/' + this.state.tagId,
-      data: data,
+      data: {
+        tagid: this.state.tagId
+      },
       success: function(data) {
         console.log('delete tag successful')},
       error: function(err) {
@@ -347,7 +346,7 @@ var MySidePanel = React.createClass({
     this.setState(newState);
   },
 
-//this change the enable and triggers
+  //this change the enable and triggers
   onChange: function(e) {
     var newState = Object.assign({}, this.state);
     newState[e.target.name] = e.target.value;
@@ -364,7 +363,7 @@ var MySidePanel = React.createClass({
             <label className="label label--rule">
             </label>
               {this.state.tokens.map(function(field, index) {
-                return <MyInputFields key={index} field={field} onChange={this.onChangeTokens.bind(this, index)}/>
+                return <MyInputFields key={index} field={field} value={this.state.info.fields[index].value} onChange={this.onChangeTokens.bind(this, index)}/>
               }.bind(this))}
             <div>Called on: </div>
             <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
@@ -376,7 +375,8 @@ var MySidePanel = React.createClass({
               <option value='Enabled'>Enabled</option>
               <option value='Disabled'>Disabled</option>
             </select>
-          <button className="button button--highlight" onClick={this.onAddTag}>Add</button>
+          <button className="button button--highlight" onClick={this.onUpdateTag}>Update</button>
+          <button className="button button--highlight" onClick={this.onDelete}>Delete</button>
         </div>
       )
     } else {
@@ -415,7 +415,7 @@ var AvailableSidePanel = React.createClass({
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.name = this.props.info.name;
+    data.type = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.custom = this.props.info.custom;
     data.projectId = this.state.projectId;
@@ -425,7 +425,7 @@ var AvailableSidePanel = React.createClass({
     console.log('dataaaaa', data)
 
     return $.ajax({
-      url: '/',
+      url: '/' + window.location.search,
       type: 'POST',
       data: data,
       success: function(data) {
@@ -489,7 +489,7 @@ var MyInputFields = React.createClass({
 		               <div className="flex--1">{this.props.field.name}</div>
 		            </div>
 			        <div> {this.props.field.description} </div>
-			        <input placeholder={this.props.field.value} />
+			        <input value={this.props.field.value} onChange={this.props.onChange}/>
               </label>
 		    </div>
 		)
@@ -512,12 +512,6 @@ var AvailableInputFields = React.createClass({
 	}
 })
 
-var SidePanelAdding = React.createClass({
-	render: function() {
-		<div>
-		</div>
-	}
-})
 
 
 ReactDOM.render((
