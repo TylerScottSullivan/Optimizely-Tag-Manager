@@ -78,7 +78,8 @@ var MyTagsPage = React.createClass({
     return {
       splicedArray: [], //merge master templates and the downloaded project
     	sidePanel: {},
-      currentProject: "6668600890"
+      currentProject: "6668600890",
+      master: [],
     }
   },
   componentDidMount() {
@@ -88,7 +89,6 @@ var MyTagsPage = React.createClass({
   		this.setState({
   			master: response
   		});
-      console.log('master', response)
   	})
     .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject))
     .then(response => response.json())
@@ -100,7 +100,6 @@ var MyTagsPage = React.createClass({
 			var newObj = {};
 			for (var i = 0; i < this.state.downloadedProject.length; i++) {
 				for (var j = 0; j < this.state.master.length; j++) {
-					console.log("HERE ARE ALL THE PROJECTS", this.state.downloadedProject[i].name, this.state.master[j].name)
 					if (this.state.downloadedProject[i].name === this.state.master[j].name) {
 						newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
 						newArray.push(newObj);
@@ -119,14 +118,12 @@ var MyTagsPage = React.createClass({
     this.setState({
       sidePanel: rowinfo //this is an object
     });
-    console.log(rowinfo, "rowinfo")
-    console.log(this.state.sidePanel, " sidePanel in state");
   },
 
   render() {
     return (
       <div className="flex height--1-1">
-        <TableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
+        <MyTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
         <MySidePanel info={this.state.sidePanel} />
       </div>
     )
@@ -138,7 +135,9 @@ var AvailableTagsPage = React.createClass({
     return {
       splicedArray: [],
     	sidePanel: {},
-      currentProject: "6668600890"
+      currentProject: "6668600890",
+      master: [],
+      downloadedProject: []
     }
   },
   componentDidMount() {
@@ -148,14 +147,25 @@ var AvailableTagsPage = React.createClass({
       this.setState({
         master: response
       })
-      var newArray = [];
-			for (var j = 0; j < this.state.master.length; j++) {
-				newArray.push(this.state.master[j]);
-			};
-			this.setState({
-				splicedArray: newArray
-			})
-		}).catch((e) => {
+		})
+    .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject))
+    .then(response => response.json())
+    .then((r) => {
+      this.setState({
+        downloadedProject: r
+      })
+      var availableTags = this.state.master.slice();
+      for (var j = 0; j < this.state.downloadedProject.length; j++) {
+        for (var i = 0; i < availableTags.length; i++) {
+          if (availableTags[i].name === this.state.downloadedProject[j].name) {
+            availableTags.splice(i, 1)
+          }
+        }
+      };
+      this.setState({
+        splicedArray: availableTags
+      })
+    }).catch((e) => {
       console.log("Err: " , e);
     })
   },
@@ -171,14 +181,14 @@ var AvailableTagsPage = React.createClass({
   render() {
     return (
       <div className="flex height--1-1">
-        <TableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
+        <AvailableTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
         <AvailableSidePanel info={this.state.sidePanel} />
       </div>
     )
   }
 })
 
-var TableContent = React.createClass({
+var MyTableContent = React.createClass({
 
   render: function() {
     return (
@@ -197,7 +207,7 @@ var TableContent = React.createClass({
           <tbody>
             {
               this.props.splicedArray.map((rowinfo, item) => {
-                return <TableColumn onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+                return <MyTableColumn onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
               })
             }
           </tbody>
@@ -207,7 +217,35 @@ var TableContent = React.createClass({
   }
 })
 
-var TableColumn = React.createClass({
+var AvailableTableContent = React.createClass({
+
+  render: function() {
+    return (
+      <div>
+        <h1 className='header1'> Available Tags </h1>
+        <table className="table table--rule table--hover">
+          <thead>
+            <tr>
+              <th className = "cell-collapse">Logo</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th className="cell-collapse">Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              this.props.splicedArray.map((rowinfo, item) => {
+                return <AvailableTableColumn onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+              })
+            }
+          </tbody>
+        </table>
+      </div>
+    )
+  }
+})
+
+var MyTableColumn = React.createClass({
 	render: function() {
 		return (
    		 <tr onClick={this.props.onSelect}>
@@ -221,83 +259,192 @@ var TableColumn = React.createClass({
 	}
 })
 
-
-var MySidePanel = React.createClass({
-  onDelete: function() {
-    //delete a tag
-    // POST 'deletetag/:tagid'
-    return null
-  },
-
+var AvailableTableColumn = React.createClass({
 	render: function() {
-		if (Object.keys(this.props.info).length !== 0) {
-			return (
-				<div className="sidepanel background--faint">
-			      <h2 className="push-double--bottom">Experiment Details</h2>
-			      <div> {this.props.info.name} </div>
-            <div>{this.props.info.tagDescription}</div>
-            <label className="label label--rule">
-            </label>
-			        {this.props.info.fields.map(function(field, item) {
-			        	return <MyInputFields key={item} field={field}/>
-			        })}
-			      <div>Called on: </div>
-				    <select className="form-control" name='trackingTrigger'>
-				      <option value='inHeader'>In header</option>
-				      <option value='onPageLoad'>On page load</option>
-				    </select>
-			      <div> Enabled or Disabled? </div>
-				    <select className="form-control" name='trackingTrigger'>
-				      <option value='inHeader'>Enabled</option>
-				      <option value='onPageLoad'>Disabled</option>
-				    </select>
-				  <div><button className="button button--highlight">Update</button>
-				  <button className="button button--highlight">Delete</button></div>
-			  </div>
-			)
-		} else {
-			return <div> </div>;
-		}
+		return (
+   		 <tr onClick={this.props.onSelect}>
+          <td id="row-centered">GA LOGO</td>
+          <td id="row-centered">{this.props.name}</td>
+          <td id="row-centered"> Analytics </td>
+          <td id="row-centered"> Enabled </td>
+       </tr>
+    )
 	}
 })
 
-var AvailableSidePanel = React.createClass({
+
+var MySidePanel = React.createClass({
+
   getInitialState: function() {
     return {
       info: null,
-//field
-//
+      tokens: [],
+      projectId: "6668600890",
+      trackingTrigger: 'inHeader',
+      active: false,
+      tagId: null
     };
   },
 
   componentWillReceiveProps: function(nextProps) {
     if (nextProps.info) {
       this.setState({
-        info: nextProps.info
+        info: nextProps.info,
+        tokens: nextProps.info.tokens
       })
     }
   },
 
   onAddTag: function() {
+    var data = {};
+
+    this.state.tokens.map(function(token){
+      data[token.tokenName] = token.value
+    })
+    data.active = this.state.active;
+    data.trackingTrigger = this.state.trackingTrigger;
+    data.name = this.props.info.name;
+    data.tagDescription = this.props.info.tagDescription;
+    data.custom = this.props.info.custom;
+    data.projectId = this.state.projectId;
+    data.hasCallback = this.props.info.hasCallback;
+    data.callBacks = this.props.info.callBacks;
+    data.approved = true;
+    console.log('dataaaaa', data)
 
     return $.ajax({
       url: '/',
       type: 'POST',
-      data: {
-        'ACCESS_TOKEN': this.state.ACCESS_TOKEN,
-        'ACCESS_TOKEN': this.state.ACCESS_TOKEN,
-      },
+      data: data,
       success: function(data) {
         console.log('Add tag successful')},
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
+  },
+
+  onDelete: function() {
+    //delete a tag
+    // POST 'deletetag/:tagid'
+    return $.ajax({
+      url: '/',
+      type: 'deletetag/' + this.state.tagId,
+      data: data,
+      success: function(data) {
+        console.log('delete tag successful')},
       error: function(err) {
         console.error("Err posting", err.toString());
       }.bind(this)
     });
   },
 
-  onChange: function(field, e) {
+
+  onChangeTokens: function(field, e) {
     var newState = Object.assign({}, this.state);
-    newState[field] = e.target.value;
+    newState.tokens[field].value = e.target.value;
+    this.setState(newState);
+  },
+
+//this change the enable and triggers
+  onChange: function(e) {
+    var newState = Object.assign({}, this.state);
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  },
+
+  render: function() {
+    if (Object.keys(this.props.info).length !== 0) {
+      return (
+        <div className="sidepanel background--faint">
+            <h2 className="push-double--bottom">Experiment Details</h2>
+            <div>{this.props.info.name} </div>
+            <div>{this.props.info.tagDescription}</div>
+            <label className="label label--rule">
+            </label>
+              {this.state.tokens.map(function(field, index) {
+                return <MyInputFields key={index} field={field} onChange={this.onChangeTokens.bind(this, index)}/>
+              }.bind(this))}
+            <div>Called on: </div>
+            <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+              <option value='inHeader'>In header</option>
+              <option value='onPageLoad'>On page load</option>
+            </select>
+            <div>Enabled or Disabled? </div>
+            <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
+              <option value='Enabled'>Enabled</option>
+              <option value='Disabled'>Disabled</option>
+            </select>
+          <button className="button button--highlight" onClick={this.onAddTag}>Add</button>
+        </div>
+      )
+    } else {
+      return <div> </div>;
+    }
+  }
+});
+
+
+var AvailableSidePanel = React.createClass({
+  getInitialState: function() {
+    return {
+      info: null,
+      tokens: [],
+      projectId: "6668600890",
+      trackingTrigger: 'inHeader',
+      active: false
+    };
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    if (nextProps.info) {
+      this.setState({
+        info: nextProps.info,
+        tokens: nextProps.info.tokens
+      })
+    }
+  },
+
+  onAddTag: function() {
+    var data = {};
+    console.log("[state]", this.state);
+    console.log("[info]", this.props.info);
+    this.state.tokens.map(function(token){
+      data[token.tokenName] = token.value
+    })
+    data.active = this.state.active;
+    data.trackingTrigger = this.state.trackingTrigger;
+    data.name = this.props.info.name;
+    data.tagDescription = this.props.info.tagDescription;
+    data.custom = this.props.info.custom;
+    data.projectId = this.state.projectId;
+    data.hasCallback = this.props.info.hasCallback;
+    data.callBacks = this.props.info.callBacks;
+    data.approved = true;
+    console.log('dataaaaa', data)
+
+    return $.ajax({
+      url: '/',
+      type: 'POST',
+      data: data,
+      success: function(data) {
+        console.log('Add tag successful')},
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
+  },
+
+  onChangeTokens: function(field, e) {
+    var newState = Object.assign({}, this.state);
+    newState.tokens[field].value = e.target.value;
+    this.setState(newState);
+  },
+
+//this change the enable and triggers
+  onChange: function(e) {
+    var newState = Object.assign({}, this.state);
+    newState[e.target.name] = e.target.value;
     this.setState(newState);
   },
 
@@ -306,22 +453,22 @@ var AvailableSidePanel = React.createClass({
 			return (
 				<div className="sidepanel background--faint">
 			      <h2 className="push-double--bottom">Experiment Details</h2>
-			      <div> {this.props.info.name} </div>
+			      <div>{this.props.info.name} </div>
             <div>{this.props.info.tagDescription}</div>
             <label className="label label--rule">
             </label>
-			        {this.props.info.tokens.map(function(field, item) {
-			        	return <AvailableInputFields key={item} field={field} value={field.value} onChange={this.onChange.bind(this, field)}/>
-			        })}
+			        {this.state.tokens.map(function(field, index) {
+			        	return <AvailableInputFields key={index} field={field} onChange={this.onChangeTokens.bind(this, index)}/>
+			        }.bind(this))}
 			      <div>Called on: </div>
-				    <select className="form-control" name='trackingTrigger'>
+				    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
 				      <option value='inHeader'>In header</option>
 				      <option value='onPageLoad'>On page load</option>
 				    </select>
-			      <div> Enabled or Disabled? </div>
-				    <select className="form-control" name='trackingTrigger'>
-				      <option value='inHeader'>Enabled</option>
-				      <option value='onPageLoad'>Disabled</option>
+			      <div>Enabled or Disabled? </div>
+				    <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
+				      <option value='Enabled'>Enabled</option>
+				      <option value='Disabled'>Disabled</option>
 				    </select>
 				  <button className="button button--highlight" onClick={this.onAddTag}>Add</button>
 			  </div>
@@ -357,7 +504,7 @@ var AvailableInputFields = React.createClass({
 		               <div className="flex--1">{this.props.field.tokenName}</div>
 		            </div>
 			        <div> {this.props.field.description} </div>
-			        <input value={this.props.value} onChange={this.props.onChange}/>
+			        <input value={this.props.field.value} onChange={this.props.onChange}/>
               </label>
 		    </div>
 		)
