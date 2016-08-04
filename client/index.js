@@ -109,16 +109,17 @@ var MyTagsPage = React.createClass({
 			this.setState({
 				splicedArray: newArray
 			})
+      console.log('splicedArray', this.state.splicedArray)
 		}).catch((e) => {
       		console.log("Err: " , e);
     })
   },
 
-
   onSelect: function(item, rowinfo) {
     this.setState({
       sidePanel: rowinfo //this is an object
     });
+    console.log('sidePanel', this.state.sidePanel)
   },
 
   render: function() {
@@ -296,9 +297,8 @@ var MySidePanel = React.createClass({
     }
   },
 
-  onAddTag: function() {
+  onUpdateTag: function() {
     var data = {};
-
     this.state.tokens.map(function(token){
       data[token.tokenName] = token.value
     })
@@ -314,7 +314,7 @@ var MySidePanel = React.createClass({
     console.log('dataaaaa', data)
 
     return $.ajax({
-      url: '/',
+      url: '/updatetag:' + this.state.tagId,
       type: 'POST',
       data: data,
       success: function(data) {
