@@ -110,9 +110,10 @@ var MyTagsPage = React.createClass({
 				splicedArray: newArray
 			})
 		}).catch((e) => {
-      console.log("Err: " , e);
+      		console.log("Err: " , e);
     })
   },
+
 
   onSelect: function(item, rowinfo) {
     this.setState({
@@ -120,7 +121,7 @@ var MyTagsPage = React.createClass({
     });
   },
 
-  render() {
+  render: function() {
     return (
       <div className="flex height--1-1">
         <MyTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
