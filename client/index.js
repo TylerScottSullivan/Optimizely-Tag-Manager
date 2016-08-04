@@ -3,23 +3,14 @@ var ReactDOM = require('react-dom');
 var moment = require('moment');
 var _ = require('underscore');
 import { Button, Table } from 'optimizely-oui';
-// import { Router, Route, Link } from 'react-router'
-
-// not using an ES6 transpiler
-// var Router = require('react-router').Router
-// var Route = require('react-router').Route
-// var Link = require('react-router').Link
+import { Router, Route, IndexRoute, Link, hashHistory } from 'react-router'
 
 var App = React.createClass({
-
   getInitialState: function() {
     return {
     	masters: [],
     	downloadedProject: [],
     	currentProject: "6668600890", //this needs to be fetched
-    	splicedArray: [], //merge master templates and the downloaded project
-    	sidePanel: {},
-      currentTab: null
     }
   },
 
@@ -29,103 +20,31 @@ var App = React.createClass({
   	return null
   },
 
-  onTabSelect: function() {
-  	return null
-  },
-
-  onSelect: function(item, rowinfo) {
-  	this.setState({
-  		sidePanel: rowinfo //this is an object
-  	});
-  	console.log(rowinfo, "rowinfo")
-  	console.log(this.state.sidePanel, " sidePanel in state");
-  },
-
-  onUpdate: function() {
-    //save the updated information
-    // POST'/updatetag/:tagid'
-  	return null
-  },
-
-  onDelete: function() {
-    //delete a tag
-    // POST 'deletetag/:tagid'
-  	return null
-  },
-  click: function(tab) {
-    this.setState({
-      currentTab: tab
-    })
-  },
-  // componentDidUpdate: function(nextProps, nextState) {
-  // },
-
-  componentDidMount: function() {
-  	fetch('http://localhost:4001/master')
-    .then((response) => response.json())
-    .then(response =>{
-  		this.setState({
-  			master: response
-  		});
-      console.log('master', response)
-  	})
-    .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject))
-    .then(response => response.json())
-    .then((r) => {
-      this.setState({
-				downloadedProject: r
-			})
-			var newArray = [];
-			var newObj = {};
-			for (var i = 0; i < this.state.downloadedProject.length; i++) {
-				for (var j = 0; j < this.state.master.length; j++) {
-					console.log(this.state.downloadedProject[i].name, this.state.master[j].name)
-					if (this.state.downloadedProject[i].name === this.state.master[j].name) {
-						newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
-						newArray.push(newObj);
-					}
-				}
-			};
-			this.setState({
-				splicedArray: newArray
-			})
-		}).catch((e) => {
-      console.log("Err: " , e);
-    })
-  },
-
   render: function() {
-    console.log("app state upon render", this.state);
+
     return (
     	<div>
         <Tab/>
         <SearchBar/>
-        <TagsPage splicedArray={this.state.splicedArray} onSelect={this.onSelect} info={this.state.sidePanel}/>
-	    </div>
+        {/* add this */}
+        {this.props.children}
+      </div>
     );
   }
 });
 
-var TagsPage = React.createClass({
-  render() {
-    return (
-      <div className="flex height--1-1">
-        <TableContent splicedArray={this.props.splicedArray} onSelect={this.props.onSelect}/>
-        <SidePanelEditable info={this.props.info} />
-      </div>
-    )
-  }
-})
 
 var Tab = React.createClass({
   render: function() {
     return (
       <div className="tabs tabs--small tabs--sub" data-oui-tabs>
         <ul className="tabs-nav soft-double--sides">
-          <li className="tabs-nav__item is-active" data-oui-tabs-nav-item onClick={this.click}>My Tags</li>
-          <li className="tabs-nav__item" data-oui-tabs-nav-item onClick={this.click}>Available Tags</li>
-          <li className="tabs-nav__item" data-oui-tabs-nav-item onClick={this.click}>Create Tag</li>
+          <Link to="/myTags" activeClassName="is-active" className="tabs-nav__item"><li className="tabs-nav__item" data-oui-tabs-nav-item>My Tags</li></Link>
+          <Link to="/availableTags" activeClassName="is-active" className="tabs-nav__item"><li className="tabs-nav__item" data-oui-tabs-nav-item>Available Tags</li></Link>
+          <Link to="/createTag" activeClassName="is-active" className="tabs-nav__item"><li className="tabs-nav__item" data-oui-tabs-nav-item>Create Tag</li></Link>
         </ul>
+        {/* add this */}
+        {this.props.children}
       </div>
     )
   }
@@ -154,10 +73,114 @@ var SearchBar = React.createClass({
   }
 })
 
+var MyTagsPage = React.createClass({
+  getInitialState() {
+    return {
+      splicedArray: [], //merge master templates and the downloaded project
+    	sidePanel: {},
+      currentProject: "6668600890"
+    }
+  },
+  componentDidMount() {
+    fetch('http://localhost:4001/master')
+    .then((response) => response.json())
+    .then(response =>{
+  		this.setState({
+  			master: response
+  		});
+      console.log('master', response)
+  	})
+    .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject))
+    .then(response => response.json())
+    .then((r) => {
+      this.setState({
+				downloadedProject: r
+			})
+			var newArray = [];
+			var newObj = {};
+			for (var i = 0; i < this.state.downloadedProject.length; i++) {
+				for (var j = 0; j < this.state.master.length; j++) {
+					console.log("HERE ARE ALL THE PROJECTS", this.state.downloadedProject[i].name, this.state.master[j].name)
+					if (this.state.downloadedProject[i].name === this.state.master[j].name) {
+						newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
+						newArray.push(newObj);
+					}
+				}
+			};
+			this.setState({
+				splicedArray: newArray
+			})
+		}).catch((e) => {
+      console.log("Err: " , e);
+    })
+  },
+
+  onSelect: function(item, rowinfo) {
+    this.setState({
+      sidePanel: rowinfo //this is an object
+    });
+    console.log(rowinfo, "rowinfo")
+    console.log(this.state.sidePanel, " sidePanel in state");
+  },
+
+  render() {
+    return (
+      <div className="flex height--1-1">
+        <TableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
+        <MySidePanel info={this.state.sidePanel} />
+      </div>
+    )
+  }
+})
+
+var AvailableTagsPage = React.createClass({
+  getInitialState() {
+    return {
+      splicedArray: [],
+    	sidePanel: {},
+      currentProject: "6668600890"
+    }
+  },
+  componentDidMount() {
+    fetch('http://localhost:4001/master')
+    .then((response) => response.json())
+    .then(response => {
+      this.setState({
+        master: response
+      })
+      var newArray = [];
+			for (var j = 0; j < this.state.master.length; j++) {
+				newArray.push(this.state.master[j]);
+			};
+			this.setState({
+				splicedArray: newArray
+			})
+		}).catch((e) => {
+      console.log("Err: " , e);
+    })
+  },
+
+  onSelect: function(item, rowinfo) {
+    this.setState({
+      sidePanel: rowinfo
+    });
+    console.log(rowinfo, "rowinfo")
+    console.log(this.state.sidePanel, " sidePanel in state");
+  },
+
+  render() {
+    return (
+      <div className="flex height--1-1">
+        <TableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
+        <AvailableSidePanel info={this.state.sidePanel} />
+      </div>
+    )
+  }
+})
+
 var TableContent = React.createClass({
 
   render: function() {
-    console.log("table content", this.props);
     return (
       <div>
         <h1 className='header1'> My Tags </h1>
@@ -174,7 +197,7 @@ var TableContent = React.createClass({
           <tbody>
             {
               this.props.splicedArray.map((rowinfo, item) => {
-                return <TableColumnMyTags onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+                return <TableColumn onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
               })
             }
           </tbody>
@@ -184,87 +207,159 @@ var TableContent = React.createClass({
   }
 })
 
-var TableColumnMyTags = React.createClass({
+var TableColumn = React.createClass({
 	render: function() {
 		return (
    		 <tr onClick={this.props.onSelect}>
-          <td>GA LOGO</td>
+          <td id="row-centered">GA LOGO</td>
           <td id="row-centered">{this.props.name}</td>
           <td id="row-centered"> Analytics </td>
           <td id="row-centered">{this.props.called} </td>
-          // <td id="row-centered"> 1 </td>
           <td id="row-centered"> Enabled </td>
        </tr>
     )
 	}
 })
 
-var TableColumnAvailable = React.createClass({
-	render: function() {
-    return (
-   		 <tr onClick={this.props.onSelect}>
-          <td>LOGO</td>
-          <td id="row-centered">{this.props.name}</td>
-          <td id="row-centered"> Analytics </td>
-          <td id="row-centered">{this.props.called} </td>
-          <td id="row-centered"> Enabled </td>
-       </tr>
-     )
-	}
-})
 
+var MySidePanel = React.createClass({
+  onDelete: function() {
+    //delete a tag
+    // POST 'deletetag/:tagid'
+    return null
+  },
 
-var SidePanelEditable = React.createClass({
 	render: function() {
-			console.log(this.props, "this.props")
-		if (this.props.info.name) {
-					return (
-						<div className="sidepanel background--faint">
-					      <h2 className="push-double--bottom">Experiment Details</h2>
-					      <div> Logo and {this.props.info.name} </div>
-					      <label className="label label--rule">
-					          <div className="flex">
-					            <div className="flex--1">Description</div>
-					          </div>
-					        </label>
-					        <div> {this.props.info.tagDescription} </div>
-					        {this.props.info.fields.map(function(field, item) {
-					        	return <InputFieldsEditable key={item} field={field}/>
-					        })}
-					        <div> Whether its X or Y </div>
-						    <select className="form-control" name='trackingTrigger'>
-						      <option value='inHeader'>In header</option>
-						      <option value='onPageLoad'>On page load</option>
-						    </select>
-					        <div> Rank Rank Rank</div>
-					        <input placeholder="Rank here" />
-					        <div> Enabled or Disabled? </div>
-						    <select className="form-control" name='trackingTrigger'>
-						      <option value='inHeader'>Enabled</option>
-						      <option value='onPageLoad'>Disabled</option>
-						    </select>
-						  <button className="button button--highlight">Update</button>
-						  <button className="button button--highlight">Delete</button>
-					  </div>
-					)
+		if (Object.keys(this.props.info).length !== 0) {
+			return (
+				<div className="sidepanel background--faint">
+			      <h2 className="push-double--bottom">Experiment Details</h2>
+			      <div> {this.props.info.name} </div>
+            <div>{this.props.info.tagDescription}</div>
+            <label className="label label--rule">
+            </label>
+			        {this.props.info.fields.map(function(field, item) {
+			        	return <MyInputFields key={item} field={field}/>
+			        })}
+			      <div>Called on: </div>
+				    <select className="form-control" name='trackingTrigger'>
+				      <option value='inHeader'>In header</option>
+				      <option value='onPageLoad'>On page load</option>
+				    </select>
+			      <div> Enabled or Disabled? </div>
+				    <select className="form-control" name='trackingTrigger'>
+				      <option value='inHeader'>Enabled</option>
+				      <option value='onPageLoad'>Disabled</option>
+				    </select>
+				  <div><button className="button button--highlight">Update</button>
+				  <button className="button button--highlight">Delete</button></div>
+			  </div>
+			)
 		} else {
 			return <div> </div>;
 		}
 	}
 })
 
-var InputFieldsEditable = React.createClass({
+var AvailableSidePanel = React.createClass({
+  getInitialState: function() {
+    return {
+      info: null,
+//field
+//
+    };
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    if (nextProps.info) {
+      this.setState({
+        info: nextProps.info
+      })
+    }
+  },
+
+  onAddTag: function() {
+
+    return $.ajax({
+      url: '/',
+      type: 'POST',
+      data: {
+        'ACCESS_TOKEN': this.state.ACCESS_TOKEN,
+        'ACCESS_TOKEN': this.state.ACCESS_TOKEN,
+      },
+      success: function(data) {
+        console.log('Add tag successful')},
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }.bind(this)
+    });
+  },
+
+  onChange: function(field, e) {
+    var newState = Object.assign({}, this.state);
+    newState[field] = e.target.value;
+    this.setState(newState);
+  },
+
+	render: function() {
+		if (Object.keys(this.props.info).length !== 0) {
+			return (
+				<div className="sidepanel background--faint">
+			      <h2 className="push-double--bottom">Experiment Details</h2>
+			      <div> {this.props.info.name} </div>
+            <div>{this.props.info.tagDescription}</div>
+            <label className="label label--rule">
+            </label>
+			        {this.props.info.tokens.map(function(field, item) {
+			        	return <AvailableInputFields key={item} field={field} value={field.value} onChange={this.onChange.bind(this, field)}/>
+			        })}
+			      <div>Called on: </div>
+				    <select className="form-control" name='trackingTrigger'>
+				      <option value='inHeader'>In header</option>
+				      <option value='onPageLoad'>On page load</option>
+				    </select>
+			      <div> Enabled or Disabled? </div>
+				    <select className="form-control" name='trackingTrigger'>
+				      <option value='inHeader'>Enabled</option>
+				      <option value='onPageLoad'>Disabled</option>
+				    </select>
+				  <button className="button button--highlight" onClick={this.onAddTag}>Add</button>
+			  </div>
+			)
+		} else {
+			return <div> </div>;
+		}
+	}
+});
+
+var MyInputFields = React.createClass({
 	render: function () {
 		return (
 				<div>
-					    <label className="label label--rule">
-			            <div className="flex">
-			               <div className="flex--1">{this.props.field.name}</div>
-			            </div>
-				        </label>
-				        <div> {this.props.field.descripton} </div>
-				        <input placeholder={this.props.field.value} />
-		        </div>
+				    <label className="label label--rule">
+		            <div className="flex">
+		               <div className="flex--1">{this.props.field.name}</div>
+		            </div>
+			        <div> {this.props.field.description} </div>
+			        <input placeholder={this.props.field.value} />
+              </label>
+		    </div>
+		)
+	}
+})
+
+var AvailableInputFields = React.createClass({
+	render: function () {
+		return (
+				<div>
+				    <label className="label label--rule">
+		            <div className="flex">
+		               <div className="flex--1">{this.props.field.tokenName}</div>
+		            </div>
+			        <div> {this.props.field.description} </div>
+			        <input value={this.props.value} onChange={this.props.onChange}/>
+              </label>
+		    </div>
 		)
 	}
 })
@@ -277,12 +372,13 @@ var SidePanelAdding = React.createClass({
 })
 
 
-var Page = React.createClass({
-  render: function() {
-    <div>
-    </div>
-  }
-})
-
-
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render((
+  <Router history={hashHistory}>
+    <Route path="/" component={App}>
+      {/* make them children of `App` */}
+      <Route path="/myTags" component={MyTagsPage}/>
+      <Route path="/availableTags" component={AvailableTagsPage}/>
+      <Route path="/createTag" component={AvailableTagsPage}/>
+    </Route>
+  </Router>
+), document.getElementById('root'))
