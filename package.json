@@ -30,11 +30,16 @@
     "optimizely-canvas-sdk": "0.0.2",
     "optimizely-oui": "^13.1.1",
     "react": "^15.2.1",
+    "react-ace": "^3.5.0",
+    "react-codemirror": "^0.2.6",
     "react-dom": "^15.2.1",
+    "react-modal": "^1.4.0",
     "react-router": "^2.6.1",
+    "reactable": "^0.13.2",
     "request": "^2.74.0",
     "request-promise": "^4.1.0",
     "serve-favicon": "~2.3.0",
+    "tablesorter": "^2.27.2",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
