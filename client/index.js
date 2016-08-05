@@ -293,7 +293,7 @@ var MyTableContent = React.createClass({
           <tbody>
             {//key is for adjacent elements in react to distinguish
               this.props.splicedArray.map((rowinfo, item) => {
-                return <MyTableRow onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} rowinfo={rowinfo}/>
+                return <MyTableRow onSelect={() => this.props.onSelect(item, rowinfo)} key={item} rowinfo={rowinfo}/>
               })
             }
           </tbody>
@@ -338,7 +338,7 @@ var AvailableTableContent = React.createClass({
           <tbody>
             {//key is for adjacent elements in react to distinguish
               this.props.splicedArray.map((rowinfo, item) => {
-                return <AvailableTableRow onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} rowinfo={rowinfo}/>
+                return <AvailableTableRow onSelect={() => this.props.onSelect(item, rowinfo)} key={item} rowinfo={rowinfo}/>
               })
             }
           </tbody>

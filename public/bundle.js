@@ -470,7 +470,9 @@ var MyTableContent = React.createClass({
           null,
           //key is for adjacent elements in react to distinguish
           this.props.splicedArray.map(function (rowinfo, item) {
-            return React.createElement(MyTableRow, { onSelect: _this3.props.onSelect.bind(_this3, item, rowinfo), key: item, rowinfo: rowinfo });
+            return React.createElement(MyTableRow, { onSelect: function onSelect() {
+                return _this3.props.onSelect(item, rowinfo);
+              }, key: item, rowinfo: rowinfo });
           })
         )
       )
@@ -550,7 +552,9 @@ var AvailableTableContent = React.createClass({
           null,
           //key is for adjacent elements in react to distinguish
           this.props.splicedArray.map(function (rowinfo, item) {
-            return React.createElement(AvailableTableRow, { onSelect: _this4.props.onSelect.bind(_this4, item, rowinfo), key: item, rowinfo: rowinfo });
+            return React.createElement(AvailableTableRow, { onSelect: function onSelect() {
+                return _this4.props.onSelect(item, rowinfo);
+              }, key: item, rowinfo: rowinfo });
           })
         )
       )
