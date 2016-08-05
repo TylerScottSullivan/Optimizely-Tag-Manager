@@ -18,7 +18,9 @@ module.exports = {
   createTag: function(master) {
     var fields = [];
     for(var i = 0; i < master.tokens.length; i++) {
+      console.log("WOOOOOOOO THESE ARE MY MASTER TOKENS", master.tokens[i], i)
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
+      console.log("HAYYYYYYYY THESE ARE MY FIELDS", fields, i)
     }
     t = new Tag({
       name: master.name,
@@ -30,14 +32,15 @@ module.exports = {
       rank: this.body.rank,
       projectId: this.project.projectId,
       active: this.body.active,
-      hasCallback: master.hasCallback
+      hasCallback: master.hasCallback,
+      pageName: this.body.pageName
     })
     return t.save()
   },
   updateProject: function(tag) {
     this.project.tags.push(tag._id);
     return new Promise(function(resolve, reject) {
-      if(tag.trackingTrigger !== "onDocumentReady" && tag.trackingTrigger !== "inHeader") {
+      if(tag.trackingTrigger !== "onDocumentReady" && tag.trackingTrigger !== "inHeader" && tag.trackingTrigger !== "onPageLoad" && tag.trackingTrigger !== "onEvent") {
         Tag.findOne({"name": tag.trackingTrigger})
            .then(function(trackerTag) {
               trackerTag.callbacks.push(tag.name)
@@ -66,6 +69,12 @@ module.exports = {
     var onDocumentReadys = tags.filter(function(item){
                               return item.trackingTrigger === "onDocumentReady";
                             })
+    var onPageLoads = tags.filter(function(item) {
+                                  return item.trackingTrigger === "onPageLoad"
+                              })
+    var onEvents = tags.filter(function(item) {
+                                  return item.trackingTrigger === "onEvent"
+                                })
 
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
@@ -73,19 +82,43 @@ module.exports = {
       inHeaderJavascript += inHeaders[i].render(tags);
     }
     var onDocumentReadyJavascript = '';
-    for(var i = 0; i < onDocumentReadys; i++) {
+    for(var i = 0; i < onDocumentReadys.length; i++) {
       //TODO: wrap this in onDocumentReady here, not in function
       onDocumentReadyJavascript += onDocumentReadys[i].render(tags);
     }
 
-    var onSpecificPageLoadJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'lifecycle',name: 'viewActivated',},handler: function(data) {console.log('Page', data.name, 'was activated.'); if (PAGES_WE_CARE_ABOUT.contians(data.name) {})},});"
+    //object of pages to ids
+    var pagesToIds = {'homepage': "6777018235", "appspot_page": "6824721001"}
+
+
+
+    //get all pages call
+    var onPageLoadsObject = {};
+    var marker = false;
+    for(var i = 0; i < onPageLoads.length; i++) {
+      marker = true;
+      onPageLoadsObject[pagesToIds[onPageLoads[i].pageName]] = onPageLoads[i].render(tags);
+    }
+
+    onPageLoadsObjectString = JSON.stringify(onPageLoadsObject);
+    onPageLoadsObjectString = "var onPageLoadsObjectFunction = function() {return " + onPageLoadsObjectString + ";};"
+
+    //
+    // 'var x = function() {return {"8498593828"": ga(I am adobe(hello)), "29ry38473985938": segment(made up thing)}}'
+    //
+    // x()[data.id]
+
+    var onSpecificPageLoadJavascript = '';
+    if (marker) {
+      onSpecificPageLoadJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'lifecycle',name: 'viewActivated',},handler: function(data) {console.log('Page', data.name, 'was activated.');onPageLoadsObjectFunction()[data.id]();}});"
+    }
     console.log("THIS.inHeaderJavascript", inHeaderJavascript)
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
     console.log("THIS.onDocumentReadyJavascript", onDocumentReadyJavascript)
 
     //combine inHeaders and onDocumentReadys
-    this.combinedJavascript = inHeaderJavascript + onDocumentReadyJavascript;
+    this.combinedJavascript = onPageLoadsObjectString + inHeaderJavascript + onDocumentReadyJavascript + onSpecificPageLoadJavascript;
     console.log("THIS.COMBINEDJAVASCRIPT", this.combinedJavascript)
 
     //getting original Javascript sections
