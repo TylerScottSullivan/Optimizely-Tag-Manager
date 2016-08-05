@@ -24,6 +24,7 @@ var tagSchema = mongoose.Schema({
   hasCallback: Boolean,
   callbacks: Array,
   pageName: String,
+  eventName: String
 })
 
 

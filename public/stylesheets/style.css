@@ -20,10 +20,96 @@ a {
 	padding: 0 20px;
 }
 
+.sidepanel-logo {
+	width: 100px;
+	height: 100px;
+}
+
+.sidepanel-displayname {
+	font-size: 20px;
+	vertical-align: middle;
+	width: 250px;
+	padding: 10px;
+}
+.flex {
+	display: flex;
+}
+
+.flex-v-center {
+	flex-direction: column;
+	justify-content: center;
+}
+
+
+.sp-headbig {
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.sd-headsmall {
+	font-weight: 700;
+	margin: 10px 0 5px 0;
+}
+
 td {
 	height: 50px;
 }
 
+.text-input-styled {
+	border-color: #a6a6a6;
+	margin: 10px 0 0 0;
+}
+
+.btn-uniform-add {
+	margin: 20px 0 0 0;
+	width: 200px;
+}
+
+.btn-uniform-del {
+	margin: 10px 0 0 0;
+	width: 200px;
+}
+
+/*input {
+	width: 200px;
+	height: 30px;
+	padding: 10px 0 0 0;
+	border-radius: 5px;
+	margin: 10px 0;
+}*/
+
 #row-centered {
 	vertical-align: middle;
+}
+
+.modaltext {
+	margin: 10px 0 0 10px;
+}
+
+.editor {
+	margin: 10px 0;
+}
+
+.space-between {
+	margin: 20px 0 0 0;
+	justify-content: space-between;
+}
+
+.modaltextarea {
+	height: 100px;
+	width: 620px;
+	margin: 5px 0;
+}
+
+textarea {
+	resize: none;
+}
+
+.deschead {
+	margin-top: 15px;
+
+}
+
+.tagdesc {
+	margin-bottom: 8px;
 }
