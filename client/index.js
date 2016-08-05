@@ -77,30 +77,68 @@ const customStyles = {
 var SearchBar = React.createClass({
 	  getInitialState: function() {
 	  	console.log('got initial state')
-	    return { modalIsOpen: false };
+	    return {
+        modalIsOpen: false,
+        name: null,
+        tagDescription: null,
+        fields: null,
+        approved: true,
+        custom: null,
+        trackingTrigger: null,
+        projectId: "6668600890",
+        active: false
+      };
 	  },
-	 
+
 	  openModal: function() {
 	  	console.log('opened modal')
 	    this.setState({modalIsOpen: true});
 	  },
-	 
+
 	  afterOpenModal: function() {
-	    // references are now sync'd and can be accessed. 
+	    // references are now sync'd and can be accessed.
 	    this.refs.subtitle.style.color = '#0081BA';
 	  },
-	 
+
 	  closeModal: function() {
 	    this.setState({modalIsOpen: false});
 	  },
-	
-	render: function() {
+
+    addCustomTag: function() {
+      var data = {};
+      data.active = this.state.active;
+      data.trackingTrigger = this.state.trackingTrigger;
+      data.projectId = this.state.projectId;
+      data.name = this.state.name,
+      data.tagDescription = this.state.tagDescription
+      data.approved = this.state.true,
+      data.custom = this.state.custom
+
+      return $.ajax({
+        url: '/customSnippet',
+        type: 'POST',
+        data: data,
+        success: function(data) {
+          console.log('Add custom tag successful')},
+        error: function(err) {
+          console.error("Err posting", err.toString());
+        }
+      });
+    },
+
+    onChange: function(e) {
+      var newState = Object.assign({}, this.state);
+      newState[e.target.name] = e.target.value;
+      this.setState(newState);
+    },
+
+	  render: function() {
 	    return (
 	    	<div>
 	        <ul className="flex push-double--ends">
 	          <li className="push-triple--right">
 	            <div className="button-group">
-	              <div> Need to put filter here </div>
+	              <div> </div>
 	              <div className="search">
 	                <input type="text" className="text-input text-input--search width--200" placeholder="Filter by Name"/>
 	              </div>
@@ -129,30 +167,35 @@ var SearchBar = React.createClass({
 							    editorProps={{$blockScrolling: true}}
 							  />
 						  </div>
+              <div className="flex">
+                     <div className="flex--1 sd-headsmall"> Name</div>
+                </div>
+                <div className="flex--1"> Please add the name of your snippet. </div>
+                <input value={this.state.name} onChange={this.onChange}/>
 				   		  <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Description</div>
 				          </div>
 				          <div className="flex--1"> Please add the description of your tag below. </div>
-				          <textarea className='modaltextarea'/>
+				          <input value={this.state.tagDescription} onChange={this.onChange}/>
 						    <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Called On: </div>
 				            </div>
-							    <select className="form-control" name='trackingTrigger'>
+							    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
 							      <option value='inHeader'>In header</option>
 							      <option value='onPageLoad'>On page load</option>
 							    </select>
 				            <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
 				            </div>
-						    <select className="form-control" name='trackingTrigger'>
+						    <select className="form-control" name='trackingTrigger' value={this.state.active} onChange={this.onChange}>
 						      <option value='inHeader'>Enabled</option>
 						      <option value='onPageLoad'>Disabled</option>
 						    </select>
 						  </div>
 						  <div className='flex space-between'>
-							  <button className="button button--highlight"> Add Custom Tag </button>
-						      <button className="button button--highlight" onClick={this.closeModal}> Close </button>
-					      </div>
+							  <button className="button button--highlight" onClick={this.addCustomTag}> Add Custom Tag </button>
+						    <button className="button button--highlight" onClick={this.closeModal}> Close </button>
+					    </div>
 				    </Modal>
 	          </li>
 	        </ul>
@@ -262,7 +305,7 @@ var AvailableTagsPage = React.createClass({
 
 
 var MyTableContent = React.createClass({
- 
+
   componentDidMount: function() {
   	this.tableSort();
   },
@@ -278,7 +321,7 @@ var MyTableContent = React.createClass({
   render: function() {
     return (
      	<div className="flex--1 soft-double--sides">
-     	<SearchBar/>
+     	<SearchBar value={this.props.splicedArray}/>
         <h1 className='header1'> My Tags </h1>
         <table className="table table--rule table--hover myTable" ref='myTable'>
           <thead>
@@ -304,7 +347,7 @@ var MyTableContent = React.createClass({
 })
 
 var AvailableTableContent = React.createClass({
-  
+
   componentDidMount: function() {
   	  	console.log('availabletablecontent mounted')
   	  	console.log(this.props, "props for availabltable content")
@@ -378,8 +421,6 @@ var AvailableTableRow = React.createClass({
     )
 	}
 })
-
-
 
 var MySidePanel = React.createClass({
 
@@ -489,7 +530,7 @@ var MySidePanel = React.createClass({
 			          <option value='Enabled'>Enabled</option>
 			          <option value='Disabled'>Disabled</option>
 			        </select>
-				    <div> 
+				    <div>
 				    	<button className="btn-uniform-add button button--highlight" onClick={this.onUpdateTag}>Update Tag</button>
 					</div>
 					<div>
@@ -572,15 +613,6 @@ var AvailableSidePanel = React.createClass({
     this.setState(newState);
   },
 
-  // handleSubmit: function() {
-  //   e.preventDefault()
-  //   this.setState({
-  //     tokens: [],
-  //     trackingTrigger: 'inHeader',
-  //     active: false
-  //   });
-  // },
-
 	render: function() {
 		if (Object.keys(this.props.info).length !== 0) {
 			return (
@@ -613,13 +645,13 @@ var AvailableSidePanel = React.createClass({
 				      <option value={true}>Enabled</option>
 				      <option value={false}>Disabled</option>
 				    </select>
-				    <div> 
+				    <div>
 				    	<button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
 					</div>
 			  </div>
 			)
 		} else {
-			return <div> 
+			return <div>
 
 				<div className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
