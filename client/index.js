@@ -14,19 +14,12 @@ var App = React.createClass({
     }
   },
 
-  onAddTag: function() {
-    //save information for the tag
-    // call POST '/'
-  	return null
-  },
-
+//this.props.children is referring to the three tags
   render: function() {
-
     return (
     	<div>
         <Tab/>
         <SearchBar/>
-        {/* add this */}
         {this.props.children}
       </div>
     );
@@ -39,12 +32,10 @@ var Tab = React.createClass({
     return (
       <div className="tabs tabs--small tabs--sub" data-oui-tabs>
         <ul className="tabs-nav soft-double--sides">
-          <Link to="/myTags" activeClassName="is-active" className="tabs-nav__item"><li className="tabs-nav__item" data-oui-tabs-nav-item>My Tags</li></Link>
+          <Link to="/myTags" activeClassName="is-active" className="tabs-nav__item" ><li className="tabs-nav__item" data-oui-tabs-nav-item>My Tags</li></Link>
           <Link to="/availableTags" activeClassName="is-active" className="tabs-nav__item"><li className="tabs-nav__item" data-oui-tabs-nav-item>Available Tags</li></Link>
           <Link to="/createTag" activeClassName="is-active" className="tabs-nav__item"><li className="tabs-nav__item" data-oui-tabs-nav-item>Create Tag</li></Link>
         </ul>
-        {/* add this */}
-        {this.props.children}
       </div>
     )
   }
@@ -79,7 +70,7 @@ var MyTagsPage = React.createClass({
       splicedArray: [], //merge master templates and the downloaded project
     	sidePanel: {},
       currentProject: "6668600890",
-      master: [],
+      master: []
     }
   },
   componentDidMount() {
@@ -110,10 +101,9 @@ var MyTagsPage = React.createClass({
 				splicedArray: newArray
 			})
 		}).catch((e) => {
-      		console.log("Err: " , e);
+      	console.log("Err: " , e);
     })
   },
-
 
   onSelect: function(item, rowinfo) {
     this.setState({
@@ -206,9 +196,9 @@ var MyTableContent = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {
+            {//key is for adjacent elements in react to distinguish
               this.props.splicedArray.map((rowinfo, item) => {
-                return <MyTableColumn onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+                return <MyTableRow onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
               })
             }
           </tbody>
@@ -234,9 +224,9 @@ var AvailableTableContent = React.createClass({
             </tr>
           </thead>
           <tbody>
-            {
+            {//rowinfo is the items in the the splicedArray, item is the index
               this.props.splicedArray.map((rowinfo, item) => {
-                return <AvailableTableColumn onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
+                return <AvailableTableRow onSelect={this.props.onSelect.bind(this, item, rowinfo)} key={item} name={rowinfo.name} called={rowinfo.trackingTrigger}/>
               })
             }
           </tbody>
@@ -246,7 +236,7 @@ var AvailableTableContent = React.createClass({
   }
 })
 
-var MyTableColumn = React.createClass({
+var MyTableRow = React.createClass({
 	render: function() {
 		return (
    		 <tr onClick={this.props.onSelect}>
@@ -260,7 +250,7 @@ var MyTableColumn = React.createClass({
 	}
 })
 
-var AvailableTableColumn = React.createClass({
+var AvailableTableRow = React.createClass({
 	render: function() {
 		return (
    		 <tr onClick={this.props.onSelect}>
@@ -283,7 +273,7 @@ var MySidePanel = React.createClass({
       projectId: "6668600890",
       trackingTrigger: 'inHeader',
       active: false,
-      tagId: null
+      tagId: this.props.info._id
     };
   },
 
@@ -291,34 +281,28 @@ var MySidePanel = React.createClass({
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
-        tokens: nextProps.info.tokens
+        tokens: nextProps.info.fields
       })
     }
   },
 
-  onAddTag: function() {
+  onUpdateTag: function() {
     var data = {};
-
-    this.state.tokens.map(function(token){
-      data[token.tokenName] = token.value
+    data.fields = this.state.tokens.map(function(token){
+    var field = {};
+    field[token.name] = token.value
+    return field
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.name = this.props.info.name;
-    data.tagDescription = this.props.info.tagDescription;
-    data.custom = this.props.info.custom;
     data.projectId = this.state.projectId;
-    data.hasCallback = this.props.info.hasCallback;
-    data.callBacks = this.props.info.callBacks;
-    data.approved = true;
-    console.log('dataaaaa', data)
 
     return $.ajax({
-      url: '/',
+      url: '/updatetag/' + this.state.tagId,
       type: 'POST',
       data: data,
       success: function(data) {
-        console.log('Add tag successful')},
+        console.log('Update tag successful')},
       error: function(err) {
         console.error("Err posting", err.toString());
       }
@@ -326,12 +310,13 @@ var MySidePanel = React.createClass({
   },
 
   onDelete: function() {
-    //delete a tag
-    // POST 'deletetag/:tagid'
+
     return $.ajax({
       url: '/',
       type: 'deletetag/' + this.state.tagId,
-      data: data,
+      data: {
+        tagid: this.state.tagId
+      },
       success: function(data) {
         console.log('delete tag successful')},
       error: function(err) {
@@ -340,14 +325,13 @@ var MySidePanel = React.createClass({
     });
   },
 
-
   onChangeTokens: function(field, e) {
     var newState = Object.assign({}, this.state);
     newState.tokens[field].value = e.target.value;
     this.setState(newState);
   },
 
-//this change the enable and triggers
+  //this change the enable and triggers
   onChange: function(e) {
     var newState = Object.assign({}, this.state);
     newState[e.target.name] = e.target.value;
@@ -364,7 +348,7 @@ var MySidePanel = React.createClass({
             <label className="label label--rule">
             </label>
               {this.state.tokens.map(function(field, index) {
-                return <MyInputFields key={index} field={field} onChange={this.onChangeTokens.bind(this, index)}/>
+                return <MyInputFields key={index} field={field} value={this.state.info.fields[index].value} onChange={this.onChangeTokens.bind(this, index)}/>
               }.bind(this))}
             <div>Called on: </div>
             <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
@@ -376,7 +360,8 @@ var MySidePanel = React.createClass({
               <option value='Enabled'>Enabled</option>
               <option value='Disabled'>Disabled</option>
             </select>
-          <button className="button button--highlight" onClick={this.onAddTag}>Add</button>
+          <button className="button button--highlight" onClick={this.onUpdateTag}>Update</button>
+          <button className="button button--highlight" onClick={this.onDelete}>Delete</button>
         </div>
       )
     } else {
@@ -408,28 +393,30 @@ var AvailableSidePanel = React.createClass({
 
   onAddTag: function() {
     var data = {};
-    console.log("[state]", this.state);
-    console.log("[info]", this.props.info);
+    // console.log("[state]", this.state);
+    // console.log("[info]", this.props.info);
     this.state.tokens.map(function(token){
       data[token.tokenName] = token.value
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.name = this.props.info.name;
+    data.projectId = this.state.projectId;
+    data.type = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.custom = this.props.info.custom;
-    data.projectId = this.state.projectId;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
     data.approved = true;
     console.log('dataaaaa', data)
 
     return $.ajax({
-      url: '/',
+      url: '/' + window.location.search,
       type: 'POST',
       data: data,
       success: function(data) {
-        console.log('Add tag successful')},
+        console.log('Add tag successful');
+
+      },
       error: function(err) {
         console.error("Err posting", err.toString());
       }
@@ -448,6 +435,15 @@ var AvailableSidePanel = React.createClass({
     newState[e.target.name] = e.target.value;
     this.setState(newState);
   },
+
+  // handleSubmit: function() {
+  //   e.preventDefault()
+  //   this.setState({
+  //     tokens: [],
+  //     trackingTrigger: 'inHeader',
+  //     active: false
+  //   });
+  // },
 
 	render: function() {
 		if (Object.keys(this.props.info).length !== 0) {
@@ -489,7 +485,7 @@ var MyInputFields = React.createClass({
 		               <div className="flex--1">{this.props.field.name}</div>
 		            </div>
 			        <div> {this.props.field.description} </div>
-			        <input placeholder={this.props.field.value} />
+			        <input value={this.props.field.value} onChange={this.props.onChange}/>
               </label>
 		    </div>
 		)
@@ -512,19 +508,12 @@ var AvailableInputFields = React.createClass({
 	}
 })
 
-var SidePanelAdding = React.createClass({
-	render: function() {
-		<div>
-		</div>
-	}
-})
 
 
 ReactDOM.render((
   <Router history={hashHistory}>
     <Route path="/" component={App}>
-      {/* make them children of `App` */}
-      <Route path="/myTags" component={MyTagsPage}/>
+      <IndexRoute path="/myTags" component={MyTagsPage}/>
       <Route path="/availableTags" component={AvailableTagsPage}/>
       <Route path="/createTag" component={AvailableTagsPage}/>
     </Route>

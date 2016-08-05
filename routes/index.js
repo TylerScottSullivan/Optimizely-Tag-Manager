@@ -20,7 +20,7 @@ router.get('/request', function(req, res, next) {
 router.post('/request', function(req, res, next) {
   var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription}
   var t = new Tag({
-    name: req.body.name,
+    name: req.body.type,
     tagDescription: req.body.tagDescription,
     fields: fields,
     approved: false,
@@ -65,7 +65,7 @@ router.post('/', function(req, res, next) {
         })
 });
 
-router.post('deletetag/:tagid', function(req, res, next) {
+router.post('/deletetag/:tagid', function(req, res, next) {
   db.collection('tags').deleteOne({"_id": req.params.tagid}, function(err, results) {
     console.log(results);
     res.status(200).send("ITS ALL GOOD IN THE HOOD")
@@ -108,20 +108,20 @@ router.post('/updatetag/:tagid', (req, res, next) => {
     if (err) {
       console.log('err updating tags', err)
     } else {
-      tag.name = req.body.name;
+      // tag.name = req.body.name;
       tag.fields = req.body.fields;
       tag.approved = req.body.approved;
-      tag.tagDescription = req.body.tagDescription;
+      // tag.tagDescription = req.body.tagDescription;
       tag.trackingTrigger = req.body.trackingTrigger;
       tag.custom = req.body.custom;
       tag.rank = req.body.rank;
       tag.projectId = req.body.projectId;
       tag.active = req.body.active;
-      tag.save(function(err, t) {
+      tag.save(function(err) {
         if (err) {
           console.log("err saving tag in update", err)
         } else {
-          res.send("update success", t)
+          res.send("update success")
         }
       })
     }
