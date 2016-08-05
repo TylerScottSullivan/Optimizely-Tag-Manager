@@ -15,21 +15,14 @@ var App = React.createClass({
   displayName: 'App',
 
   getInitialState: function getInitialState() {
-    console.log("window", window.location.search);
     return {
       masters: [],
       downloadedProject: [],
       currentProject: "6668600890" };
   },
 
-  onAddTag: function onAddTag() {
-    //save information for the tag
-    // call POST '/'
-    return null;
-  },
-
+  //this.props.children is referring to the three tags
   render: function render() {
-
     return React.createElement(
       'div',
       null,
@@ -77,8 +70,7 @@ var Tab = React.createClass({
             'Create Tag'
           )
         )
-      ),
-      this.props.children
+      )
     );
   }
 });
@@ -170,7 +162,6 @@ var MyTagsPage = React.createClass({
       _this.setState({
         splicedArray: newArray
       });
-      console.log('splicedArray', _this.state.splicedArray);
     }).catch(function (e) {
       console.log("Err: ", e);
     });
@@ -181,7 +172,6 @@ var MyTagsPage = React.createClass({
     this.setState({
       sidePanel: rowinfo //this is an object
     });
-    console.log('sidePanel', this.state.sidePanel);
   },
 
   render: function render() {
@@ -311,8 +301,9 @@ var MyTableContent = React.createClass({
         React.createElement(
           'tbody',
           null,
+          //key is for adjacent elements in react to distinguish
           this.props.splicedArray.map(function (rowinfo, item) {
-            return React.createElement(MyTableColumn, { onSelect: _this3.props.onSelect.bind(_this3, item, rowinfo), key: item, name: rowinfo.name, called: rowinfo.trackingTrigger });
+            return React.createElement(MyTableRow, { onSelect: _this3.props.onSelect.bind(_this3, item, rowinfo), key: item, name: rowinfo.name, called: rowinfo.trackingTrigger });
           })
         )
       )
@@ -369,8 +360,9 @@ var AvailableTableContent = React.createClass({
         React.createElement(
           'tbody',
           null,
+          //rowinfo is the items in the the splicedArray, item is the index
           this.props.splicedArray.map(function (rowinfo, item) {
-            return React.createElement(AvailableTableColumn, { onSelect: _this4.props.onSelect.bind(_this4, item, rowinfo), key: item, name: rowinfo.name, called: rowinfo.trackingTrigger });
+            return React.createElement(AvailableTableRow, { onSelect: _this4.props.onSelect.bind(_this4, item, rowinfo), key: item, name: rowinfo.name, called: rowinfo.trackingTrigger });
           })
         )
       )
@@ -378,8 +370,8 @@ var AvailableTableContent = React.createClass({
   }
 });
 
-var MyTableColumn = React.createClass({
-  displayName: 'MyTableColumn',
+var MyTableRow = React.createClass({
+  displayName: 'MyTableRow',
 
   render: function render() {
     return React.createElement(
@@ -415,8 +407,8 @@ var MyTableColumn = React.createClass({
   }
 });
 
-var AvailableTableColumn = React.createClass({
-  displayName: 'AvailableTableColumn',
+var AvailableTableRow = React.createClass({
+  displayName: 'AvailableTableRow',
 
   render: function render() {
     return React.createElement(
@@ -481,14 +473,12 @@ var MySidePanel = React.createClass({
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
 
-    console.log('dataaaaa', data);
-
     return $.ajax({
-      url: '/updatetag/' + this.props.info._id,
+      url: '/updatetag/' + this.state.tagId,
       type: 'POST',
       data: data,
       success: function success(data) {
-        console.log('Add tag successful');
+        console.log('Update tag successful');
       },
       error: function error(err) {
         console.error("Err posting", err.toString());
@@ -634,17 +624,17 @@ var AvailableSidePanel = React.createClass({
 
   onAddTag: function onAddTag() {
     var data = {};
-    console.log("[state]", this.state);
-    console.log("[info]", this.props.info);
+    // console.log("[state]", this.state);
+    // console.log("[info]", this.props.info);
     this.state.tokens.map(function (token) {
       data[token.tokenName] = token.value;
     });
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
+    data.projectId = this.state.projectId;
     data.type = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.custom = this.props.info.custom;
-    data.projectId = this.state.projectId;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
     data.approved = true;
@@ -675,6 +665,15 @@ var AvailableSidePanel = React.createClass({
     newState[e.target.name] = e.target.value;
     this.setState(newState);
   },
+
+  // handleSubmit: function() {
+  //   e.preventDefault()
+  //   this.setState({
+  //     tokens: [],
+  //     trackingTrigger: 'inHeader',
+  //     active: false
+  //   });
+  // },
 
   render: function render() {
     if (Object.keys(this.props.info).length !== 0) {
@@ -825,7 +824,7 @@ ReactDOM.render(React.createElement(
   React.createElement(
     _reactRouter.Route,
     { path: '/', component: App },
-    React.createElement(_reactRouter.Route, { path: '/myTags', component: MyTagsPage }),
+    React.createElement(_reactRouter.IndexRoute, { path: '/myTags', component: MyTagsPage }),
     React.createElement(_reactRouter.Route, { path: '/availableTags', component: AvailableTagsPage }),
     React.createElement(_reactRouter.Route, { path: '/createTag', component: AvailableTagsPage })
   )
