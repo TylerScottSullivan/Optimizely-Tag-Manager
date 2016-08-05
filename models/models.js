@@ -22,7 +22,9 @@ var tagSchema = mongoose.Schema({
   active: Boolean,
   approved: Boolean,
   hasCallback: Boolean,
-  callbacks: Array
+  callbacks: Array,
+  pageName: String,
+  eventName
 })
 
 

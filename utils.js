@@ -56,6 +56,10 @@ module.exports = {
   },
   getJavascript: function(populatedProject) {
     var tags = this.project.tags;
+
+//do everything separately
+
+    //wrap page type things
     var inHeaders = tags.filter(function(item){
                     return item.trackingTrigger === "inHeader";
                   })
@@ -74,6 +78,7 @@ module.exports = {
       onDocumentReadyJavascript += onDocumentReadys[i].render(tags);
     }
 
+    var onSpecificPageLoadJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'lifecycle',name: 'viewActivated',},handler: function(data) {console.log('Page', data.name, 'was activated.'); if (PAGES_WE_CARE_ABOUT.contians(data.name) {})},});"
     console.log("THIS.inHeaderJavascript", inHeaderJavascript)
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
@@ -120,5 +125,40 @@ module.exports = {
            "Content-Type": "application/json"
          }
        })
+  },
+  getTagOptions: function(project) {
+    this.project = project;
+    return Tag.find({'hasCallback': true});
+  },
+  getOptions: function(tags) {
+        //get names of options
+        tags.map(function(item) {
+          return item.name;
+        });
+
+        //inHeader/onDocumentReady should intuitively come first
+        tags.unshift("inHeader");
+        tags.unshift("onDocumentReady");
+
+        //save current tags
+        this.tags = tags;
+
+        //make call to optimizely for all pages associated with the id
+        var token = process.env.API_TOKEN;
+        return rp({
+             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.project.projectId,
+             method: 'GET',
+             headers: {
+               "Token": token,
+               "Content-Type": "application/json"
+             }
+           })
+
+        //send info
+        //res.setHeader('Content-Type', 'application/json');
+        //res.send(JSON.stringify(tags));
+  },
+  addProjectOptions: function(data) {
+    return data;
   }
 }
