@@ -42,827 +42,1087 @@ var Table = Reactable.Table,
     unsafe = Reactable.unsafe;
 
 var App = React.createClass({
-		displayName: 'App',
+  displayName: 'App',
 
-		getInitialState: function getInitialState() {
-				return {
-						masters: [],
-						downloadedProject: [],
-						currentProject: "6668600890" };
-		},
+  getInitialState: function getInitialState() {
+    return {
+      masters: [],
+      downloadedProject: [],
+      currentProject: "6668600890" };
+  },
 
-		onAddTag: function onAddTag() {
-				//save information for the tag
-				// call POST '/'
-				return null;
-		},
-
-		render: function render() {
-
-				return React.createElement(
-						'div',
-						null,
-						React.createElement(Tab, null),
-						this.props.children
-				);
-		}
+  //this.props.children is referring to the three tags
+  render: function render() {
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(Tab, null),
+      this.props.children
+    );
+  }
 });
 
 var Tab = React.createClass({
-		displayName: 'Tab',
+  displayName: 'Tab',
 
-		render: function render() {
-				return React.createElement(
-						'div',
-						{ className: 'tabs tabs--small tabs--sub', 'data-oui-tabs': true },
-						React.createElement(
-								'ul',
-								{ className: 'tabs-nav soft-double--sides' },
-								React.createElement(
-										_reactRouter.Link,
-										{ to: '/myTags', activeClassName: 'is-active', className: 'tabs-nav__item' },
-										React.createElement(
-												'li',
-												{ className: 'tabs-nav__item', 'data-oui-tabs-nav-item': true },
-												'My Tags'
-										)
-								),
-								React.createElement(
-										_reactRouter.Link,
-										{ to: '/availableTags', activeClassName: 'is-active', className: 'tabs-nav__item' },
-										React.createElement(
-												'li',
-												{ className: 'tabs-nav__item', 'data-oui-tabs-nav-item': true },
-												'Available Tags'
-										)
-								),
-								React.createElement(
-										_reactRouter.Link,
-										{ to: '/submitNewTemplate', activeClassName: 'is-active', className: 'tabs-nav__item' },
-										React.createElement(
-												'li',
-												{ className: 'tabs-nav__item', 'data-oui-tabs-nav-item': true },
-												'Submit New Template'
-										)
-								)
-						),
-						this.props.children
-				);
-		}
+  render: function render() {
+    return React.createElement(
+      'div',
+      { className: 'tabs tabs--small tabs--sub', 'data-oui-tabs': true },
+      React.createElement(
+        'ul',
+        { className: 'tabs-nav soft-double--sides' },
+        React.createElement(
+          _reactRouter.Link,
+          { to: '/myTags', activeClassName: 'is-active', className: 'tabs-nav__item' },
+          React.createElement(
+            'li',
+            { className: 'tabs-nav__item', 'data-oui-tabs-nav-item': true },
+            'My Tags'
+          )
+        ),
+        React.createElement(
+          _reactRouter.Link,
+          { to: '/availableTags', activeClassName: 'is-active', className: 'tabs-nav__item' },
+          React.createElement(
+            'li',
+            { className: 'tabs-nav__item', 'data-oui-tabs-nav-item': true },
+            'Available Tags'
+          )
+        ),
+        React.createElement(
+          _reactRouter.Link,
+          { to: '/submitNewTemplate', activeClassName: 'is-active', className: 'tabs-nav__item' },
+          React.createElement(
+            'li',
+            { className: 'tabs-nav__item', 'data-oui-tabs-nav-item': true },
+            'Submit New Template'
+          )
+        )
+      )
+    );
+  }
 });
 
 var customStyles = {
-		content: {
-				top: '50%',
-				left: '50%',
-				right: 'auto',
-				bottom: 'auto',
-				marginRight: '-50%',
-				transform: 'translate(-50%, -50%)',
-				height: '550px',
-				width: '700px'
-		}
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    height: '550px',
+    width: '700px'
+  }
 };
 
 var SearchBar = React.createClass({
-		displayName: 'SearchBar',
+  displayName: 'SearchBar',
 
-		getInitialState: function getInitialState() {
-				console.log('got initial state');
-				return { modalIsOpen: false };
-		},
+  getInitialState: function getInitialState() {
+    console.log('got initial state');
+    return { modalIsOpen: false };
+  },
 
-		openModal: function openModal() {
-				console.log('opened modal');
-				this.setState({ modalIsOpen: true });
-		},
+  openModal: function openModal() {
+    console.log('opened modal');
+    this.setState({ modalIsOpen: true });
+  },
 
-		afterOpenModal: function afterOpenModal() {
-				// references are now sync'd and can be accessed. 
-				this.refs.subtitle.style.color = '#0081BA';
-		},
+  afterOpenModal: function afterOpenModal() {
+    // references are now sync'd and can be accessed. 
+    this.refs.subtitle.style.color = '#0081BA';
+  },
 
-		closeModal: function closeModal() {
-				this.setState({ modalIsOpen: false });
-		},
+  closeModal: function closeModal() {
+    this.setState({ modalIsOpen: false });
+  },
 
-		render: function render() {
-				return React.createElement(
-						'div',
-						null,
-						React.createElement(
-								'ul',
-								{ className: 'flex push-double--ends' },
-								React.createElement(
-										'li',
-										{ className: 'push-triple--right' },
-										React.createElement(
-												'div',
-												{ className: 'button-group' },
-												React.createElement(
-														'div',
-														null,
-														' Need to put filter here '
-												),
-												React.createElement(
-														'div',
-														{ className: 'search' },
-														React.createElement('input', { type: 'text', className: 'text-input text-input--search width--200', placeholder: 'Filter by Name' })
-												),
-												React.createElement(
-														'button',
-														{ className: 'button', type: 'button' },
-														'Search'
-												)
-										)
-								),
-								React.createElement(
-										'li',
-										{ className: 'anchor--right' },
-										React.createElement(
-												'button',
-												{ className: 'button button--highlight', onClick: this.openModal },
-												'Create Custom Tag'
-										),
-										React.createElement(
-												Modal,
-												{
-														isOpen: this.state.modalIsOpen,
-														onAfterOpen: this.afterOpenModal,
-														onRequestClose: this.closeModal,
-														style: customStyles },
-												React.createElement(
-														'h2',
-														{ ref: 'subtitle' },
-														'Create Custom Tag'
-												),
-												React.createElement(
-														'div',
-														{ className: 'modaltext' },
-														React.createElement(
-																'div',
-																null,
-																' Please create your own tag by inserting HTML or Javascript '
-														),
-														React.createElement(
-																'div',
-																{ className: 'editor' },
-																React.createElement(_reactAce2.default, {
-																		className: 'editor',
-																		mode: 'javascript',
-																		theme: 'tomorrow',
-																		name: 'UNIQUE_ID_OF_DIV',
-																		height: '120px',
-																		width: '620px',
-																		editorProps: { $blockScrolling: true }
-																})
-														),
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1 sd-headsmall' },
-																		' Description'
-																)
-														),
-														React.createElement(
-																'div',
-																{ className: 'flex--1' },
-																' Please add the description of your tag below. '
-														),
-														React.createElement('textarea', { className: 'modaltextarea' }),
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1 sd-headsmall' },
-																		' Called On: '
-																)
-														),
-														React.createElement(
-																'select',
-																{ className: 'form-control', name: 'trackingTrigger' },
-																React.createElement(
-																		'option',
-																		{ value: 'inHeader' },
-																		'In header'
-																),
-																React.createElement(
-																		'option',
-																		{ value: 'onPageLoad' },
-																		'On page load'
-																)
-														),
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1 sd-headsmall' },
-																		' Enabled or Disabled: '
-																)
-														),
-														React.createElement(
-																'select',
-																{ className: 'form-control', name: 'trackingTrigger' },
-																React.createElement(
-																		'option',
-																		{ value: 'inHeader' },
-																		'Enabled'
-																),
-																React.createElement(
-																		'option',
-																		{ value: 'onPageLoad' },
-																		'Disabled'
-																)
-														)
-												),
-												React.createElement(
-														'div',
-														{ className: 'flex space-between' },
-														React.createElement(
-																'button',
-																{ className: 'button button--highlight' },
-																' Add Custom Tag '
-														),
-														React.createElement(
-																'button',
-																{ className: 'button button--highlight', onClick: this.closeModal },
-																' Close '
-														)
-												)
-										)
-								)
-						)
-				);
-		}
+  render: function render() {
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'ul',
+        { className: 'flex push-double--ends' },
+        React.createElement(
+          'li',
+          { className: 'push-triple--right' },
+          React.createElement(
+            'div',
+            { className: 'button-group' },
+            React.createElement(
+              'div',
+              null,
+              ' Need to put filter here '
+            ),
+            React.createElement(
+              'div',
+              { className: 'search' },
+              React.createElement('input', { type: 'text', className: 'text-input text-input--search width--200', placeholder: 'Filter by Name' })
+            ),
+            React.createElement(
+              'button',
+              { className: 'button', type: 'button' },
+              'Search'
+            )
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'anchor--right' },
+          React.createElement(
+            'button',
+            { className: 'button button--highlight', onClick: this.openModal },
+            'Create Custom Tag'
+          ),
+          React.createElement(
+            Modal,
+            {
+              isOpen: this.state.modalIsOpen,
+              onAfterOpen: this.afterOpenModal,
+              onRequestClose: this.closeModal,
+              style: customStyles },
+            React.createElement(
+              'h2',
+              { ref: 'subtitle' },
+              'Create Custom Tag'
+            ),
+            React.createElement(
+              'div',
+              { className: 'modaltext' },
+              React.createElement(
+                'div',
+                null,
+                ' Please create your own tag by inserting HTML or Javascript '
+              ),
+              React.createElement(
+                'div',
+                { className: 'editor' },
+                React.createElement(_reactAce2.default, {
+                  className: 'editor',
+                  mode: 'javascript',
+                  theme: 'tomorrow',
+                  name: 'UNIQUE_ID_OF_DIV',
+                  height: '120px',
+                  width: '620px',
+                  editorProps: { $blockScrolling: true }
+                })
+              ),
+              React.createElement(
+                'div',
+                { className: 'flex' },
+                React.createElement(
+                  'div',
+                  { className: 'flex--1 sd-headsmall' },
+                  ' Description'
+                )
+              ),
+              React.createElement(
+                'div',
+                { className: 'flex--1' },
+                ' Please add the description of your tag below. '
+              ),
+              React.createElement('textarea', { className: 'modaltextarea' }),
+              React.createElement(
+                'div',
+                { className: 'flex' },
+                React.createElement(
+                  'div',
+                  { className: 'flex--1 sd-headsmall' },
+                  ' Called On: '
+                )
+              ),
+              React.createElement(
+                'select',
+                { className: 'form-control', name: 'trackingTrigger' },
+                React.createElement(
+                  'option',
+                  { value: 'inHeader' },
+                  'In header'
+                ),
+                React.createElement(
+                  'option',
+                  { value: 'onPageLoad' },
+                  'On page load'
+                )
+              ),
+              React.createElement(
+                'div',
+                { className: 'flex' },
+                React.createElement(
+                  'div',
+                  { className: 'flex--1 sd-headsmall' },
+                  ' Enabled or Disabled: '
+                )
+              ),
+              React.createElement(
+                'select',
+                { className: 'form-control', name: 'trackingTrigger' },
+                React.createElement(
+                  'option',
+                  { value: 'inHeader' },
+                  'Enabled'
+                ),
+                React.createElement(
+                  'option',
+                  { value: 'onPageLoad' },
+                  'Disabled'
+                )
+              )
+            ),
+            React.createElement(
+              'div',
+              { className: 'flex space-between' },
+              React.createElement(
+                'button',
+                { className: 'button button--highlight' },
+                ' Add Custom Tag '
+              ),
+              React.createElement(
+                'button',
+                { className: 'button button--highlight', onClick: this.closeModal },
+                ' Close '
+              )
+            )
+          )
+        )
+      )
+    );
+  }
 });
 
 var MyTagsPage = React.createClass({
-		displayName: 'MyTagsPage',
+  displayName: 'MyTagsPage',
 
-		getInitialState: function getInitialState() {
-				return {
-						splicedArray: [], //merge master templates and the downloaded project
-						sidePanel: {},
-						currentProject: "6668600890"
-				};
-		},
-		componentDidMount: function componentDidMount() {
-				var _this = this;
+  getInitialState: function getInitialState() {
+    return {
+      splicedArray: [], //merge master templates and the downloaded project
+      sidePanel: {},
+      currentProject: "6668600890",
+      master: []
+    };
+  },
+  componentDidMount: function componentDidMount() {
+    var _this = this;
 
-				fetch('http://localhost:4001/master').then(function (response) {
-						return response.json();
-				}).then(function (response) {
-						_this.setState({
-								master: response
-						});
-						console.log('master', response);
-				}).then(function () {
-						return fetch('http://localhost:4001/download/' + _this.state.currentProject);
-				}).then(function (response) {
-						return response.json();
-				}).then(function (r) {
-						_this.setState({
-								downloadedProject: r
-						});
-						var newArray = [];
-						var newObj = {};
-						for (var i = 0; i < _this.state.downloadedProject.length; i++) {
-								for (var j = 0; j < _this.state.master.length; j++) {
-										console.log("HERE ARE ALL THE PROJECTS", _this.state.downloadedProject[i].name, _this.state.master[j].name);
-										if (_this.state.downloadedProject[i].name === _this.state.master[j].name) {
-												newObj = $.extend({}, _this.state.master[j], _this.state.downloadedProject[i]);
-												newArray.push(newObj);
-										}
-								}
-						};
-						_this.setState({
-								splicedArray: newArray
-						});
-				}).catch(function (e) {
-						console.log("Err: ", e);
-				});
-		},
+    fetch('http://localhost:4001/master').then(function (response) {
+      return response.json();
+    }).then(function (response) {
+      _this.setState({
+        master: response
+      });
+    }).then(function () {
+      return fetch('http://localhost:4001/download/' + _this.state.currentProject);
+    }).then(function (response) {
+      return response.json();
+    }).then(function (r) {
+      _this.setState({
+        downloadedProject: r
+      });
+      var newArray = [];
+      var newObj = {};
+      for (var i = 0; i < _this.state.downloadedProject.length; i++) {
+        for (var j = 0; j < _this.state.master.length; j++) {
+          if (_this.state.downloadedProject[i].name === _this.state.master[j].name) {
+            newObj = $.extend({}, _this.state.master[j], _this.state.downloadedProject[i]);
+            newArray.push(newObj);
+          }
+        }
+      };
+      _this.setState({
+        splicedArray: newArray
+      });
+    }).catch(function (e) {
+      console.log("Err: ", e);
+    });
+  },
 
-		onSelect: function onSelect(item, rowinfo) {
-				this.setState({
-						sidePanel: rowinfo //this is an object
-				});
-				console.log(rowinfo, "rowinfo");
-				console.log(this.state.sidePanel, " sidePanel in state");
-		},
+  onSelect: function onSelect(item, rowinfo) {
+    this.setState({
+      sidePanel: rowinfo //this is an object
+    });
+  },
 
-		render: function render() {
-				return React.createElement(
-						'div',
-						{ className: 'flex height--1-1' },
-						React.createElement(TableContent, { splicedArray: this.state.splicedArray, onSelect: this.onSelect }),
-						React.createElement(MySidePanel, { info: this.state.sidePanel })
-				);
-		}
+  render: function render() {
+    return React.createElement(
+      'div',
+      { className: 'flex height--1-1' },
+      React.createElement(MyTableContent, { splicedArray: this.state.splicedArray, onSelect: this.onSelect }),
+      React.createElement(MySidePanel, { info: this.state.sidePanel })
+    );
+  }
 });
 
 var AvailableTagsPage = React.createClass({
-		displayName: 'AvailableTagsPage',
+  displayName: 'AvailableTagsPage',
 
-		getInitialState: function getInitialState() {
-				return {
-						splicedArray: [],
-						sidePanel: {},
-						currentProject: "6668600890"
-				};
-		},
-		componentDidMount: function componentDidMount() {
-				var _this2 = this;
+  getInitialState: function getInitialState() {
+    return {
+      splicedArray: [],
+      sidePanel: {},
+      currentProject: "6668600890",
+      master: [],
+      downloadedProject: []
+    };
+  },
+  componentDidMount: function componentDidMount() {
+    var _this2 = this;
 
-				fetch('http://localhost:4001/master').then(function (response) {
-						return response.json();
-				}).then(function (response) {
-						_this2.setState({
-								master: response
-						});
-						var newArray = [];
-						for (var j = 0; j < _this2.state.master.length; j++) {
-								newArray.push(_this2.state.master[j]);
-						};
-						_this2.setState({
-								splicedArray: newArray
-						});
-				}).catch(function (e) {
-						console.log("Err: ", e);
-				});
-		},
+    console.log('availabletagspage mounted');
+    console.log(this.props, "props for availabletagspage");
+    fetch('http://localhost:4001/master').then(function (response) {
+      return response.json();
+    }).then(function (response) {
+      _this2.setState({
+        splicedArray: response
+      });
+    }).catch(function (e) {
+      console.log("Err: ", e);
+    });
+  },
 
-		onSelect: function onSelect(item, rowinfo) {
-				this.setState({
-						sidePanel: rowinfo
-				});
-				console.log(rowinfo, "rowinfo");
-				console.log(this.state.sidePanel, " sidePanel in state");
-		},
+  onSelect: function onSelect(item, rowinfo) {
+    this.setState({
+      sidePanel: rowinfo
+    });
+    console.log(rowinfo, "rowinfo");
+    console.log(this.state.sidePanel, " sidePanel in state");
+  },
 
-		render: function render() {
-				return React.createElement(
-						'div',
-						{ className: 'flex height--1-1' },
-						React.createElement(TableContent, { splicedArray: this.state.splicedArray, onSelect: this.onSelect }),
-						React.createElement(AvailableSidePanel, { info: this.state.sidePanel })
-				);
-		}
+  render: function render() {
+    return React.createElement(
+      'div',
+      { className: 'flex height--1-1' },
+      React.createElement(AvailableTableContent, { splicedArray: this.state.splicedArray, onSelect: this.onSelect }),
+      React.createElement(AvailableSidePanel, { info: this.state.sidePanel })
+    );
+  }
 });
 
-var TableContent = React.createClass({
-		displayName: 'TableContent',
+var MyTableContent = React.createClass({
+  displayName: 'MyTableContent',
 
 
-		componentDidMount: function componentDidMount() {
-				this.tableSort();
-		},
+  componentDidMount: function componentDidMount() {
+    this.tableSort();
+  },
 
-		componentDidUpdate: function componentDidUpdate() {
-				this.tableSort();
-		},
+  componentDidUpdate: function componentDidUpdate() {
+    this.tableSort();
+  },
 
-		render: function render() {
-				var _this3 = this;
+  tableSort: function tableSort() {
+    $(this.refs.myTable).tablesorter();
+  },
 
-				return React.createElement(
-						'div',
-						{ className: 'flex--1 soft-double--sides' },
-						React.createElement(SearchBar, null),
-						React.createElement(
-								'h1',
-								{ className: 'header1' },
-								' My Tags '
-						),
-						React.createElement(
-								'table',
-								{ className: 'table table--rule table--hover myTable', ref: 'myTable' },
-								React.createElement(
-										'thead',
-										null,
-										React.createElement(
-												'tr',
-												null,
-												React.createElement(
-														'th',
-														{ className: 'cell-collapse' },
-														'Logo'
-												),
-												React.createElement(
-														'th',
-														null,
-														'Name'
-												),
-												React.createElement(
-														'th',
-														null,
-														'Category'
-												),
-												React.createElement(
-														'th',
-														null,
-														'Called On'
-												),
-												React.createElement(
-														'th',
-														{ className: 'cell-collapse' },
-														'Status'
-												)
-										)
-								),
-								React.createElement(
-										'tbody',
-										null,
-										this.props.splicedArray.map(function (rowinfo, item) {
-												return React.createElement(TableColumn, { onSelect: _this3.props.onSelect.bind(_this3, item, rowinfo), key: item, rowinfo: rowinfo });
-										})
-								)
-						)
-				);
-		},
+  render: function render() {
+    var _this3 = this;
 
-		tableSort: function tableSort() {
-				$(this.refs.myTable).tablesorter();
-		}
+    return React.createElement(
+      'div',
+      { className: 'flex--1 soft-double--sides' },
+      React.createElement(SearchBar, null),
+      React.createElement(
+        'h1',
+        { className: 'header1' },
+        ' My Tags '
+      ),
+      React.createElement(
+        'table',
+        { className: 'table table--rule table--hover myTable', ref: 'myTable' },
+        React.createElement(
+          'thead',
+          null,
+          React.createElement(
+            'tr',
+            null,
+            React.createElement(
+              'th',
+              { className: 'cell-collapse' },
+              'Logo'
+            ),
+            React.createElement(
+              'th',
+              null,
+              'Name'
+            ),
+            React.createElement(
+              'th',
+              null,
+              'Category'
+            ),
+            React.createElement(
+              'th',
+              null,
+              'Called On'
+            ),
+            React.createElement(
+              'th',
+              { className: 'cell-collapse' },
+              'Status'
+            )
+          )
+        ),
+        React.createElement(
+          'tbody',
+          null,
+          //key is for adjacent elements in react to distinguish
+          this.props.splicedArray.map(function (rowinfo, item) {
+            return React.createElement(MyTableRow, { onSelect: _this3.props.onSelect.bind(_this3, item, rowinfo), key: item, rowinfo: rowinfo });
+          })
+        )
+      )
+    );
+  }
 });
 
-var TableColumn = React.createClass({
-		displayName: 'TableColumn',
+var AvailableTableContent = React.createClass({
+  displayName: 'AvailableTableContent',
 
-		render: function render() {
-				console.log(this.props, "props");
-				return React.createElement(
-						'tr',
-						{ onClick: this.props.onSelect },
-						React.createElement(
-								'td',
-								{ id: 'row-centered' },
-								' ',
-								React.createElement('img', { src: this.props.rowinfo.logo })
-						),
-						React.createElement(
-								'td',
-								{ id: 'row-centered' },
-								this.props.rowinfo.displayName
-						),
-						React.createElement(
-								'td',
-								{ id: 'row-centered' },
-								this.props.rowinfo.category,
-								' '
-						),
-						React.createElement(
-								'td',
-								{ id: 'row-centered' },
-								this.props.rowinfo.called,
-								' '
-						),
-						React.createElement(
-								'td',
-								{ id: 'row-centered' },
-								' Enabled '
-						)
-				);
-		}
+
+  componentDidMount: function componentDidMount() {
+    console.log('availabletablecontent mounted');
+    console.log(this.props, "props for availabltable content");
+    this.tableSort();
+  },
+
+  componentDidUpdate: function componentDidUpdate() {
+    this.tableSort();
+  },
+
+  tableSort: function tableSort() {
+    $(this.refs.AvTable).tablesorter();
+  },
+
+  render: function render() {
+    var _this4 = this;
+
+    console.log("[AvailableTableContent props]", this.props.splicedArray);
+    return React.createElement(
+      'div',
+      { className: 'flex--1 soft-double--sides' },
+      React.createElement(SearchBar, null),
+      React.createElement(
+        'h1',
+        { className: 'header1' },
+        ' Available Tags '
+      ),
+      React.createElement(
+        'table',
+        { className: 'table table--rule table--hover myTable', ref: 'AvTable' },
+        React.createElement(
+          'thead',
+          null,
+          React.createElement(
+            'tr',
+            null,
+            React.createElement(
+              'th',
+              { className: 'cell-collapse' },
+              'Logo'
+            ),
+            React.createElement(
+              'th',
+              null,
+              'Name'
+            ),
+            React.createElement(
+              'th',
+              null,
+              'Category'
+            ),
+            React.createElement(
+              'th',
+              null,
+              'Called On'
+            ),
+            React.createElement(
+              'th',
+              { className: 'cell-collapse' },
+              'Status'
+            )
+          )
+        ),
+        React.createElement(
+          'tbody',
+          null,
+          //key is for adjacent elements in react to distinguish
+          this.props.splicedArray.map(function (rowinfo, item) {
+            return React.createElement(AvailableTableRow, { onSelect: _this4.props.onSelect.bind(_this4, item, rowinfo), key: item, rowinfo: rowinfo });
+          })
+        )
+      )
+    );
+  }
+});
+
+var MyTableRow = React.createClass({
+  displayName: 'MyTableRow',
+
+  render: function render() {
+    console.log(this.props, "props");
+    return React.createElement(
+      'tr',
+      { onClick: this.props.onSelect },
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        ' ',
+        React.createElement('img', { src: this.props.rowinfo.logo })
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        this.props.rowinfo.displayName
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        this.props.rowinfo.category,
+        ' '
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        this.props.rowinfo.called,
+        ' '
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        ' Enabled '
+      )
+    );
+  }
+});
+
+var AvailableTableRow = React.createClass({
+  displayName: 'AvailableTableRow',
+
+  render: function render() {
+    console.log('availabletablerow mounted');
+    console.log(this.props, "props for availabletablerow");
+    return React.createElement(
+      'tr',
+      { onClick: this.props.onSelect },
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        ' ',
+        React.createElement('img', { src: this.props.rowinfo.logo })
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        this.props.rowinfo.displayName
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        this.props.rowinfo.category,
+        ' '
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        this.props.rowinfo.called,
+        ' '
+      ),
+      React.createElement(
+        'td',
+        { id: 'row-centered' },
+        ' Enabled '
+      )
+    );
+  }
 });
 
 var MySidePanel = React.createClass({
-		displayName: 'MySidePanel',
+  displayName: 'MySidePanel',
 
-		onDelete: function onDelete() {
-				//delete a tag
-				// POST 'deletetag/:tagid'
-				return null;
-		},
 
-		render: function render() {
-				if (Object.keys(this.props.info).length !== 0) {
-						return React.createElement(
-								'div',
-								{ className: 'sidepanel background--faint' },
-								React.createElement(
-										'h2',
-										{ className: 'push-double--bottom sp-headbig' },
-										'TAG DETAILS'
-								),
-								React.createElement(
-										'div',
-										{ className: 'flex' },
-										React.createElement(
-												'div',
-												null,
-												' ',
-												React.createElement('img', { className: 'sidepanel-logo', src: this.props.info.logo }),
-												' '
-										),
-										React.createElement(
-												'div',
-												{ className: 'flex flex-v-center' },
-												React.createElement(
-														'div',
-														{ className: 'sidepanel-displayname' },
-														' ',
-														this.props.info.displayName,
-														' '
-												)
-										)
-								),
-								React.createElement(
-										'div',
-										{ className: 'sd-headsmall deschead' },
-										' DESCRIPTION '
-								),
-								React.createElement(
-										'div',
-										{ className: 'tagdesc' },
-										this.props.info.tagDescription
-								),
-								React.createElement('label', { className: 'label label--rule' }),
-								this.props.info.tokens.map(function (field, item) {
-										return React.createElement(MyInputFields, { key: item, field: field });
-								}),
-								React.createElement(
-										'div',
-										{ className: 'flex' },
-										React.createElement(
-												'div',
-												{ className: 'flex--1 sd-headsmall' },
-												' Called On: '
-										)
-								),
-								React.createElement(
-										'select',
-										{ className: 'form-control', name: 'trackingTrigger' },
-										React.createElement(
-												'option',
-												{ value: 'inHeader' },
-												'In header'
-										),
-										React.createElement(
-												'option',
-												{ value: 'onPageLoad' },
-												'On page load'
-										)
-								),
-								React.createElement(
-										'div',
-										{ className: 'flex' },
-										React.createElement(
-												'div',
-												{ className: 'flex--1 sd-headsmall' },
-												' Enabled or Disabled: '
-										)
-								),
-								React.createElement(
-										'select',
-										{ className: 'form-control', name: 'trackingTrigger' },
-										React.createElement(
-												'option',
-												{ value: 'inHeader' },
-												'Enabled'
-										),
-										React.createElement(
-												'option',
-												{ value: 'onPageLoad' },
-												'Disabled'
-										)
-								),
-								React.createElement(
-										'div',
-										null,
-										React.createElement(
-												'button',
-												{ className: 'btn-uniform-add button button--highlight' },
-												'Update Tag'
-										)
-								),
-								React.createElement(
-										'div',
-										null,
-										React.createElement(
-												'button',
-												{ className: 'btn-uniform-del button button--highlight' },
-												'Delete'
-										)
-								)
-						);
-				} else {
-						return React.createElement(
-								'div',
-								null,
-								' '
-						);
-				}
-		}
+  getInitialState: function getInitialState() {
+    return {
+      info: this.props.info,
+      fields: this.props.info.fields,
+      projectId: "6668600890",
+      trackingTrigger: this.props.info.trackingTrigger,
+      active: this.props.info.active,
+      tagId: this.props.info._id
+    };
+  },
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    if (nextProps.info) {
+      this.setState({
+        info: nextProps.info,
+        fields: nextProps.info.fields
+      });
+    }
+  },
+
+  onUpdateTag: function onUpdateTag() {
+    var data = {};
+
+    data.fields = this.state.fields.map(function (field) {
+      var returnfield = {};
+      returnfield[field.name] = field.value;
+      return returnfield;
+    });
+
+    data.active = this.state.active;
+    data.trackingTrigger = this.state.trackingTrigger;
+    data.projectId = this.state.projectId;
+
+    return $.ajax({
+      url: '/updatetag/' + this.state.tagId,
+      type: 'POST',
+      data: data,
+      success: function success(data) {
+        console.log('Update tag successful');
+      },
+      error: function error(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
+  },
+
+  onDelete: function onDelete() {
+
+    return $.ajax({
+      url: '/',
+      type: 'deletetag/' + this.state.tagId,
+      data: {
+        tagid: this.state.tagId
+      },
+      success: function success(data) {
+        console.log('delete tag successful');
+      },
+      error: function (err) {
+        console.error("Err posting", err.toString());
+      }.bind(this)
+    });
+  },
+
+  onChangeTokens: function onChangeTokens(field, e) {
+    var newState = Object.assign({}, this.state);
+    newState.tokens[field].value = e.target.value;
+    this.setState(newState);
+  },
+
+  //this change the enable and triggers
+  onChange: function onChange(e) {
+    var newState = Object.assign({}, this.state);
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  },
+
+  render: function render() {
+    if (Object.keys(this.props.info).length !== 0) {
+      return React.createElement(
+        'div',
+        { className: 'sidepanel background--faint' },
+        React.createElement(
+          'h2',
+          { className: 'push-double--bottom sp-headbig' },
+          'TAG DETAILS'
+        ),
+        React.createElement(
+          'div',
+          { className: 'flex' },
+          React.createElement(
+            'div',
+            null,
+            ' ',
+            React.createElement('img', { className: 'sidepanel-logo', src: this.state.info.logo }),
+            ' '
+          ),
+          React.createElement(
+            'div',
+            { className: 'flex flex-v-center' },
+            React.createElement(
+              'div',
+              { className: 'sidepanel-displayname' },
+              ' ',
+              this.state.info.displayName,
+              ' '
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'sd-headsmall deschead' },
+          ' DESCRIPTION '
+        ),
+        React.createElement(
+          'div',
+          { className: 'tagdesc' },
+          this.state.tagDescription
+        ),
+        React.createElement('label', { className: 'label label--rule' }),
+        this.state.fields.map(function (field, item) {
+          return React.createElement(MyInputFields, { key: item, field: field, value: this.state.fields[item].value, onChange: this.onChangeTokens.bind(this, item) });
+        }.bind(this)),
+        React.createElement(
+          'div',
+          { className: 'flex' },
+          React.createElement(
+            'div',
+            { className: 'flex--1 sd-headsmall' },
+            ' Called On: '
+          )
+        ),
+        React.createElement(
+          'select',
+          { className: 'form-control', name: 'trackingTrigger', value: this.state.trackingTrigger, onChange: this.onChange },
+          React.createElement(
+            'option',
+            { value: 'inHeader' },
+            'In header'
+          ),
+          React.createElement(
+            'option',
+            { value: 'onPageLoad' },
+            'On page load'
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'flex' },
+          React.createElement(
+            'div',
+            { className: 'flex--1 sd-headsmall' },
+            ' Enabled or Disabled: '
+          )
+        ),
+        React.createElement(
+          'select',
+          { className: 'form-control', name: 'active', value: this.state.active, onChange: this.onChange },
+          React.createElement(
+            'option',
+            { value: 'Enabled' },
+            'Enabled'
+          ),
+          React.createElement(
+            'option',
+            { value: 'Disabled' },
+            'Disabled'
+          )
+        ),
+        React.createElement(
+          'div',
+          null,
+          React.createElement(
+            'button',
+            { className: 'btn-uniform-add button button--highlight', onClick: this.onUpdateTag },
+            'Update Tag'
+          )
+        ),
+        React.createElement(
+          'div',
+          null,
+          React.createElement(
+            'button',
+            { className: 'btn-uniform-del button button--highlight', onClick: this.onDelete },
+            'Delete'
+          )
+        )
+      );
+    } else {
+      return React.createElement(
+        'div',
+        null,
+        ' '
+      );
+    }
+  }
 });
 
 var AvailableSidePanel = React.createClass({
-		displayName: 'AvailableSidePanel',
+  displayName: 'AvailableSidePanel',
 
-		onDelete: function onDelete() {
-				//delete a tag
-				// POST 'deletetag/:tagid'
-				return null;
-		},
+  getInitialState: function getInitialState() {
+    return {
+      info: this.props.info,
+      tokens: this.props.info.tokens,
+      projectId: "6668600890",
+      trackingTrigger: 'inHeader',
+      active: true
+    };
+  },
 
-		render: function render() {
-				if (Object.keys(this.props.info).length !== 0) {
-						return React.createElement(
-								'div',
-								{ className: 'sidepanel background--faint' },
-								React.createElement(
-										'h2',
-										{ className: 'push-double--bottom sp-headbig' },
-										'TAG DETAILS'
-								),
-								React.createElement(
-										'div',
-										{ className: 'flex' },
-										React.createElement(
-												'div',
-												null,
-												' ',
-												React.createElement('img', { className: 'sidepanel-logo', src: this.props.info.logo }),
-												' '
-										),
-										React.createElement(
-												'div',
-												{ className: 'flex flex-v-center' },
-												React.createElement(
-														'div',
-														{ className: 'sidepanel-displayname' },
-														' ',
-														this.props.info.displayName,
-														' '
-												)
-										)
-								),
-								React.createElement(
-										'div',
-										{ className: 'sd-headsmall deschead' },
-										' DESCRIPTION '
-								),
-								React.createElement(
-										'div',
-										{ className: 'tagdesc' },
-										this.props.info.tagDescription
-								),
-								React.createElement('label', { className: 'label label--rule' }),
-								this.props.info.tokens.map(function (field, item) {
-										return React.createElement(MyInputFields, { key: item, field: field });
-								}),
-								React.createElement(
-										'div',
-										{ className: 'flex' },
-										React.createElement(
-												'div',
-												{ className: 'flex--1 sd-headsmall' },
-												' Called On: '
-										)
-								),
-								React.createElement(
-										'select',
-										{ className: 'form-control', name: 'trackingTrigger' },
-										React.createElement(
-												'option',
-												{ value: 'inHeader' },
-												'In header'
-										),
-										React.createElement(
-												'option',
-												{ value: 'onPageLoad' },
-												'On page load'
-										)
-								),
-								React.createElement(
-										'div',
-										{ className: 'flex' },
-										React.createElement(
-												'div',
-												{ className: 'flex--1 sd-headsmall' },
-												' Enabled or Disabled: '
-										)
-								),
-								React.createElement(
-										'select',
-										{ className: 'form-control', name: 'trackingTrigger' },
-										React.createElement(
-												'option',
-												{ value: 'inHeader' },
-												'Enabled'
-										),
-										React.createElement(
-												'option',
-												{ value: 'onPageLoad' },
-												'Disabled'
-										)
-								),
-								React.createElement(
-										'div',
-										null,
-										React.createElement(
-												'button',
-												{ className: 'btn-uniform-add button button--highlight' },
-												'Add Tag'
-										)
-								)
-						);
-				} else {
-						return React.createElement(
-								'div',
-								null,
-								React.createElement(
-										'div',
-										{ className: 'sidepanel background--faint' },
-										React.createElement(
-												'h2',
-												{ className: 'push-double--bottom sp-headbig' },
-												'TAG DETAILS'
-										),
-										React.createElement(
-												'div',
-												null,
-												' Select a Tag to add to My Tags. '
-										)
-								)
-						);
-				}
-		}
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    if (nextProps.info) {
+      this.setState({
+        info: nextProps.info,
+        tokens: nextProps.info.tokens
+      });
+    }
+  },
+
+  onAddTag: function onAddTag() {
+    var data = {};
+    // console.log("[state]", this.state);
+    // console.log("[info]", this.props.info);
+    this.state.tokens.map(function (token) {
+      data[token.tokenName] = token.value;
+    });
+    data.active = this.state.active;
+    data.trackingTrigger = this.state.trackingTrigger;
+    data.projectId = this.state.projectId;
+    data.type = this.props.info.name;
+    data.tagDescription = this.props.info.tagDescription;
+    data.custom = this.props.info.custom;
+    data.hasCallback = this.props.info.hasCallback;
+    data.callBacks = this.props.info.callBacks;
+    data.approved = true;
+    console.log('dataaaaa', data);
+
+    return $.ajax({
+      url: '/' + window.location.search,
+      type: 'POST',
+      data: data,
+      success: function success(data) {
+        console.log('Add tag successful');
+      },
+      error: function error(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
+  },
+
+  onChangeTokens: function onChangeTokens(index, e) {
+    var tokens = this.state.tokens;
+    tokens[index].value = e.target.value;
+    this.setState({
+      tokens: tokens
+    });
+  },
+
+  //this change the enable and triggers
+  onChange: function onChange(e) {
+    var newState = Object.assign({}, this.state);
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  },
+
+  // handleSubmit: function() {
+  //   e.preventDefault()
+  //   this.setState({
+  //     tokens: [],
+  //     trackingTrigger: 'inHeader',
+  //     active: false
+  //   });
+  // },
+
+  render: function render() {
+    if (Object.keys(this.props.info).length !== 0) {
+      return React.createElement(
+        'div',
+        { className: 'sidepanel background--faint' },
+        React.createElement(
+          'h2',
+          { className: 'push-double--bottom sp-headbig' },
+          'TAG DETAILS'
+        ),
+        React.createElement(
+          'div',
+          { className: 'flex' },
+          React.createElement(
+            'div',
+            null,
+            ' ',
+            React.createElement('img', { className: 'sidepanel-logo', src: this.props.info.logo }),
+            ' '
+          ),
+          React.createElement(
+            'div',
+            { className: 'flex flex-v-center' },
+            React.createElement(
+              'div',
+              { className: 'sidepanel-displayname' },
+              ' ',
+              this.props.info.displayName,
+              ' '
+            )
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'sd-headsmall deschead' },
+          ' DESCRIPTION '
+        ),
+        React.createElement(
+          'div',
+          { className: 'tagdesc' },
+          this.props.info.tagDescription
+        ),
+        React.createElement('label', { className: 'label label--rule' }),
+        this.state.tokens.map(function (token, item) {
+          return React.createElement(AvailableInputFields, { key: item, token: token, onChange: this.onChangeTokens.bind(this, item) });
+        }.bind(this)),
+        React.createElement(
+          'div',
+          { className: 'flex' },
+          React.createElement(
+            'div',
+            { className: 'flex--1 sd-headsmall' },
+            ' Called On: '
+          )
+        ),
+        React.createElement(
+          'select',
+          { className: 'form-control', name: 'trackingTrigger', value: this.state.trackingTrigger, onChange: this.onChange },
+          React.createElement(
+            'option',
+            { value: 'inHeader' },
+            'In header'
+          ),
+          React.createElement(
+            'option',
+            { value: 'onPageLoad' },
+            'On page load'
+          )
+        ),
+        React.createElement(
+          'div',
+          { className: 'flex' },
+          React.createElement(
+            'div',
+            { className: 'flex--1 sd-headsmall' },
+            ' Enabled or Disabled: '
+          )
+        ),
+        React.createElement(
+          'select',
+          { className: 'form-control', name: 'active', value: this.state.active, onChange: this.onChange },
+          React.createElement(
+            'option',
+            { value: true },
+            'Enabled'
+          ),
+          React.createElement(
+            'option',
+            { value: false },
+            'Disabled'
+          )
+        ),
+        React.createElement(
+          'div',
+          null,
+          React.createElement(
+            'button',
+            { className: 'btn-uniform-add button button--highlight', onClick: this.onAddTag },
+            'Add Tag'
+          )
+        )
+      );
+    } else {
+      return React.createElement(
+        'div',
+        null,
+        React.createElement(
+          'div',
+          { className: 'sidepanel background--faint' },
+          React.createElement(
+            'h2',
+            { className: 'push-double--bottom sp-headbig' },
+            'TAG DETAILS'
+          ),
+          React.createElement(
+            'div',
+            null,
+            ' Select a Tag to add to My Tags. '
+          )
+        )
+      );
+    }
+  }
 });
 
 var MyInputFields = React.createClass({
-		displayName: 'MyInputFields',
+  displayName: 'MyInputFields',
 
-		render: function render() {
-				console.log(this.props, "props");
-				return React.createElement(
-						'div',
-						null,
-						React.createElement(
-								'div',
-								{ className: 'flex' },
-								React.createElement(
-										'div',
-										{ className: 'flex--1 sd-headsmall' },
-										this.props.field.tokenName
-								)
-						),
-						React.createElement(
-								'div',
-								null,
-								' ',
-								this.props.field.description,
-								' ',
-								React.createElement(
-										'a',
-										{ href: this.props.field.learnmorelink, target: '_blank' },
-										' Learn More. '
-								),
-								' '
-						),
-						React.createElement('input', { className: 'text-input width--200 text-input-styled', placeholder: this.props.field.placeholder })
-				);
-		}
+  render: function render() {
+    console.log(this.props, "props");
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'div',
+        { className: 'flex' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          this.props.field.tokenName
+        )
+      ),
+      React.createElement(
+        'div',
+        null,
+        ' ',
+        this.props.field.description,
+        ' ',
+        React.createElement(
+          'a',
+          { href: this.props.field.learnmorelink, target: '_blank' },
+          ' Learn More. '
+        ),
+        ' '
+      ),
+      React.createElement('input', { className: 'text-input width--200 text-input-styled', placeholder: this.props.field.placeholder, value: this.props.field.value, onChange: this.props.onChange })
+    );
+  }
 });
 
-// var AvailableInputFields = React.createClass({
-// 	render: function () {
-// 		return (
-// 				<div>
-// 				    <label className="label label--rule">
-// 		            <div className="flex">
-// 		               <div className="flex--1">{this.props.field.tokenName}</div>
-// 		            </div>
-// 			        <div> {this.props.field.description} </div>
-// 			        <input classname='text-input' value={this.props.value} onChange={this.props.onChange}/>
-//               </label>
-// 		    </div>
-// 		)
-// 	}
-// })
+var AvailableInputFields = React.createClass({
+  displayName: 'AvailableInputFields',
 
-var SidePanelAdding = React.createClass({
-		displayName: 'SidePanelAdding',
-
-		render: function render() {
-				React.createElement('div', null);
-		}
+  render: function render() {
+    console.log(this.props, "props");
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'div',
+        { className: 'flex' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          this.props.token.tokenDisplayName
+        )
+      ),
+      React.createElement(
+        'div',
+        null,
+        ' ',
+        this.props.token.description,
+        ' ',
+        React.createElement(
+          'a',
+          { href: this.props.token.learnmorelink, target: '_blank' },
+          ' Learn More. '
+        ),
+        ' '
+      ),
+      React.createElement('input', { className: 'text-input width--200 text-input-styled', placeholder: this.props.token.placeholder, value: this.props.token.value, onChange: this.props.onChange })
+    );
+  }
 });
 
 ReactDOM.render(React.createElement(
-		_reactRouter.Router,
-		{ history: _reactRouter.hashHistory },
-		React.createElement(
-				_reactRouter.Route,
-				{ path: '/', component: App },
-				React.createElement(_reactRouter.Route, { path: '/myTags', component: MyTagsPage }),
-				React.createElement(_reactRouter.Route, { path: '/availableTags', component: AvailableTagsPage }),
-				React.createElement(_reactRouter.Route, { path: '/submitNewTemplate', component: AvailableTagsPage })
-		)
+  _reactRouter.Router,
+  { history: _reactRouter.hashHistory },
+  React.createElement(
+    _reactRouter.Route,
+    { path: '/', component: App },
+    React.createElement(_reactRouter.IndexRedirect, { to: '/myTags' }),
+    React.createElement(_reactRouter.Route, { path: '/myTags', component: MyTagsPage }),
+    React.createElement(_reactRouter.Route, { path: '/availableTags', component: AvailableTagsPage }),
+    React.createElement(_reactRouter.Route, { path: '/submitNewTemplate', component: AvailableTagsPage })
+  )
 ), document.getElementById('root'));
 
 },{"brace":2,"brace/mode/javascript":3,"brace/theme/github":4,"brace/theme/tomorrow":5,"moment":45,"optimizely-oui":54,"react":446,"react-ace":231,"react-dom":232,"react-modal":239,"react-router":269,"reactable":447,"underscore":464}],2:[function(require,module,exports){

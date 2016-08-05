@@ -65,7 +65,7 @@ router.post('/', function(req, res, next) {
         })
 });
 
-router.post('deletetag/:tagid', function(req, res, next) {
+router.post('/deletetag/:tagid', function(req, res, next) {
   db.collection('tags').deleteOne({"_id": req.params.tagid}, function(err, results) {
     console.log(results);
     res.status(200).send("ITS ALL GOOD IN THE HOOD")
@@ -108,20 +108,20 @@ router.post('/updatetag/:tagid', (req, res, next) => {
     if (err) {
       console.log('err updating tags', err)
     } else {
-      tag.name = req.body.name;
+      // tag.name = req.body.name;
       tag.fields = req.body.fields;
       tag.approved = req.body.approved;
-      tag.tagDescription = req.body.tagDescription;
+      // tag.tagDescription = req.body.tagDescription;
       tag.trackingTrigger = req.body.trackingTrigger;
       tag.custom = req.body.custom;
       tag.rank = req.body.rank;
       tag.projectId = req.body.projectId;
       tag.active = req.body.active;
-      tag.save(function(err, t) {
+      tag.save(function(err) {
         if (err) {
           console.log("err saving tag in update", err)
         } else {
-          res.send("update success", t)
+          res.send("update success")
         }
       })
     }
@@ -129,25 +129,18 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 })
 
 router.get('/options', function(req, res, next) {
-  Tag.find({'hasCallback': true}, function(err, tags) {
-    if (err) {
-      console.log("error finding tags", err)
-    }
-    else {
-      //get names of options
-      tags.map(function(item) {
-        return item.name;
-      });
-
-      //inHeader/onDocumentReady should intuitively come first
-      tags.unshift("inHeader");
-      tags.unshift("onDocumentReady");
-
-      //send info
-      res.setHeader('Content-Type', 'application/json');
-      res.send(JSON.stringify(tags));
-    }
-  })
+  var utils = require('../utils')
+  Project.find({'projectId': userContext.context.environment.current_project})
+         .then(utils.getTagOptions.bind(utils))
+         .then(utils.getOptions.bind(utils))
+         .then(utils.addProjectOptions.bind(utils))
+         .then(function(response) {
+           console.log("THIS IS THE RESPONSE", response)
+           res.status(200).send('I am alright')
+         })
+         .catch(function(err) {
+           console.log("Error at the end of /options", err)
+         })
 })
 
 module.exports = router;

@@ -22,18 +22,27 @@ var tagSchema = mongoose.Schema({
   active: Boolean,
   approved: Boolean,
   hasCallback: Boolean,
-  callbacks: Array
+  callbacks: Array,
+  pageName: String,
+  eventName: String
 })
 
-tagSchema.methods.render = function() {
-  //TODO: change to this.trackingTrigger
-  var innerCallback = '';
-  for (var i = 0; i < this.callbacks.length; i++) {
-    innerCallback += this.callbacks[i].render();
+
+tagSchema.methods.render = function(tags) {
+  var filtered = [];
+  if (tags) {
+     filtered = tags.filter(function(item) {
+      return this.callbacks.includes(item.name)
+    }.bind(this))
   }
 
+  var innerCallback = '';
+  for (var i = 0; i < filtered.length; i++) {
+    innerCallback += filtered[i].render(tags);
+  }
   return snippets[this.name](this.fields, this.trackingTrigger, innerCallback);
 }
+
 
 var masterSchema = mongoose.Schema({
   name: String,

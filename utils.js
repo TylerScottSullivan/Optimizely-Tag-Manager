@@ -21,7 +21,7 @@ module.exports = {
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
     }
     t = new Tag({
-      name: this.body.type,
+      name: master.name,
       fields: fields,
       approved: true,
       tagDescription: master.tagDescription,
@@ -56,6 +56,10 @@ module.exports = {
   },
   getJavascript: function(populatedProject) {
     var tags = this.project.tags;
+
+//do everything separately
+
+    //wrap page type things
     var inHeaders = tags.filter(function(item){
                     return item.trackingTrigger === "inHeader";
                   })
@@ -64,30 +68,28 @@ module.exports = {
                             })
 
     var inHeaderJavascript = '';
-    console.log('EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE', tags)
-    console.log('MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM', inHeaders)
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
-      console.log('WWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW')
-      inHeaderJavascript += inHeaders[i].render();
-      console.log(inHeaderJavascript)
+      inHeaderJavascript += inHeaders[i].render(tags);
     }
     var onDocumentReadyJavascript = '';
     for(var i = 0; i < onDocumentReadys; i++) {
       //TODO: wrap this in onDocumentReady here, not in function
-      onDocumentReadyJavascript += onDocumentReadys[i].render();
+      onDocumentReadyJavascript += onDocumentReadys[i].render(tags);
     }
 
+    var onSpecificPageLoadJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'lifecycle',name: 'viewActivated',},handler: function(data) {console.log('Page', data.name, 'was activated.'); if (PAGES_WE_CARE_ABOUT.contians(data.name) {})},});"
+    console.log("THIS.inHeaderJavascript", inHeaderJavascript)
     //wrap onDocumentReadyJavascript in an on document ready
-    onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '})'
+    onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
+    console.log("THIS.onDocumentReadyJavascript", onDocumentReadyJavascript)
 
     //combine inHeaders and onDocumentReadys
-    this.combinedJavascript = inHeaders + onDocumentReadys;
-
+    this.combinedJavascript = inHeaderJavascript + onDocumentReadyJavascript;
+    console.log("THIS.COMBINEDJAVASCRIPT", this.combinedJavascript)
 
     //getting original Javascript sections
     var token = process.env.API_TOKEN;
-    console.log("PROJECT ID++++++++++++++++++++++++++++++++++++++++++++++++", token)
     return rp({
                      uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
                      method: 'GET',
@@ -98,7 +100,6 @@ module.exports = {
      })
   },
   buildJavascript: function(response) {
-    console.log("************************************", response)
     var j = JSON.parse(response).project_javascript;
 
 
@@ -124,5 +125,40 @@ module.exports = {
            "Content-Type": "application/json"
          }
        })
+  },
+  getTagOptions: function(project) {
+    this.project = project;
+    return Tag.find({'hasCallback': true});
+  },
+  getOptions: function(tags) {
+        //get names of options
+        tags.map(function(item) {
+          return item.name;
+        });
+
+        //inHeader/onDocumentReady should intuitively come first
+        tags.unshift("inHeader");
+        tags.unshift("onDocumentReady");
+
+        //save current tags
+        this.tags = tags;
+
+        //make call to optimizely for all pages associated with the id
+        var token = process.env.API_TOKEN;
+        return rp({
+             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.project.projectId,
+             method: 'GET',
+             headers: {
+               "Token": token,
+               "Content-Type": "application/json"
+             }
+           })
+
+        //send info
+        //res.setHeader('Content-Type', 'application/json');
+        //res.send(JSON.stringify(tags));
+  },
+  addProjectOptions: function(data) {
+    return data;
   }
 }
