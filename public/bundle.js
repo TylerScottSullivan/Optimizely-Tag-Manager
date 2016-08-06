@@ -124,12 +124,12 @@ var SearchBar = React.createClass({
     console.log('got initial state');
     return {
       modalIsOpen: false,
-      name: null,
-      tagDescription: null,
-      fields: null,
+      name: '',
+      tagDescription: '',
+      fields: '',
       approved: true,
-      custom: null,
-      trackingTrigger: null,
+      custom: '',
+      trackingTrigger: 'inHeader',
       projectId: "6668600890",
       active: false
     };
@@ -154,8 +154,10 @@ var SearchBar = React.createClass({
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
-    data.name = this.state.name, data.tagDescription = this.state.tagDescription;
-    data.approved = this.state.true, data.custom = this.state.custom;
+    data.name = this.state.name;
+    data.tagDescription = this.state.tagDescription;
+    data.approved = this.state.approved;
+    data.custom = this.state.custom;
 
     return $.ajax({
       url: '/customSnippet',
@@ -168,12 +170,19 @@ var SearchBar = React.createClass({
         console.error("Err posting", err.toString());
       }
     });
+    this.setState({ modalIsOpen: false });
   },
 
   onChange: function onChange(e) {
     var newState = Object.assign({}, this.state);
     newState[e.target.name] = e.target.value;
     this.setState(newState);
+  },
+
+  onChangeSnippet: function onChangeSnippet(newVal) {
+    this.setState({
+      custom: newVal
+    });
   },
 
   render: function render() {
@@ -241,10 +250,12 @@ var SearchBar = React.createClass({
                   className: 'editor',
                   mode: 'javascript',
                   theme: 'tomorrow',
-                  name: 'UNIQUE_ID_OF_DIV',
+                  name: 'custom',
                   height: '120px',
                   width: '620px',
-                  editorProps: { $blockScrolling: true }
+                  editorProps: { $blockScrolling: true },
+                  value: this.state.custom,
+                  onChange: this.onChangeSnippet
                 })
               ),
               React.createElement(
@@ -261,7 +272,7 @@ var SearchBar = React.createClass({
                 { className: 'flex--1' },
                 ' Please add the name of your snippet. '
               ),
-              React.createElement('input', { value: this.state.name, onChange: this.onChange }),
+              React.createElement('input', { name: 'name', value: this.state.name, onChange: this.onChange }),
               React.createElement(
                 'div',
                 { className: 'flex' },
@@ -276,7 +287,7 @@ var SearchBar = React.createClass({
                 { className: 'flex--1' },
                 ' Please add the description of your tag below. '
               ),
-              React.createElement('input', { value: this.state.tagDescription, onChange: this.onChange }),
+              React.createElement('input', { name: 'tagDescription', value: this.state.tagDescription, onChange: this.onChange }),
               React.createElement(
                 'div',
                 { className: 'flex' },
@@ -311,7 +322,7 @@ var SearchBar = React.createClass({
               ),
               React.createElement(
                 'select',
-                { className: 'form-control', name: 'trackingTrigger', value: this.state.active, onChange: this.onChange },
+                { className: 'form-control', name: 'active', value: this.state.active, onChange: this.onChange },
                 React.createElement(
                   'option',
                   { value: 'inHeader' },

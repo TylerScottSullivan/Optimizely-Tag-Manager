@@ -79,12 +79,12 @@ var SearchBar = React.createClass({
 	  	console.log('got initial state')
 	    return {
         modalIsOpen: false,
-        name: null,
-        tagDescription: null,
-        fields: null,
+        name: '',
+        tagDescription: '',
+        fields: '',
         approved: true,
-        custom: null,
-        trackingTrigger: null,
+        custom: '',
+        trackingTrigger: 'inHeader',
         projectId: "6668600890",
         active: false
       };
@@ -109,10 +109,10 @@ var SearchBar = React.createClass({
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
       data.projectId = this.state.projectId;
-      data.name = this.state.name,
-      data.tagDescription = this.state.tagDescription
-      data.approved = this.state.true,
-      data.custom = this.state.custom
+      data.name = this.state.name;
+      data.tagDescription = this.state.tagDescription;
+      data.approved = this.state.approved;
+      data.custom = this.state.custom;
 
       return $.ajax({
         url: '/customSnippet',
@@ -124,12 +124,19 @@ var SearchBar = React.createClass({
           console.error("Err posting", err.toString());
         }
       });
+      this.setState({modalIsOpen: false});
     },
 
     onChange: function(e) {
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
       this.setState(newState);
+    },
+
+    onChangeSnippet: function(newVal) {
+        this.setState({
+          custom: newVal
+        });
     },
 
 	  render: function() {
@@ -159,24 +166,26 @@ var SearchBar = React.createClass({
 					      <div className="editor">
 					        <AceEditor
 					        	className="editor"
-							    mode="javascript"
-							    theme="tomorrow"
-							    name="UNIQUE_ID_OF_DIV"
-							    height="120px"
-							    width="620px"
-							    editorProps={{$blockScrolling: true}}
-							  />
+  							    mode="javascript"
+  							    theme="tomorrow"
+  							    name="custom"
+  							    height="120px"
+  							    width="620px"
+  							    editorProps={{$blockScrolling: true}}
+                    value={this.state.custom}
+                    onChange={this.onChangeSnippet}
+                  />
 						  </div>
               <div className="flex">
                      <div className="flex--1 sd-headsmall"> Name</div>
                 </div>
                 <div className="flex--1"> Please add the name of your snippet. </div>
-                <input value={this.state.name} onChange={this.onChange}/>
+                <input name='name' value={this.state.name} onChange={this.onChange}/>
 				   		  <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Description</div>
 				          </div>
 				          <div className="flex--1"> Please add the description of your tag below. </div>
-				          <input value={this.state.tagDescription} onChange={this.onChange}/>
+				          <input name='tagDescription' value={this.state.tagDescription} onChange={this.onChange}/>
 						    <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Called On: </div>
 				            </div>
@@ -187,7 +196,7 @@ var SearchBar = React.createClass({
 				            <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
 				            </div>
-						    <select className="form-control" name='trackingTrigger' value={this.state.active} onChange={this.onChange}>
+						    <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
 						      <option value='inHeader'>Enabled</option>
 						      <option value='onPageLoad'>Disabled</option>
 						    </select>

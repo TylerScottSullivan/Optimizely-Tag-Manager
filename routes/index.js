@@ -37,15 +37,16 @@ router.post('/request', function(req, res, next) {
 })
 
 router.post('/customSnippet', function(req, res, next) {
+  console.log('req.body', req.body)
   var t = new Tag({
     name: req.body.name,
     tagDescription: req.body.tagDescription,
     fields: null,
     approved: true,
-    custom: req.body.snippet,
-    trackingTrigger: this.body.trackingTrigger,
-    projectId: this.body.projectId,
-    active: this.body.active
+    custom: req.body.custom,
+    trackingTrigger: req.body.trackingTrigger,
+    projectId: req.body.projectId,
+    active: req.body.active
   })
   t.save(function(err, tag) {
     if (err) {
