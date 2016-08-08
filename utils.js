@@ -7,17 +7,22 @@ var Tag = require('./models/models').Tag;
 var rp = require('request-promise');
 var snippets = require('./snippets')
 var findOrCreate = require('mongoose-findorcreate')
-fs = require('fs');
+var Handlebars = require('handlebars')
 
 module.exports = {
   body: null,
   project: null,
   findMaster: function(project) {
     this.project = project;
-    return Master.findOne({"name": this.body.type})
+    return Master.find({})
   },
-  createTag: function(master) {
+  createTag: function(masters) {
+    //storing all masters
+    this.masters = masters;
     var fields = [];
+    var master = masters.filter(function(item) {
+      return item.name === this.body.type
+    }.bind(this))[0];
     for(var i = 0; i < master.tokens.length; i++) {
       console.log("WOOOOOOOO THESE ARE MY MASTER TOKENS", master.tokens[i], i)
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
@@ -79,15 +84,13 @@ module.exports = {
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
-      inHeaderJavascript += inHeaders[i].render(tags);
+      inHeaderJavascript = inHeaders[i].render(tags, this.masters);
     }
     var onDocumentReadyJavascript = '';
     for(var i = 0; i < onDocumentReadys.length; i++) {
       //TODO: wrap this in onDocumentReady here, not in function
-      onDocumentReadyJavascript += onDocumentReadys[i].render(tags);
+      onDocumentReadyJavascript = onDocumentReadys[i].render(tags, this.masters);
     }
-
-    //object of pages to ids
     var pagesToIds = {'select_dropdown_1': "6824293401", "shopping_cart": "6824330423"}
 
 
@@ -138,8 +141,16 @@ module.exports = {
       originalJavascriptStartSection = j.slice(0, originalJavascriptStartSectionIndex);
     }
 
+    //TODO: getEndSection
+    originalJavascriptEndSectionIndex = j.indexOf('\n//--------------------HorizonsJavascriptEnd--------------------') + 64;
+    var originalJavascriptEndSection = '';
+    if (originalJavascriptEndSectionIndex !== -1) {
+      originalJavascriptEndSection = j.slice(originalJavascriptEndSectionIndex)
+      console.log("THIS IS THE ORIGINAL", originalJavascriptEndSection)
+    }
+
     //add our javascript piece to the originalJavascriptStartSection
-    var finalJavascript = originalJavascriptStartSection + "//--------------------HorizonsJavascriptStart--------------------\n" + this.combinedJavascript;
+    var finalJavascript = originalJavascriptStartSection + "//--------------------HorizonsJavascriptStart--------------------\n" + this.combinedJavascript + '\n//--------------------HorizonsJavascriptEnd--------------------' + originalJavascriptEndSection;
     var token = process.env.API_TOKEN;
     console.log("Javascript", finalJavascript)
     return rp({
@@ -189,38 +200,15 @@ module.exports = {
   addProjectOptions: function(data) {
     return data;
   },
-  split: function(master) {
-    var code = master.nonApprovedCode;
-    for(var i = 0; i < master.tokens.length; i++) {
-      while(code.indexOf(master.tokens[i].tokenCode) !== -1) {
-        var tokenIndex = code.indexOf(master.tokens[i].tokenCode);
-        var beforeTokenCode = code.slice(0, tokenIndex);
-        var afterTokenCode = code.slice(tokenIndex + master.tokens[i].tokenCode.length);
-        code = beforeTokenCode + "mappedFields[" + master.tokens[i].tokenName + "]" + afterTokenCode;
+  approve: function(master) {
+    //change approved to true
+    master.approved = true;
+    master.save(function(err, master) {
+      if (err) console.log(err, "error in approve of utils")
+      else {
+        console.log("THIS IS THE MASTER AFTER UPDATE IN APPROVE OF UTILS", master);
+        return master;
       }
-    };
-    while(code.indexOf(master.callbackCode) !== -1) {
-        var callbackIndex = code.indexOf(master.callbackCode);
-        var beforeCallbackCode = code.slice(0, callbackIndex);
-        var afterCallbackCode = code.slice(callbackIndex + master.callbackCode.length);
-        code = beforeCallbackCode + 'callback' + afterCallbackCode;
-    }
-    // create the new snippet file
-    // write to the new snippet file
-    // read the index file
-    // write to the index file
-    var finalFunctionalCode = 'module.exports = function(fields, callback) {var mappedFields = {};for (var i = 0; i < fields.length; i++) {mappedFields[fields[i].tokenName] = fields[i].tokenValue;};var ret = \'' + code + '\'; return ret;};'
-    var newstr = finalFunctionalCode.replace(/[^\x20-\x7E]/gmi, "")
-
-    fs.readFile('./snippets/index.js', (err, data) => {
-      var lastIndex = data.indexOf("}");
-      var beforeIndex = data.slice(0, lastIndex);
-      var afterIndex = data.slice(lastIndex);
-      var writeCode = beforeIndex + master.name + ": require('./" + master.name + "')," + afterIndex;
-      fs.writeFile('./snippets/index.js', writeCode, (err) => {
-        if (err) console.log("err", err)
-        fs.writeFile('./snippets/' + master.name + '.js', newstr);
-      })
-    });
+    })
   }
 }

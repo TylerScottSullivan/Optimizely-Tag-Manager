@@ -1,6 +1,7 @@
 var mongoose = require('mongoose');
 var findOrCreate = require('mongoose-findorcreate')
 var snippets = require('../snippets')
+var Handlebars = require('handlebars')
 
 var projectSchema = mongoose.Schema({
   projectId: String,
@@ -19,15 +20,16 @@ var tagSchema = mongoose.Schema({
   custom: String,
   rank: Number,
   projectId: String,
-  approved: Boolean,
+  active: Boolean,
   hasCallback: Boolean,
   callbacks: Array,
   pageName: String,
   eventName: String
 })
 
-
-tagSchema.methods.render = function(tags) {
+//tags, masters, innerCallback
+tagSchema.methods.render = function(tags, masters) {
+  //data structured {tags:, masters:, innerCallback:, template:}
   var filtered = [];
   if (tags) {
      filtered = tags.filter(function(item) {
@@ -37,9 +39,25 @@ tagSchema.methods.render = function(tags) {
 
   var innerCallback = '';
   for (var i = 0; i < filtered.length; i++) {
-    innerCallback += filtered[i].render(tags);
+    innerCallback += filtered[i].render(tags, masters);
   }
-  return snippets[this.name](this.fields, this.trackingTrigger, innerCallback);
+  var master = masters.filter(function(item) {
+    return this.name === item.name
+  }.bind(this))[0]
+
+
+  var handleBarsFields = {};
+
+  for (var i = 0; i < this.fields.length; i++) {
+    handleBarsFields[this.fields[i].name] = this.fields[i].value;
+  }
+
+  handleBarsFields['callback'] = innerCallback;
+
+
+  var template = Handlebars.compile(master.template);
+  return template(handleBarsFields);
+  //return snippets[this.name](this.fields, this.trackingTrigger, innerCallback);
 }
 
 var masterSchema = mongoose.Schema({
@@ -49,8 +67,8 @@ var masterSchema = mongoose.Schema({
   tagDescription: String,
   hasCallback: Boolean,
   approved: Boolean,
-  nonApprovedCode: String,
-  callbackCode: String
+  callbackCode: String,
+  template: String
 })
 
 
