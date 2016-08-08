@@ -113,3 +113,11 @@ textarea {
 .tagdesc {
 	margin-bottom: 8px;
 }
+
+.validation {
+  border-color: red;
+}
+
+.warning {
+  color: red
+}

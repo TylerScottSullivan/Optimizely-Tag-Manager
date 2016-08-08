@@ -126,12 +126,13 @@ router.get('/download/:projectid', (req, res, next) => {
 // /updatetag/:projectid/:tagid
 // Post: updated information for tag
 router.post('/updatetag/:tagid', (req, res, next) => {
+  console.log('req.body ini the bad end', req.body)
   Tag.findById(req.params.tagid, function(err, tag) {
     if (err) {
       console.log('err updating tags', err)
     } else {
       // tag.name = req.body.name;
-      tag.fields = req.body.fields;
+      tag.fields = JSON.parse(req.body.fields);
       tag.approved = req.body.approved;
       // tag.tagDescription = req.body.tagDescription;
       tag.trackingTrigger = req.body.trackingTrigger;
@@ -152,6 +153,9 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
+  var signedRequest = req.query.signed_request;
+  var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
+
   Project.find({'projectId': userContext.context.environment.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))

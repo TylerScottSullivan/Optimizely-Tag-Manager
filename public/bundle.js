@@ -121,7 +121,6 @@ var SearchBar = React.createClass({
   displayName: 'SearchBar',
 
   getInitialState: function getInitialState() {
-    console.log('got initial state');
     return {
       modalIsOpen: false,
       name: '',
@@ -135,7 +134,7 @@ var SearchBar = React.createClass({
   },
 
   openModal: function openModal() {
-    console.log('opened modal');
+    // console.log('opened modal')
     this.setState({ modalIsOpen: true });
   },
 
@@ -270,7 +269,7 @@ var SearchBar = React.createClass({
                 { className: 'flex--1' },
                 ' Please add the name of your snippet. '
               ),
-              React.createElement('input', { name: 'name', value: this.state.name, onChange: this.onChange }),
+              React.createElement('input', { required: true, name: 'name', value: this.state.name, onChange: this.onChange }),
               React.createElement(
                 'div',
                 { className: 'flex' },
@@ -399,7 +398,7 @@ var MyTagsPage = React.createClass({
       _this.setState({
         splicedArray: newArray
       });
-      console.log('newArrayyy', _this.state.splicedArray);
+      // console.log('newArrayyy', this.state.splicedArray)
     }).catch(function (e) {
       console.log("Err: ", e);
     });
@@ -412,8 +411,8 @@ var MyTagsPage = React.createClass({
   },
 
   render: function render() {
-    console.log('splicedArray', this.state.splicedArray);
-    console.log('my sidepanelll', this.state.sidePanel);
+    // console.log('splicedArray', this.state.splicedArray)
+    // console.log('my sidepanelll', this.state.sidePanel)
     return React.createElement(
       'div',
       { className: 'flex height--1-1' },
@@ -438,8 +437,8 @@ var AvailableTagsPage = React.createClass({
   componentDidMount: function componentDidMount() {
     var _this2 = this;
 
-    console.log('availabletagspage mounted');
-    console.log(this.props, "props for availabletagspage");
+    // console.log('availabletagspage mounted')
+    // console.log(this.props, "props for availabletagspage")
     fetch('http://localhost:4001/master').then(function (response) {
       return response.json();
     }).then(function (response) {
@@ -455,8 +454,8 @@ var AvailableTagsPage = React.createClass({
     this.setState({
       sidePanel: rowinfo
     });
-    console.log(rowinfo, "rowinfo");
-    console.log(this.state.sidePanel, " sidePanel in state");
+    // console.log(rowinfo, "rowinfo")
+    // console.log(this.state.sidePanel, " sidePanel in state");
   },
 
   render: function render() {
@@ -488,7 +487,7 @@ var MyTableContent = React.createClass({
   render: function render() {
     var _this3 = this;
 
-    console.log('my table content splicedArray', this.props.splicedArray);
+    // console.log('my table content splicedArray', this.props.splicedArray)
     return React.createElement(
       'div',
       { className: 'flex--1 soft-double--sides' },
@@ -554,8 +553,8 @@ var AvailableTableContent = React.createClass({
 
 
   componentDidMount: function componentDidMount() {
-    console.log('availabletablecontent mounted');
-    console.log(this.props, "props for availabltable content");
+    // console.log('availabletablecontent mounted')
+    // console.log(this.props, "props for availabltable content")
     this.tableSort();
   },
 
@@ -570,7 +569,7 @@ var AvailableTableContent = React.createClass({
   render: function render() {
     var _this4 = this;
 
-    console.log("[AvailableTableContent props]", this.props.splicedArray);
+    // console.log("[AvailableTableContent props]", this.props.splicedArray);
     return React.createElement(
       'div',
       { className: 'flex--1 soft-double--sides' },
@@ -635,7 +634,7 @@ var MyTableRow = React.createClass({
   displayName: 'MyTableRow',
 
   render: function render() {
-    console.log(this.props, "props");
+    // console.log(this.props, "props")
     return React.createElement(
       'tr',
       { onClick: this.props.onSelect },
@@ -675,8 +674,8 @@ var AvailableTableRow = React.createClass({
   displayName: 'AvailableTableRow',
 
   render: function render() {
-    console.log('availabletablerow mounted');
-    console.log(this.props, "props for availabletablerow");
+    // 	console.log('availabletablerow mounted')
+    // console.log(this.props, "props for availabletablerow")
     return React.createElement(
       'tr',
       { onClick: this.props.onSelect },
@@ -736,19 +735,17 @@ var MySidePanel = React.createClass({
     }
   },
 
-  onUpdateTag: function onUpdateTag() {
+  onUpdate: function onUpdate() {
     var data = {};
-
-    data.fields = this.state.fields.map(function (field) {
+    // console.log('fields before', this.state.fields)
+    data.fields = JSON.stringify(this.state.fields.map(function (field) {
       var returnfield = {};
       returnfield[field.name] = field.value;
       return returnfield;
-    });
-
+    }));
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
-    console.log('updating tag', data);
 
     return $.ajax({
       url: '/updatetag/' + this.props.info._id,
@@ -779,7 +776,7 @@ var MySidePanel = React.createClass({
 
   onChangeTokens: function onChangeTokens(field, e) {
     var newState = Object.assign({}, this.state);
-    newState.tokens[field].value = e.target.value;
+    newState.fields[field].value = e.target.value;
     this.setState(newState);
   },
 
@@ -794,7 +791,7 @@ var MySidePanel = React.createClass({
     if (Object.keys(this.props.info).length !== 0) {
       return React.createElement(
         'div',
-        { className: 'sidepanel background--faint' },
+        { 'data-toggle': 'validator', className: 'sidepanel background--faint' },
         React.createElement(
           'h2',
           { className: 'push-double--bottom sp-headbig' },
@@ -887,7 +884,7 @@ var MySidePanel = React.createClass({
           null,
           React.createElement(
             'button',
-            { className: 'btn-uniform-add button button--highlight', onClick: this.onUpdateTag },
+            { className: 'btn-uniform-add button button--highlight', onClick: this.onUpdate },
             'Update Tag'
           )
         ),
@@ -920,7 +917,8 @@ var AvailableSidePanel = React.createClass({
       tokens: this.props.info.tokens,
       projectId: "6668600890",
       trackingTrigger: 'inHeader',
-      active: true
+      active: true,
+      errors: {}
     };
   },
 
@@ -933,10 +931,16 @@ var AvailableSidePanel = React.createClass({
     }
   },
 
-  onAddTag: function onAddTag() {
+  onAddTag: function onAddTag(e) {
+    e.preventDefault();
     var data = {};
+    var errors = {};
 
     this.state.tokens.map(function (token) {
+      if (!token.value) {
+        // Input validation
+        errors[token.tokenDisplayName] = token.tokenDisplayName + ' is required';
+      }
       data[token.tokenName] = token.value;
     });
     data.active = this.state.active;
@@ -947,19 +951,26 @@ var AvailableSidePanel = React.createClass({
     data.custom = this.props.info.custom;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    console.log('dataaaaa', data);
 
-    return $.ajax({
-      url: '/' + window.location.search,
-      type: 'POST',
-      data: data,
-      success: function success(data) {
-        console.log('Add tag successful');
-      },
-      error: function error(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
+    // console.log("errors", Object.keys(errors))
+
+    if (Object.keys(errors).length === 0) {
+      return $.ajax({
+        url: '/' + window.location.search,
+        type: 'POST',
+        data: data,
+        success: function success(data) {
+          console.log('Add tag successful');
+        },
+        error: function error(err) {
+          console.error("Err posting", err.toString());
+        }
+      });
+    } else {
+      this.setState({
+        errors: errors
+      });
+    }
   },
 
   onChangeTokens: function onChangeTokens(index, e) {
@@ -978,10 +989,12 @@ var AvailableSidePanel = React.createClass({
   },
 
   render: function render() {
+    var _this5 = this;
+
     if (Object.keys(this.props.info).length !== 0) {
       return React.createElement(
-        'div',
-        { className: 'sidepanel background--faint' },
+        'form',
+        { 'data-toggle': 'validator', className: 'sidepanel background--faint' },
         React.createElement(
           'h2',
           { className: 'push-double--bottom sp-headbig' },
@@ -1021,8 +1034,11 @@ var AvailableSidePanel = React.createClass({
         ),
         React.createElement('label', { className: 'label label--rule' }),
         this.state.tokens.map(function (token, item) {
-          return React.createElement(AvailableInputFields, { key: item, token: token, onChange: this.onChangeTokens.bind(this, item) });
-        }.bind(this)),
+          var err = _this5.state.errors[token.tokenDisplayName];
+          console.log(token.tokenDisplayName + ' has error: ' + err);
+          return React.createElement(AvailableInputFields, { key: item, error: err || false, token: token, onChange: _this5.onChangeTokens.bind(_this5, item), required: true });
+        }),
+        React.createElement('div', { className: 'help-block with-errors' }),
         React.createElement(
           'div',
           { className: 'flex' },
@@ -1106,7 +1122,8 @@ var MyInputFields = React.createClass({
   displayName: 'MyInputFields',
 
   render: function render() {
-    console.log(this.props, "props");
+    var error = this.props.error ? 'validation' : '';
+    console.log('error name', error);
     return React.createElement(
       'div',
       null,
@@ -1115,13 +1132,13 @@ var MyInputFields = React.createClass({
         { className: 'flex' },
         React.createElement(
           'div',
-          { className: 'flex--1 sd-headsmall' },
+          { className: 'flex--1 sd-headsmall', name: 'tokenName' },
           this.props.field.tokenName
         )
       ),
       React.createElement(
         'div',
-        null,
+        { name: 'description' },
         ' ',
         this.props.field.description,
         ' ',
@@ -1132,7 +1149,7 @@ var MyInputFields = React.createClass({
         ),
         ' '
       ),
-      React.createElement('input', { className: 'text-input width--200 text-input-styled', placeholder: this.props.field.placeholder, value: this.props.field.value, onChange: this.props.onChange })
+      React.createElement('input', { name: 'value', className: 'text-input width--200 text-input-styled {error}', placeholder: this.props.field.placeholder, value: this.props.field.value, onChange: this.props.onChange })
     );
   }
 });
@@ -1141,7 +1158,7 @@ var AvailableInputFields = React.createClass({
   displayName: 'AvailableInputFields',
 
   render: function render() {
-    console.log(this.props, "props");
+    var error = this.props.error ? 'validation' : '';
     return React.createElement(
       'div',
       null,
@@ -1167,7 +1184,12 @@ var AvailableInputFields = React.createClass({
         ),
         ' '
       ),
-      React.createElement('input', { className: 'text-input width--200 text-input-styled', placeholder: this.props.token.placeholder, value: this.props.token.value, onChange: this.props.onChange })
+      React.createElement('input', { required: 'true', className: 'text-input width--200 text-input-styled ' + error, placeholder: this.props.token.placeholder, value: this.props.token.value, onChange: this.props.onChange }),
+      this.props.error !== false ? React.createElement(
+        'div',
+        { 'class': 'warning' },
+        this.props.error
+      ) : null
     );
   }
 });
@@ -1207,8 +1229,7 @@ var NewTemplate = React.createClass({
 
   onSubmit: function onSubmit() {
     var data = {};
-    // console.log("[state]", this.state);
-    // console.log("[info]", this.props.info);
+
     this.state.tokens.map(function (token) {
       data[token.tokenName] = token.value;
     });
@@ -1220,7 +1241,6 @@ var NewTemplate = React.createClass({
     data.custom = this.props.info.custom;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    console.log('dataaaaa', data);
 
     return $.ajax({
       url: '/' + window.location.search,
