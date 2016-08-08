@@ -13,9 +13,5 @@ function v(e){function t(t){e[t]=function(){e._q.push([t].concat(Array.prototype
 if(!n._iq.hasOwnProperty(e)){n._iq[e]={_q:[]};v(n._iq[e])}return n._iq[e]};e.amplitude=n;\
 })(window,document);\
 amplitude.getInstance().init(" + id + ");"
-  if (loadedOnDocumentReady) {
-    return '$(document).ready(function(){' +ret+ '})'
-  } else {
-    return ret
-  }
+  return ret;
 }
