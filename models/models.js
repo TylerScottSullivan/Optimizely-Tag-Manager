@@ -20,7 +20,6 @@ var tagSchema = mongoose.Schema({
   rank: Number,
   projectId: String,
   active: Boolean,
-  approved: Boolean,
   hasCallback: Boolean,
   callbacks: Array,
   pageName: String,
