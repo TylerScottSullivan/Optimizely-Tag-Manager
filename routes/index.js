@@ -88,8 +88,8 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/deletetag/:tagid', function(req, res, next) {
-  console.log('tagid', req.params.tagid)
-  db.collection.deleteOne({"_id": req.params.tagid}, function(err, results) {
+  Tag.remove({"_id": req.params.tagid}, function(err, results) {
+    if (err) console.log('error deleting', err)
     console.log(results);
     res.status(200).send("ITS ALL GOOD IN THE HOOD")
   })
@@ -163,6 +163,51 @@ router.get('/options', function(req, res, next) {
          .catch(function(err) {
            console.log("Error at the end of /options", err)
          })
+})
+
+router.get('/template', function(req, res, next){
+  res.render('template')
+})
+
+router.post('/template', function(req, res, next) {
+  var tokens = [];
+  tokens.push({'tokenName': req.body.tokenName, 'tokenDisplayName': req.body.tokenDisplayName, 'tokenDescription': req.body.tokenDescription, 'tokenCode': '123456789'})
+  var m = new Master({
+    name: req.body.type,
+    displayName: req.body.displayName,
+    tokens: tokens,
+    tagDescription: req.body.description,
+    hasCallback: true,
+    approved: false,
+    nonApprovedCode: req.body.custom,
+    callbackCode: 'abcdefg'
+  })
+  m.save(function(err, master) {
+    if (err) console.log(error, "HEyyyyyy got an error");
+    else {
+      res.redirect('/')
+    }
+  })
+})
+
+router.get('/approve', function(req, res, next) {
+  Master.find({"approved": false}, function(err, masters) {
+    console.log(masters, "these are the masters hayyyyy")
+    res.render('templateApproval', {masters: masters})
+  })
+})
+
+router.post('/approve', function(req, res, next) {
+  var utils = require('../utils')
+  Master.findOne({'name': 'segment'})
+        .then(utils.split.bind(utils))
+        .then(function(response) {
+          console.log("THIS IS THE RESPONSE", response)
+          res.status(200).send('I am guccigucci')
+        })
+        .catch(function(err) {
+          console.log("Error at the end of /options", err)
+        })
 })
 
 module.exports = router;

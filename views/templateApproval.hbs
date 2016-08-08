@@ -1,0 +1,27 @@
+{{#each masters}}
+  <div class='name'>{{this.name}}</div>
+  {{#each this.tokens}}
+    <div>{{this.tokenName}}</div>
+    <div>{{this.tokenDisplayName}}</div>
+    <div>{{this.tokenDescription}}</div>
+    <div>{{this.tokenCode}}</div>
+  {{/each}}
+  <div>{{this.tagDescription}}</div>
+  <div>{{this.nonApprovedCode}}</div>
+{{/each}}
+
+<div class="button">Click me</div>
+
+<script>
+var text = $('.name').text();
+console.log(text);
+  $('.button').on("click", function(e) {
+    e.preventDefault();
+    $.ajax('http://localhost:4001/deletetag/57a7c062781dfd78391bee75', {
+      method: "POST",
+      success: function() {
+        console.log("WORKEDDDDDDD HAY")
+      }
+    })
+  })
+</script>

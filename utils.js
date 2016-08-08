@@ -7,6 +7,7 @@ var Tag = require('./models/models').Tag;
 var rp = require('request-promise');
 var snippets = require('./snippets')
 var findOrCreate = require('mongoose-findorcreate')
+fs = require('fs');
 
 module.exports = {
   body: null,
@@ -25,14 +26,14 @@ module.exports = {
     t = new Tag({
       name: master.name,
       fields: fields,
-      approved: true,
       tagDescription: master.tagDescription,
       trackingTrigger: this.body.trackingTrigger,
       custom: this.body.custom,
       projectId: this.project.projectId,
       active: this.body.active,
       hasCallback: master.hasCallback,
-      pageName: this.body.pageName
+      pageName: this.body.pageName,
+      eventName: this.body.eventName
     })
     return t.save()
   },
@@ -87,29 +88,24 @@ module.exports = {
     }
 
     //object of pages to ids
-    var pagesToIds = {'homepage': "6777018235", "appspot_page": "6824721001"}
+    var pagesToIds = {'select_dropdown_1': "6824293401", "shopping_cart": "6824330423"}
 
 
 
     //get all pages call
-    var onPageLoadsObject = {};
+    var onEventsObject = {};
     var marker = false;
-    for(var i = 0; i < onPageLoads.length; i++) {
+    for(var i = 0; i < onEvents.length; i++) {
       marker = true;
-      onPageLoadsObject[pagesToIds[onPageLoads[i].pageName]] = onPageLoads[i].render(tags);
+      onEventsObject[onEvents[i].eventName] = onEvents[i].render(tags);
     }
 
-    onPageLoadsObjectString = JSON.stringify(onPageLoadsObject);
-    onPageLoadsObjectString = "var onPageLoadsObjectFunction = function() {return " + onPageLoadsObjectString + ";};"
+    onEventsObjectString = JSON.stringify(onEventsObject);
+    onEventsObjectString = "var onEventsObjectFunction = function() {return " + onEventsObjectString + ";};"
 
-    //
-    // 'var x = function() {return {"8498593828"": ga(I am adobe(hello)), "29ry38473985938": segment(made up thing)}}'
-    //
-    // x()[data.id]
-
-    var onSpecificPageLoadJavascript = '';
+    var onSpecificEventJavascript = '';
     if (marker) {
-      onSpecificPageLoadJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'lifecycle',name: 'viewActivated',},handler: function(data) {console.log('Page', data.name, 'was activated.');onPageLoadsObjectFunction()[data.id]();}});"
+      onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');eval(onEventsObjectFunction()[data.id]);}});"
     }
     console.log("THIS.inHeaderJavascript", inHeaderJavascript)
     //wrap onDocumentReadyJavascript in an on document ready
@@ -117,7 +113,7 @@ module.exports = {
     console.log("THIS.onDocumentReadyJavascript", onDocumentReadyJavascript)
 
     //combine inHeaders and onDocumentReadys
-    this.combinedJavascript = onPageLoadsObjectString + inHeaderJavascript + onDocumentReadyJavascript + onSpecificPageLoadJavascript;
+    this.combinedJavascript = onEventsObjectString + inHeaderJavascript + onDocumentReadyJavascript + onSpecificEventJavascript;
     console.log("THIS.COMBINEDJAVASCRIPT", this.combinedJavascript)
 
     //getting original Javascript sections
@@ -192,5 +188,39 @@ module.exports = {
   },
   addProjectOptions: function(data) {
     return data;
+  },
+  split: function(master) {
+    var code = master.nonApprovedCode;
+    for(var i = 0; i < master.tokens.length; i++) {
+      while(code.indexOf(master.tokens[i].tokenCode) !== -1) {
+        var tokenIndex = code.indexOf(master.tokens[i].tokenCode);
+        var beforeTokenCode = code.slice(0, tokenIndex);
+        var afterTokenCode = code.slice(tokenIndex + master.tokens[i].tokenCode.length);
+        code = beforeTokenCode + "mappedFields[" + master.tokens[i].tokenName + "]" + afterTokenCode;
+      }
+    };
+    while(code.indexOf(master.callbackCode) !== -1) {
+        var callbackIndex = code.indexOf(master.callbackCode);
+        var beforeCallbackCode = code.slice(0, callbackIndex);
+        var afterCallbackCode = code.slice(callbackIndex + master.callbackCode.length);
+        code = beforeCallbackCode + 'callback' + afterCallbackCode;
+    }
+    // create the new snippet file
+    // write to the new snippet file
+    // read the index file
+    // write to the index file
+    var finalFunctionalCode = 'module.exports = function(fields, callback) {var mappedFields = {};for (var i = 0; i < fields.length; i++) {mappedFields[fields[i].tokenName] = fields[i].tokenValue;};var ret = \'' + code + '\'; return ret;};'
+    var newstr = finalFunctionalCode.replace(/[^\x20-\x7E]/gmi, "")
+
+    fs.readFile('./snippets/index.js', (err, data) => {
+      var lastIndex = data.indexOf("}");
+      var beforeIndex = data.slice(0, lastIndex);
+      var afterIndex = data.slice(lastIndex);
+      var writeCode = beforeIndex + master.name + ": require('./" + master.name + "')," + afterIndex;
+      fs.writeFile('./snippets/index.js', writeCode, (err) => {
+        if (err) console.log("err", err)
+        fs.writeFile('./snippets/' + master.name + '.js', newstr);
+      })
+    });
   }
 }

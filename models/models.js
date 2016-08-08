@@ -42,12 +42,15 @@ tagSchema.methods.render = function(tags) {
   return snippets[this.name](this.fields, this.trackingTrigger, innerCallback);
 }
 
-
 var masterSchema = mongoose.Schema({
   name: String,
+  displayName: String,
   tokens: Array,
   tagDescription: String,
-  hasCallback: Boolean
+  hasCallback: Boolean,
+  approved: Boolean,
+  nonApprovedCode: String,
+  callbackCode: String
 })
 
 
