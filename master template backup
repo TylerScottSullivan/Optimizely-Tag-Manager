@@ -1,0 +1,58 @@
+{
+    "_id": {
+        "$oid": "579a5b89dcba0f14a15aa50f"
+    },
+    "name": "ADOBE",
+    "displayName": "Adobe Analytics",
+    "hasCallback": true,
+    "tagDescription": "A tag for adobe",
+    "tokens": [
+        {
+            "tokenName": "READ_TOKEN",
+            "tokenDisplayName": "Read Token",
+            "description": "A read token for adobe"
+        },
+        {
+            "tokenName": "WRITE_TOKEN",
+            "tokenDisplayName": "Write Token",
+            "description": "A write token for adobe"
+        }
+    ]
+}
+{
+    "_id": {
+        "$oid": "579a5447dcba0f14a15aa0a8"
+    },
+    "name": "GA",
+    "displayName": "Google Universal Analytics",
+    "logo": "/images/google_universal_analytics.png",
+    "hasCallback": true,
+    "category": "Analytics",
+    "tagDescription": "Use this tag to insert the Google Universal Analytics tracking code into your website through Optimizely.",
+    "tokens": [
+        {
+            "tokenName": "ACCESS_TOKEN",
+            "tokenDisplayName": "Read Token",
+            "placeholder": "Ex. UA-########-#",
+            "description": "Please insert the tracking ID for Universal Analytics here.",
+            "learnmorelink": "https://support.google.com/analytics/answer/1008080?hl=en"
+        }
+    ]
+}
+
+{
+    "_id": {
+        "$oid": "57a351a2f36d2840aa64a3df"
+    },
+    "name": "GC",
+    "displayName": "Google Classic Analytics",
+    "hasCallback": true,
+    "tagDescription": "A google analytics classic tag",
+    "tokens": [
+        {
+            "tokenName": "ACCESS_TOKEN",
+            "tokenDisplayName": "Access Token",
+            "description": "Access token for google analytics classic"
+        }
+    ]
+}

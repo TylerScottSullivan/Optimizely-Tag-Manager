@@ -2,7 +2,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Modal = require('react-modal');
 var moment = require('moment');
-var reactace = require('react-ace');
+var react = require('react-ace');
 var Reactable = require('reactable');
 import { render } from 'react-dom';
 import brace from 'brace';
@@ -82,7 +82,6 @@ var SearchBar = React.createClass({
         name: '',
         tagDescription: '',
         fields: '',
-        approved: true,
         custom: '',
         trackingTrigger: 'inHeader',
         projectId: "6668600890",
@@ -111,20 +110,20 @@ var SearchBar = React.createClass({
       data.projectId = this.state.projectId;
       data.name = this.state.name;
       data.tagDescription = this.state.tagDescription;
-      data.approved = this.state.approved;
       data.custom = this.state.custom;
+      this.setState({modalIsOpen: false});
 
       return $.ajax({
         url: '/customSnippet',
         type: 'POST',
         data: data,
         success: function(data) {
-          console.log('Add custom tag successful')},
+          console.log('Add custom tag successful')
+        },
         error: function(err) {
           console.error("Err posting", err.toString());
         }
       });
-      this.setState({modalIsOpen: false});
     },
 
     onChange: function(e) {
@@ -239,6 +238,10 @@ var MyTagsPage = React.createClass({
 			var newArray = [];
 			var newObj = {};
 			for (var i = 0; i < this.state.downloadedProject.length; i++) {
+        //this is to render the custom tags
+        if (this.state.downloadedProject[i].name === 'custom') {
+          newArray.push(this.state.downloadedProject[i])
+        }
 				for (var j = 0; j < this.state.master.length; j++) {
 					if (this.state.downloadedProject[i].name === this.state.master[j].name) {
 						newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
@@ -249,6 +252,8 @@ var MyTagsPage = React.createClass({
 			this.setState({
 				splicedArray: newArray
 			})
+      console.log('newArrayyy', this.state.splicedArray)
+
 		}).catch((e) => {
       	console.log("Err: " , e);
     })
@@ -261,6 +266,8 @@ var MyTagsPage = React.createClass({
   },
 
   render: function() {
+    console.log('splicedArray', this.state.splicedArray)
+    console.log('my sidepanelll', this.state.sidePanel)
     return (
       <div className="flex height--1-1">
         <MyTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
@@ -328,6 +335,7 @@ var MyTableContent = React.createClass({
   },
 
   render: function() {
+    console.log('my table content splicedArray', this.props.splicedArray)
     return (
      	<div className="flex--1 soft-double--sides">
      	<SearchBar value={this.props.splicedArray}/>
@@ -438,8 +446,8 @@ var MySidePanel = React.createClass({
       info: this.props.info,
       fields: this.props.info.fields,
       projectId: "6668600890",
-      trackingTrigger: this.props.info.trackingTrigger,
-      active: this.props.info.active,
+      trackingTrigger: 'inHeader',
+      active: 'true',
       tagId: this.props.info._id
     };
   },
@@ -465,9 +473,10 @@ var MySidePanel = React.createClass({
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
+    console.log('updating tag', data)
 
     return $.ajax({
-      url: '/updatetag/' + this.state.tagId,
+      url: '/updatetag/' + this.props.info._id,
       type: 'POST',
       data: data,
       success: function(data) {
@@ -479,18 +488,15 @@ var MySidePanel = React.createClass({
   },
 
   onDelete: function() {
-
     return $.ajax({
-      url: '/',
-      type: 'deletetag/' + this.state.tagId,
-      data: {
-        tagid: this.state.tagId
-      },
+      url: '/deletetag/' + this.props.info._id,
+      type: 'POST',
+      // data: {},
       success: function(data) {
         console.log('delete tag successful')},
       error: function(err) {
         console.error("Err posting", err.toString());
-      }.bind(this)
+      }
     });
   },
 
@@ -536,8 +542,8 @@ var MySidePanel = React.createClass({
 		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
 		            </div>
 			        <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
-			          <option value='Enabled'>Enabled</option>
-			          <option value='Disabled'>Disabled</option>
+			          <option value='true'>Enabled</option>
+			          <option value='false'>Disabled</option>
 			        </select>
 				    <div>
 				    	<button className="btn-uniform-add button button--highlight" onClick={this.onUpdateTag}>Update Tag</button>
@@ -552,7 +558,6 @@ var MySidePanel = React.createClass({
 		}
 	}
 })
-
 
 
 var AvailableSidePanel = React.createClass({
@@ -577,8 +582,7 @@ var AvailableSidePanel = React.createClass({
 
   onAddTag: function() {
     var data = {};
-    // console.log("[state]", this.state);
-    // console.log("[info]", this.props.info);
+
     this.state.tokens.map(function(token){
       data[token.tokenName] = token.value
     })
@@ -590,7 +594,6 @@ var AvailableSidePanel = React.createClass({
     data.custom = this.props.info.custom;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    data.approved = true;
     console.log('dataaaaa', data)
 
     return $.ajax({
@@ -692,7 +695,7 @@ var AvailableInputFields = React.createClass({
 		console.log(this.props, "props")
 		return (
 			<div>
-	            <div className="flex">
+	          <div className="flex">
 	               <div className="flex--1 sd-headsmall">{this.props.token.tokenDisplayName}</div>
 	            </div>
 		        <div> {this.props.token.description} <a href={this.props.token.learnmorelink} target="_blank"> Learn More. </a> </div>
@@ -702,7 +705,126 @@ var AvailableInputFields = React.createClass({
 	}
 })
 
+var NewTemplate = React.createClass({
+  getInitialState: function() {
+    return {
+      active: null,
+      type: null,
+      displayName: null,
+      discription: null,
+      tokenName: null,
+      tokenDisplayName: null,
+      tokenDescription: null,
+      custom: null,
+      hascallback: null,
+      projectId: "6668600890",
+    };
+  },
 
+  onChangeTokens: function(index, e) {
+    var tokens = this.state.tokens;
+    tokens[index].value = e.target.value;
+    this.setState({
+      tokens: tokens
+    });
+  },
+
+//this change the enable and triggers
+  onChange: function(e) {
+    var newState = Object.assign({}, this.state);
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  },
+
+  onSubmit: function() {
+    var data = {};
+    // console.log("[state]", this.state);
+    // console.log("[info]", this.props.info);
+    this.state.tokens.map(function(token){
+      data[token.tokenName] = token.value
+    })
+    data.active = this.state.active;
+    data.trackingTrigger = this.state.trackingTrigger;
+    data.projectId = this.state.projectId;
+    data.type = this.props.info.name;
+    data.tagDescription = this.props.info.tagDescription;
+    data.custom = this.props.info.custom;
+    data.hasCallback = this.props.info.hasCallback;
+    data.callBacks = this.props.info.callBacks;
+    console.log('dataaaaa', data)
+
+    return $.ajax({
+      url: '/' + window.location.search,
+      type: 'POST',
+      data: data,
+      success: function(data) {
+        console.log('Add tag successful');
+
+      },
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    })
+  },
+
+  //change the language later
+	render: function () {
+		return (
+      <form method='post'>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Enter a name for snippet (please don't include spaces):</div>
+         <input type="text" className="text-input width--200 text-input-styled" name='type' />
+       </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Enter display name for snippet:</div>
+         <input type="text" className="text-input width--200 text-input-styled" name='displayName'/>
+       </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Enter description for snippet:</div>
+         <input type="text" className="text-input width--200 text-input-styled" name='description'/>
+       </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Enter a token name, code 123456789:</div>
+         <input type="text" className="text-input width--200 text-input-styled" name='tokenName'/>
+       </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Enter a token display name, code 123456789:</div>
+         <input type="text" className="text-input width--200 text-input-styled" name='tokenDisplayName' />
+       </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Enter a token description, code 123456789:</div>
+         <input type="text" className="text-input width--200 text-input-styled" name='tokenDescription'/>
+       </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Does your snippet take any callback?</div>
+         <select className="form-control" name='hasCallback' value={this.state.hasCallback} onChange={this.onChange}>
+           <option value='yes'>Yes</option>
+           <option value='no'>No</option>
+         </select>
+       </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Your callback code is abcdefg:</div>
+       </div>
+       <div className="form-group">
+       <div for="comment" className="flex--1 sd-headsmall">Enter your code</div>
+         <div className="editor">
+           <AceEditor
+             className="editor text-input width--200 text-input-styled"
+             mode="javascript"
+             theme="tomorrow"
+             name="custom"
+             height="1000px"
+             width="600px"
+             editorProps={{$blockScrolling: true}}
+             id="comment"
+           />
+        </div>
+       </div>
+       <button type="submit" onClick={this.onSubmit} className="btn-uniform-add button button--highlight">Submit</button>
+      </form>
+		)
+	}
+})
 
 
 ReactDOM.render((
@@ -711,7 +833,7 @@ ReactDOM.render((
       <IndexRedirect to="/myTags" />
       <Route path="/myTags" component={MyTagsPage}/>
       <Route path="/availableTags" component={AvailableTagsPage}/>
-      <Route path="/submitNewTemplate" component={AvailableTagsPage}/>
+      <Route path="/submitNewTemplate" component={NewTemplate}/>
     </Route>
   </Router>
 ), document.getElementById('root'))

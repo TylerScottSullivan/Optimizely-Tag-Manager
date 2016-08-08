@@ -27,7 +27,7 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Modal = require('react-modal');
 var moment = require('moment');
-var reactace = require('react-ace');
+var react = require('react-ace');
 var Reactable = require('reactable');
 
 
@@ -127,7 +127,6 @@ var SearchBar = React.createClass({
       name: '',
       tagDescription: '',
       fields: '',
-      approved: true,
       custom: '',
       trackingTrigger: 'inHeader',
       projectId: "6668600890",
@@ -156,8 +155,8 @@ var SearchBar = React.createClass({
     data.projectId = this.state.projectId;
     data.name = this.state.name;
     data.tagDescription = this.state.tagDescription;
-    data.approved = this.state.approved;
     data.custom = this.state.custom;
+    this.setState({ modalIsOpen: false });
 
     return $.ajax({
       url: '/customSnippet',
@@ -170,7 +169,6 @@ var SearchBar = React.createClass({
         console.error("Err posting", err.toString());
       }
     });
-    this.setState({ modalIsOpen: false });
   },
 
   onChange: function onChange(e) {
@@ -387,6 +385,10 @@ var MyTagsPage = React.createClass({
       var newArray = [];
       var newObj = {};
       for (var i = 0; i < _this.state.downloadedProject.length; i++) {
+        //this is to render the custom tags
+        if (_this.state.downloadedProject[i].name === 'custom') {
+          newArray.push(_this.state.downloadedProject[i]);
+        }
         for (var j = 0; j < _this.state.master.length; j++) {
           if (_this.state.downloadedProject[i].name === _this.state.master[j].name) {
             newObj = $.extend({}, _this.state.master[j], _this.state.downloadedProject[i]);
@@ -397,6 +399,7 @@ var MyTagsPage = React.createClass({
       _this.setState({
         splicedArray: newArray
       });
+      console.log('newArrayyy', _this.state.splicedArray);
     }).catch(function (e) {
       console.log("Err: ", e);
     });
@@ -409,6 +412,8 @@ var MyTagsPage = React.createClass({
   },
 
   render: function render() {
+    console.log('splicedArray', this.state.splicedArray);
+    console.log('my sidepanelll', this.state.sidePanel);
     return React.createElement(
       'div',
       { className: 'flex height--1-1' },
@@ -483,6 +488,7 @@ var MyTableContent = React.createClass({
   render: function render() {
     var _this3 = this;
 
+    console.log('my table content splicedArray', this.props.splicedArray);
     return React.createElement(
       'div',
       { className: 'flex--1 soft-double--sides' },
@@ -715,8 +721,8 @@ var MySidePanel = React.createClass({
       info: this.props.info,
       fields: this.props.info.fields,
       projectId: "6668600890",
-      trackingTrigger: this.props.info.trackingTrigger,
-      active: this.props.info.active,
+      trackingTrigger: 'inHeader',
+      active: 'true',
       tagId: this.props.info._id
     };
   },
@@ -742,9 +748,10 @@ var MySidePanel = React.createClass({
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
+    console.log('updating tag', data);
 
     return $.ajax({
-      url: '/updatetag/' + this.state.tagId,
+      url: '/updatetag/' + this.props.info._id,
       type: 'POST',
       data: data,
       success: function success(data) {
@@ -757,19 +764,16 @@ var MySidePanel = React.createClass({
   },
 
   onDelete: function onDelete() {
-
     return $.ajax({
-      url: '/',
-      type: 'deletetag/' + this.state.tagId,
-      data: {
-        tagid: this.state.tagId
-      },
+      url: '/deletetag/' + this.props.info._id,
+      type: 'POST',
+      // data: {},
       success: function success(data) {
         console.log('delete tag successful');
       },
-      error: function (err) {
+      error: function error(err) {
         console.error("Err posting", err.toString());
-      }.bind(this)
+      }
     });
   },
 
@@ -869,12 +873,12 @@ var MySidePanel = React.createClass({
           { className: 'form-control', name: 'active', value: this.state.active, onChange: this.onChange },
           React.createElement(
             'option',
-            { value: 'Enabled' },
+            { value: 'true' },
             'Enabled'
           ),
           React.createElement(
             'option',
-            { value: 'Disabled' },
+            { value: 'false' },
             'Disabled'
           )
         ),
@@ -931,8 +935,7 @@ var AvailableSidePanel = React.createClass({
 
   onAddTag: function onAddTag() {
     var data = {};
-    // console.log("[state]", this.state);
-    // console.log("[info]", this.props.info);
+
     this.state.tokens.map(function (token) {
       data[token.tokenName] = token.value;
     });
@@ -944,7 +947,6 @@ var AvailableSidePanel = React.createClass({
     data.custom = this.props.info.custom;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    data.approved = true;
     console.log('dataaaaa', data);
 
     return $.ajax({
@@ -1170,6 +1172,198 @@ var AvailableInputFields = React.createClass({
   }
 });
 
+var NewTemplate = React.createClass({
+  displayName: 'NewTemplate',
+
+  getInitialState: function getInitialState() {
+    return {
+      active: null,
+      type: null,
+      displayName: null,
+      discription: null,
+      tokenName: null,
+      tokenDisplayName: null,
+      tokenDescription: null,
+      custom: null,
+      hascallback: null,
+      projectId: "6668600890"
+    };
+  },
+
+  onChangeTokens: function onChangeTokens(index, e) {
+    var tokens = this.state.tokens;
+    tokens[index].value = e.target.value;
+    this.setState({
+      tokens: tokens
+    });
+  },
+
+  //this change the enable and triggers
+  onChange: function onChange(e) {
+    var newState = Object.assign({}, this.state);
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  },
+
+  onSubmit: function onSubmit() {
+    var data = {};
+    // console.log("[state]", this.state);
+    // console.log("[info]", this.props.info);
+    this.state.tokens.map(function (token) {
+      data[token.tokenName] = token.value;
+    });
+    data.active = this.state.active;
+    data.trackingTrigger = this.state.trackingTrigger;
+    data.projectId = this.state.projectId;
+    data.type = this.props.info.name;
+    data.tagDescription = this.props.info.tagDescription;
+    data.custom = this.props.info.custom;
+    data.hasCallback = this.props.info.hasCallback;
+    data.callBacks = this.props.info.callBacks;
+    console.log('dataaaaa', data);
+
+    return $.ajax({
+      url: '/' + window.location.search,
+      type: 'POST',
+      data: data,
+      success: function success(data) {
+        console.log('Add tag successful');
+      },
+      error: function error(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
+  },
+
+  //change the language later
+  render: function render() {
+    return React.createElement(
+      'form',
+      { method: 'post' },
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Enter a name for snippet (please don\'t include spaces):'
+        ),
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'type' })
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Enter display name for snippet:'
+        ),
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'displayName' })
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Enter description for snippet:'
+        ),
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'description' })
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Enter a token name, code 123456789:'
+        ),
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'tokenName' })
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Enter a token display name, code 123456789:'
+        ),
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'tokenDisplayName' })
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Enter a token description, code 123456789:'
+        ),
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'tokenDescription' })
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Does your snippet take any callback?'
+        ),
+        React.createElement(
+          'select',
+          { className: 'form-control', name: 'hasCallback', value: this.state.hasCallback, onChange: this.onChange },
+          React.createElement(
+            'option',
+            { value: 'yes' },
+            'Yes'
+          ),
+          React.createElement(
+            'option',
+            { value: 'no' },
+            'No'
+          )
+        )
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Your callback code is abcdefg:'
+        )
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { 'for': 'comment', className: 'flex--1 sd-headsmall' },
+          'Enter your code'
+        ),
+        React.createElement(
+          'div',
+          { className: 'editor' },
+          React.createElement(_reactAce2.default, {
+            className: 'editor text-input width--200 text-input-styled',
+            mode: 'javascript',
+            theme: 'tomorrow',
+            name: 'custom',
+            height: '1000px',
+            width: '600px',
+            editorProps: { $blockScrolling: true },
+            id: 'comment'
+          })
+        )
+      ),
+      React.createElement(
+        'button',
+        { type: 'submit', onClick: this.onSubmit, className: 'btn-uniform-add button button--highlight' },
+        'Submit'
+      )
+    );
+  }
+});
+
 ReactDOM.render(React.createElement(
   _reactRouter.Router,
   { history: _reactRouter.hashHistory },
@@ -1179,7 +1373,7 @@ ReactDOM.render(React.createElement(
     React.createElement(_reactRouter.IndexRedirect, { to: '/myTags' }),
     React.createElement(_reactRouter.Route, { path: '/myTags', component: MyTagsPage }),
     React.createElement(_reactRouter.Route, { path: '/availableTags', component: AvailableTagsPage }),
-    React.createElement(_reactRouter.Route, { path: '/submitNewTemplate', component: AvailableTagsPage })
+    React.createElement(_reactRouter.Route, { path: '/submitNewTemplate', component: NewTemplate })
   )
 ), document.getElementById('root'));
 

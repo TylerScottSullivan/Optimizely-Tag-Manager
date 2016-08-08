@@ -23,7 +23,6 @@ router.post('/request', function(req, res, next) {
     name: req.body.type,
     tagDescription: req.body.tagDescription,
     fields: fields,
-    approved: false,
     custom: req.body.snippet
   })
   t.save(function(err, tag) {
@@ -39,9 +38,10 @@ router.post('/request', function(req, res, next) {
 router.post('/customSnippet', function(req, res, next) {
   console.log('req.body', req.body)
   var t = new Tag({
-    name: req.body.name,
+    name: 'custom',
+    displayName: req.body.name,
     tagDescription: req.body.tagDescription,
-    fields: null,
+    fields: [],
     approved: true,
     custom: req.body.custom,
     trackingTrigger: req.body.trackingTrigger,
