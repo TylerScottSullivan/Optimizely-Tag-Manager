@@ -29,7 +29,6 @@ module.exports = {
       tagDescription: master.tagDescription,
       trackingTrigger: this.body.trackingTrigger,
       custom: this.body.custom,
-      rank: this.body.rank,
       projectId: this.project.projectId,
       active: this.body.active,
       hasCallback: master.hasCallback,

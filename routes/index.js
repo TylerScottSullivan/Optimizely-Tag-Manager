@@ -36,6 +36,28 @@ router.post('/request', function(req, res, next) {
   })
 })
 
+router.post('/customSnippet', function(req, res, next) {
+  console.log('req.body', req.body)
+  var t = new Tag({
+    name: req.body.name,
+    tagDescription: req.body.tagDescription,
+    fields: null,
+    approved: true,
+    custom: req.body.custom,
+    trackingTrigger: req.body.trackingTrigger,
+    projectId: req.body.projectId,
+    active: req.body.active
+  })
+  t.save(function(err, tag) {
+    if (err) {
+      console.log("Error in index.js line 49 saving custom snippet tag", err)
+    }
+    else {
+      res.status(200).send("Okay with saving the custom snippet")
+    }
+  })
+})
+
 router.post('/', function(req, res, next) {
 
   //getting the signedRequest from Optimizely
@@ -72,7 +94,6 @@ router.post('/deletetag/:tagid', function(req, res, next) {
     res.status(200).send("ITS ALL GOOD IN THE HOOD")
   })
 })
-
 
 // /masters
 // GET: gets all current master templates
