@@ -152,13 +152,14 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
-  Project.find({'projectId': userContext.context.environment.current_project})
+  Project.find({'projectId': 6668600890})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
          .then(function(response) {
-           console.log("THIS IS THE RESPONSE", response)
-           res.status(200).send('I am alright')
+            console.log("THIS IS THE EVENTS RESPONSE", response)
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(response)); //send an array of options
          })
          .catch(function(err) {
            console.log("Error at the end of /options", err)

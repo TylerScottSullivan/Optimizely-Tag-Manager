@@ -24,9 +24,7 @@ module.exports = {
       return item.name === this.body.type
     }.bind(this))[0];
     for(var i = 0; i < master.tokens.length; i++) {
-      console.log("WOOOOOOOO THESE ARE MY MASTER TOKENS", master.tokens[i], i)
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
-      console.log("HAYYYYYYYY THESE ARE MY FIELDS", fields, i)
     }
     t = new Tag({
       name: master.name,
@@ -100,7 +98,7 @@ module.exports = {
     var marker = false;
     for(var i = 0; i < onEvents.length; i++) {
       marker = true;
-      onEventsObject[onEvents[i].eventName] = onEvents[i].render(tags);
+      onEventsObject[onEvents[i].eventName] = onEvents[i].render(tags, this.masters);
     }
 
     onEventsObjectString = JSON.stringify(onEventsObject);
@@ -110,14 +108,11 @@ module.exports = {
     if (marker) {
       onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');eval(onEventsObjectFunction()[data.id]);}});"
     }
-    console.log("THIS.inHeaderJavascript", inHeaderJavascript)
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
-    console.log("THIS.onDocumentReadyJavascript", onDocumentReadyJavascript)
 
     //combine inHeaders and onDocumentReadys
     this.combinedJavascript = onEventsObjectString + inHeaderJavascript + onDocumentReadyJavascript + onSpecificEventJavascript;
-    console.log("THIS.COMBINEDJAVASCRIPT", this.combinedJavascript)
 
     //getting original Javascript sections
     var token = process.env.API_TOKEN;
@@ -146,13 +141,11 @@ module.exports = {
     var originalJavascriptEndSection = '';
     if (originalJavascriptEndSectionIndex !== -1) {
       originalJavascriptEndSection = j.slice(originalJavascriptEndSectionIndex)
-      console.log("THIS IS THE ORIGINAL", originalJavascriptEndSection)
     }
 
     //add our javascript piece to the originalJavascriptStartSection
     var finalJavascript = originalJavascriptStartSection + "//--------------------HorizonsJavascriptStart--------------------\n" + this.combinedJavascript + '\n//--------------------HorizonsJavascriptEnd--------------------' + originalJavascriptEndSection;
     var token = process.env.API_TOKEN;
-    console.log("Javascript", finalJavascript)
     return rp({
          uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
          method: 'PUT',
@@ -171,13 +164,13 @@ module.exports = {
   },
   getOptions: function(tags) {
         //get names of options
-        tags.map(function(item) {
+        this.tagNames = tags.map(function(item) {
           return item.name;
         });
 
         //inHeader/onDocumentReady should intuitively come first
-        tags.unshift("inHeader");
-        tags.unshift("onDocumentReady");
+        this.tagNames.unshift("inHeader");
+        this.tagNames.unshift("onDocumentReady");
 
         //save current tags
         this.tags = tags;
@@ -185,7 +178,7 @@ module.exports = {
         //make call to optimizely for all pages associated with the id
         var token = process.env.API_TOKEN;
         return rp({
-             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.project.projectId,
+             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + 6668600890,
              method: 'GET',
              headers: {
                "Token": token,
@@ -198,7 +191,12 @@ module.exports = {
         //res.send(JSON.stringify(tags));
   },
   addProjectOptions: function(data) {
-    return data;
+    console.log("TAGS", this.tagNames)
+    console.log("DATA", data)
+    var eventNames = JSON.parse(data).map(function(item) {
+      return item.api_name;
+    })
+    return this.tagNames.concat(eventNames);
   },
   approve: function(master) {
     //change approved to true
