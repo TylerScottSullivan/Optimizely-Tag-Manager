@@ -135,29 +135,23 @@ router.get('/download/:projectid', (req, res, next) => {
 // /updatetag/:projectid/:tagid
 // Post: updated information for tag
 router.post('/updatetag/:tagid', (req, res, next) => {
-  console.log('req.body ini the bad end', req.body)
-  Tag.findById(req.params.tagid, function(err, tag) {
-    if (err) {
-      console.log('err updating tags', err)
-    } else {
-      // tag.name = req.body.name;
-      tag.fields = JSON.parse(req.body.fields);
-      tag.approved = req.body.approved;
-      // tag.tagDescription = req.body.tagDescription;
-      tag.trackingTrigger = req.body.trackingTrigger;
-      tag.custom = req.body.custom;
-      tag.rank = req.body.rank;
-      tag.projectId = req.body.projectId;
-      tag.active = req.body.active;
-      tag.save(function(err) {
-        if (err) {
-          console.log("err saving tag in update", err)
-        } else {
-          res.send("update success")
-        }
-      })
-    }
-  })
+  var utils = require('../utils')
+  utils.body = req.body;
+  utils.tagid = req.params.tagid;
+  Project.findById(req.query.projectId)
+         .then(utils.findMaster.bind(utils))
+         .then(utils.findTag.bind(utils))
+         .then(utils.updateTag.bind(utils))
+         .then(utils.getProject.bind(utils))
+         .then(utils.populateProject.bind(utils))
+         .then(utils.getJavascript.bind(utils))
+         .then(utils.buildJavascript.bind(utils))
+         .then(function(response) {
+            res.status(200).send("Tag has been updated.")
+         })
+         .catch(function(err) {
+           console.log("Error at the end of /update", err)
+         })
 })
 
 router.get('/options', function(req, res, next) {

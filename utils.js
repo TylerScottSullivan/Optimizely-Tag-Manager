@@ -12,6 +12,7 @@ var Handlebars = require('handlebars')
 module.exports = {
   body: null,
   project: null,
+  tagid: null,
   findMaster: function(project) {
     this.project = project;
     return Master.find({})
@@ -66,6 +67,10 @@ module.exports = {
     var tags = this.project.tags;
 
 //do everything separately
+
+    tags = tags.filter(function(item) {
+      return item.active === true;
+    })
 
     //wrap page type things
     var inHeaders = tags.filter(function(item){
@@ -202,7 +207,13 @@ module.exports = {
     return this.tagNames.concat(eventNames);
   },
   getProject: function(projectId, tagid) {
-    this.tagid = tagid;
+    if (tagid) {
+      this.tagid = tagid;
+    }
+    //using this method for both passing in a projectId or a tag
+    if(projectId.projectId) {
+      projectId = projectId.projectId
+    }
     return Project.findOne({'projectId': projectId})
   },
   removeTagFromProject: function(project) {
@@ -211,5 +222,23 @@ module.exports = {
     project.tags.splice(project.tags.indexOf(this.tagid), 1);
     console.log("project.tags 2", project.tags)
     return project.save();
+  },
+  setMaster: function(master) {
+    //set the master and find the correct tag
+    this.master = master;
+    return Tag.findById(req.params.tagid)
+  },
+  updateTag: function(tag) {
+    // tag.name = req.body.name;
+    for(var i = 0; i < this.master.tokens.length; i++) {
+      fields.push({'name': this.master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
+    }
+    tag.fields = fields;
+    tag.approved = this.body.approved;
+    tag.trackingTrigger = this.body.trackingTrigger;
+    tag.template = this.body.template;
+    tag.projectId = this.body.projectId;
+    tag.active = this.body.active;
+    return tag.save();
   }
 }
