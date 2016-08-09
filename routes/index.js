@@ -126,12 +126,13 @@ router.get('/download/:projectid', (req, res, next) => {
 // /updatetag/:projectid/:tagid
 // Post: updated information for tag
 router.post('/updatetag/:tagid', (req, res, next) => {
+  console.log('req.body ini the bad end', req.body)
   Tag.findById(req.params.tagid, function(err, tag) {
     if (err) {
       console.log('err updating tags', err)
     } else {
       // tag.name = req.body.name;
-      tag.fields = req.body.fields;
+      tag.fields = JSON.parse(req.body.fields);
       tag.approved = req.body.approved;
       // tag.tagDescription = req.body.tagDescription;
       tag.trackingTrigger = req.body.trackingTrigger;
@@ -152,13 +153,18 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
+
+  var signedRequest = req.query.signed_request;
+  var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
+
   Project.find({'projectId': userContext.context.environment.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
          .then(function(response) {
-           console.log("THIS IS THE RESPONSE", response)
-           res.status(200).send('I am alright')
+            console.log("THIS IS THE EVENTS RESPONSE", response)
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(response)); //send an array of options
          })
          .catch(function(err) {
            console.log("Error at the end of /options", err)
@@ -179,7 +185,7 @@ router.post('/template', function(req, res, next) {
     tagDescription: req.body.description,
     hasCallback: true,
     approved: false,
-    nonApprovedCode: req.body.custom,
+    template: req.body.custom,
     callbackCode: 'abcdefg'
   })
   m.save(function(err, master) {
@@ -192,17 +198,19 @@ router.post('/template', function(req, res, next) {
 
 router.get('/approve', function(req, res, next) {
   Master.find({"approved": false}, function(err, masters) {
-    console.log(masters, "these are the masters hayyyyy")
     res.render('templateApproval', {masters: masters})
   })
 })
 
 router.post('/approve', function(req, res, next) {
   var utils = require('../utils')
+  //TODO this needs to be changed to incorporate master from form
+  //find the master to UPDATE
+  //change it's template to handlebars compiled code
+  //change approved to true
   Master.findOne({'name': 'segment'})
-        .then(utils.split.bind(utils))
+        .then(utils.approve.bind(utils))
         .then(function(response) {
-          console.log("THIS IS THE RESPONSE", response)
           res.status(200).send('I am guccigucci')
         })
         .catch(function(err) {

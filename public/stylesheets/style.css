@@ -128,3 +128,11 @@ textarea {
 	border-radius: 2px;
 	border-color: #97C70A;
 }
+
+.validation {
+  border-color: red;
+}
+
+.warning {
+  color: red
+}
