@@ -201,7 +201,7 @@ module.exports = {
   approve: function(master) {
     //change approved to true
     master.approved = true;
-    master.save(function(err, master) {
+    return master.save(function(err, master) {
       if (err) console.log(err, "error in approve of utils")
       else {
         console.log("THIS IS THE MASTER AFTER UPDATE IN APPROVE OF UTILS", master);
