@@ -21,7 +21,7 @@ module.exports = {
     this.masters = masters;
     var fields = [];
     var master = masters.filter(function(item) {
-      return item.name === this.body.type
+      return item.name === this.body.name
     }.bind(this))[0];
     for(var i = 0; i < master.tokens.length; i++) {
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
