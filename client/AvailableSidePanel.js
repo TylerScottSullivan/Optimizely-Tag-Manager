@@ -53,12 +53,15 @@ var AvailableSidePanel = React.createClass({
         data: data,
         success: function(data) {
           console.log('Add tag successful');
+          this.props.onDownload(this.props.downloadedProject.push(data))
+          console.log('datapushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhed')
         },
         error: function(err) {
           console.error("Err posting", err.toString());
         }
       });
     } else {
+      console.log('there is an error omg');
       this.setState({
         errors: errors
       });

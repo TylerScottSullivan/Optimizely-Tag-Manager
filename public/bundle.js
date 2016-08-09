@@ -105,12 +105,15 @@ var AvailableSidePanel = React.createClass({
         data: data,
         success: function success(data) {
           console.log('Add tag successful');
+          this.props.onDownload(this.props.downloadedProject.push(data));
+          console.log('datapushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhed');
         },
         error: function error(err) {
           console.error("Err posting", err.toString());
         }
       });
     } else {
+      console.log('there is an error omg');
       this.setState({
         errors: errors
       });
@@ -423,11 +426,11 @@ var AvailableTableRow = React.createClass({
       ),
       this.props.rowinfo.added ? React.createElement(
         "td",
-        { id: "row-centered", align: "center" },
+        { id: "row-centered" },
         "   Added "
       ) : React.createElement(
         "td",
-        { id: "row-centered", align: "center" },
+        { id: "row-centered" },
         " Unadded "
       )
     );
