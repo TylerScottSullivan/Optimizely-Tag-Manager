@@ -41,6 +41,7 @@ const customStyles = {
 };
 
 var App = React.createClass({
+  console.log("nice");
   getInitialState: function() {
     return {
     	masters: [],
