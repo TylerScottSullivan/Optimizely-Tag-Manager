@@ -88,16 +88,23 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/deletetag/:tagid', function(req, res, next) {
-  Tag.remove({"_id": req.params.tagid}, function(err, results) {
-    if (err) console.log('error deleting', err)
-    console.log(results);
-    res.status(200).send("ITS ALL GOOD IN THE HOOD")
-  })
+  Tag.remove({"_id": req.params.tagid})
+     .then(utils.getProject.bind(utils))
+     .then(utils.populateProject.bind(utils))
+     .then(utils.getJavascript.bind(utils))
+     .then(utils.buildJavascript.bind(utils))
+     .then(function(response) {
+       res.status(200).send('I am alright')
+     })
+     .catch(function(err) {
+       console.log("Error at the end of /", err)
+     })
 })
 
 // /masters
 // GET: gets all current master templates
 router.get('/master', (req, res, next) => {
+  var utils = require('../utils')
   Master.find(function(err, masters) {
     if (err) {
       console.log("err found in finding masters", err)
