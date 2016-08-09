@@ -17,8 +17,8 @@ var text = $('.name').text();
 console.log(text);
   $('.button').on("click", function(e) {
     e.preventDefault();
-    $.ajax('http://localhost:4001/approve', {
-      method: "POST",
+    $.ajax('http://localhost:4001/options', {
+      method: "GET",
       success: function() {
         console.log("WORKEDDDDDDD HAY")
       }

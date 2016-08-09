@@ -153,6 +153,7 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
+
   var signedRequest = req.query.signed_request;
   var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
 
@@ -161,8 +162,9 @@ router.get('/options', function(req, res, next) {
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
          .then(function(response) {
-           console.log("THIS IS THE RESPONSE", response)
-           res.status(200).send('I am alright')
+            console.log("THIS IS THE EVENTS RESPONSE", response)
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(response)); //send an array of options
          })
          .catch(function(err) {
            console.log("Error at the end of /options", err)
