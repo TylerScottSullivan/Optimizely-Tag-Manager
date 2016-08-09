@@ -13,7 +13,7 @@ var NewTemplate = React.createClass({
       tokenName: null,
       tokenDisplayName: null,
       tokenDescription: null,
-      custom: null,
+      template: null,
       hascallback: null,
       projectId: "6668600890",
     };

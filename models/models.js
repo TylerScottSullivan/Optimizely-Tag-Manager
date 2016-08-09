@@ -17,7 +17,7 @@ var tagSchema = mongoose.Schema({
   tagDescription: String,
   fields: Array,
   trackingTrigger: String,
-  custom: String,
+  template: String,
   rank: Number,
   projectId: String,
   active: Boolean,
@@ -42,6 +42,7 @@ tagSchema.methods.render = function(tags, masters) {
     innerCallback += filtered[i].render(tags, masters);
   }
   var master = masters.filter(function(item) {
+
     return this.name === item.name
   }.bind(this))[0]
 
@@ -54,6 +55,9 @@ tagSchema.methods.render = function(tags, masters) {
 
   handleBarsFields['callback'] = innerCallback;
 
+  if (this.name === "custom") {
+    return master.template;
+  }
 
   var template = Handlebars.compile(master.template);
   return template(handleBarsFields);

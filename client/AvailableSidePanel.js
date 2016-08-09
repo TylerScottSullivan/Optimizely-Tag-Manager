@@ -39,11 +39,9 @@ var AvailableSidePanel = React.createClass({
     data.projectId = this.state.projectId;
     data.type = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
-    data.custom = this.props.info.custom;
+    data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-
-    // console.log("errors", Object.keys(errors))
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -82,7 +80,7 @@ var AvailableSidePanel = React.createClass({
 	render: function() {
 		if (Object.keys(this.props.info).length !== 0) {
 			return (
-				<form data-toggle='validator' className="sidepanel background--faint">
+				<div className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
 			      	<div className="flex">
 				    	<div> <img className='sidepanel-logo' src={this.props.info.logo}/> </div>
@@ -96,7 +94,6 @@ var AvailableSidePanel = React.createClass({
 	            	</label>
 			        {this.state.tokens.map((token, item) => {
                 var err = this.state.errors[token.tokenDisplayName];
-                console.log(`${token.tokenDisplayName} has error: ${err}`);
 			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)} required/>
 			        })}
               <div className="help-block with-errors"></div>
@@ -117,7 +114,7 @@ var AvailableSidePanel = React.createClass({
 				    <div>
 				    	<button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
 					</div>
-			  </form>
+			  </div>
 			)
 		} else {
 			return <div>
