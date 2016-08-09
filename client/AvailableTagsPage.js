@@ -12,13 +12,37 @@ var AvailableTagsPage = React.createClass({
       downloadedProject: this.props.downloadedProject
     }
   },
+
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({
+      downloadedProject: nextProps.downloadedProject,
+      master: nextProps.masters
+    })
+
+  },
+
   componentDidMount: function() {
+  },
+
+  onSelect: function(item, rowinfo) {
+    this.setState({
+      sidePanel: rowinfo
+    });
+    // console.log(rowinfo, "rowinfo")
+    // console.log(this.state.sidePanel, " sidePanel in state");
+  },
+
+  render: function() {
       var newArray = [];
       var newObj = {};
       var counter = 0;
+      var currentInfo = this.state.sidePanel;
       for (var j = 0; j < this.state.master.length; j++) {
         for (var i = 0; i < this.state.downloadedProject.length; i++) {
           if (this.state.downloadedProject[i].name === this.state.master[j].name) {
+            if (currentInfo.name === this.state.downloadedProject[i].name) {
+              currentInfo.added = true;
+            }
             newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
             newObj.added = true;
             newArray.push(newObj);
@@ -32,25 +56,14 @@ var AvailableTagsPage = React.createClass({
         }
         counter = 0;
       };
-      this.setState({
-        splicedArray: newArray
-      })
+
+      var splicedArray = newArray;
       console.log(newArray, 'newArray');
-  },
 
-  onSelect: function(item, rowinfo) {
-    this.setState({
-      sidePanel: rowinfo
-    });
-    // console.log(rowinfo, "rowinfo")
-    // console.log(this.state.sidePanel, " sidePanel in state");
-  },
-
-  render: function() {
     return (
       <div className="flex height--1-1">
-        <AvailableTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
-        <AvailableSidePanel info={this.state.sidePanel} {...this.props} />
+        <AvailableTableContent splicedArray={splicedArray} onSelect={this.onSelect}/>
+        <AvailableSidePanel info={currentInfo} {...this.props} />
       </div>
     )
   }

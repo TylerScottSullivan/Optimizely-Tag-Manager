@@ -54,7 +54,7 @@ tagSchema.methods.render = function(tags, masters) {
 
   handleBarsFields['callback'] = innerCallback;
 
-
+  console.log("THESE ARE THE MASTERS IN RENDER", master);
   var template = Handlebars.compile(master.template);
   return template(handleBarsFields);
   //return snippets[this.name](this.fields, this.trackingTrigger, innerCallback);

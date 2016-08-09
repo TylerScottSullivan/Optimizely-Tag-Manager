@@ -7,7 +7,6 @@ var AvailableInputFields = React.createClass({
 	displayName: 'AvailableInputFields',
 
 	render: function render() {
-		console.log(this.props, "props for available input fields");
 		var error = this.props.error ? 'validation' : '';
 		return React.createElement(
 			'div',
@@ -90,7 +89,7 @@ var AvailableSidePanel = React.createClass({
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
-    data.type = this.props.info.name;
+    data.name = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.custom = this.props.info.custom;
     data.hasCallback = this.props.info.hasCallback;
@@ -103,13 +102,16 @@ var AvailableSidePanel = React.createClass({
         url: '/' + window.location.search,
         type: 'POST',
         data: data,
-        success: function success(data) {
+        success: function (response) {
           console.log('Add tag successful');
-          this.props.onDownload(this.props.downloadedProject.push(data));
+          console.log(data, "data");
+          console.log(this.props.downloadedProject.concat(data), "concated downloadedProject");
+          this.props.onDownload(this.props.downloadedProject.concat(data));
           console.log('datapushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhed');
-        },
+        }.bind(this),
         error: function error(err) {
           console.error("Err posting", err.toString());
+          console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr help');
         }
       });
     } else {
@@ -460,13 +462,35 @@ var AvailableTagsPage = React.createClass({
       downloadedProject: this.props.downloadedProject
     };
   },
-  componentDidMount: function componentDidMount() {
+
+  componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+    this.setState({
+      downloadedProject: nextProps.downloadedProject,
+      master: nextProps.masters
+    });
+  },
+
+  componentDidMount: function componentDidMount() {},
+
+  onSelect: function onSelect(item, rowinfo) {
+    this.setState({
+      sidePanel: rowinfo
+    });
+    // console.log(rowinfo, "rowinfo")
+    // console.log(this.state.sidePanel, " sidePanel in state");
+  },
+
+  render: function render() {
     var newArray = [];
     var newObj = {};
     var counter = 0;
+    var currentInfo = this.state.sidePanel;
     for (var j = 0; j < this.state.master.length; j++) {
       for (var i = 0; i < this.state.downloadedProject.length; i++) {
         if (this.state.downloadedProject[i].name === this.state.master[j].name) {
+          if (currentInfo.name === this.state.downloadedProject[i].name) {
+            currentInfo.added = true;
+          }
           newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i]);
           newObj.added = true;
           newArray.push(newObj);
@@ -480,26 +504,15 @@ var AvailableTagsPage = React.createClass({
       }
       counter = 0;
     };
-    this.setState({
-      splicedArray: newArray
-    });
+
+    var splicedArray = newArray;
     console.log(newArray, 'newArray');
-  },
 
-  onSelect: function onSelect(item, rowinfo) {
-    this.setState({
-      sidePanel: rowinfo
-    });
-    // console.log(rowinfo, "rowinfo")
-    // console.log(this.state.sidePanel, " sidePanel in state");
-  },
-
-  render: function render() {
     return React.createElement(
       'div',
       { className: 'flex height--1-1' },
-      React.createElement(AvailableTableContent, { splicedArray: this.state.splicedArray, onSelect: this.onSelect }),
-      React.createElement(AvailableSidePanel, _extends({ info: this.state.sidePanel }, this.props))
+      React.createElement(AvailableTableContent, { splicedArray: splicedArray, onSelect: this.onSelect }),
+      React.createElement(AvailableSidePanel, _extends({ info: currentInfo }, this.props))
     );
   }
 });
