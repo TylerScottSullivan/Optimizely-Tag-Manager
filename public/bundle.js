@@ -132,6 +132,7 @@ var AvailableSidePanel = React.createClass({
 
   //this change the enable and triggers
   onChange: function onChange(e) {
+    e.preventDefault();
     console.log(e, "e");
     if (e.target.name === "active") {
       if (this.state.active === false) {
@@ -785,8 +786,17 @@ var MySidePanel = React.createClass({
     } else {
       return React.createElement(
         'div',
-        null,
-        ' '
+        { className: 'sidepanel background--faint' },
+        React.createElement(
+          'h2',
+          { className: 'push-double--bottom sp-headbig' },
+          'TAG DETAILS'
+        ),
+        React.createElement(
+          'div',
+          null,
+          ' Select a Tag to view Details. '
+        )
       );
     }
   }
@@ -891,7 +901,7 @@ var MyTableRow = React.createClass({
   displayName: "MyTableRow",
 
   render: function render() {
-    // console.log(this.props, "props")
+    console.log(this.props, "props for myTableRow");
     return React.createElement(
       "tr",
       { onClick: this.props.onSelect },
@@ -915,13 +925,23 @@ var MyTableRow = React.createClass({
       React.createElement(
         "td",
         { id: "row-centered" },
-        this.props.rowinfo.called,
+        this.props.rowinfo.trackingTrigger,
         " "
       ),
       React.createElement(
         "td",
         { id: "row-centered" },
-        " Enabled "
+        " ",
+        this.props.rowinfo.active ? React.createElement(
+          "div",
+          null,
+          " Enabled "
+        ) : React.createElement(
+          "div",
+          null,
+          " Disabled "
+        ),
+        " "
       )
     );
   }
