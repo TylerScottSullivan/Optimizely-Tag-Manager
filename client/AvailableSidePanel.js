@@ -81,6 +81,7 @@ var AvailableSidePanel = React.createClass({
 
 //this change the enable and triggers
   onChange: function(e) {
+    e.preventDefault();
     console.log(e, "e")
     if (e.target.name === "active") {
       if (this.state.active === false) {
