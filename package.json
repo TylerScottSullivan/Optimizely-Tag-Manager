@@ -49,6 +49,7 @@
     "eslint": "^3.0.1",
     "eslint-plugin-react": "^5.2.2",
     "nodemon": "^1.9.2",
+    "react-toggle": "^2.1.1",
     "watchify": "^3.7.0"
   }
 }

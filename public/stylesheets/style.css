@@ -113,3 +113,18 @@ textarea {
 .tagdesc {
 	margin-bottom: 8px;
 }
+
+.togglebutton {
+	margin: 20px 0 0 0;
+}
+
+.greenbox {
+	margin: 15px 0;
+	padding: 10px;
+	background-color: #E9F6C3;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #97C70A;
+}

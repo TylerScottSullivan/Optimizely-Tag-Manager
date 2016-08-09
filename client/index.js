@@ -10,9 +10,10 @@ import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/github';
 import 'brace/theme/tomorrow';
+import Toggle from 'react-toggle';
 
 var _ = require('underscore');
-import { Button } from 'optimizely-oui';
+import { Attention } from 'optimizely-oui';
 import { Router, Route, IndexRoute, IndexRedirect, Link, IndexLink, hashHistory } from 'react-router'
 
 
@@ -33,12 +34,24 @@ var App = React.createClass({
     }
   },
 
+  onDownload: function(projects) {
+    this.setState({
+      downloadedProject: projects
+    })
+  },
+
+  onMaster: function(master) {
+    this.setState({
+      masters: master
+    })
+  },
+
 //this.props.children is referring to the three tags
   render: function() {
     return (
     	<div>
         <Tab/>
-        {this.props.children}
+        {React.cloneElement(this.props.children, Object.assign({}, this.state, {onDownload: this.onDownload, onMaster: this.onMaster}), null)}
       </div>
     );
   }
@@ -46,6 +59,7 @@ var App = React.createClass({
 
 
 var Tab = React.createClass({
+
   render: function() {
     return (
       <div className="tabs tabs--small tabs--sub" data-oui-tabs>
@@ -228,6 +242,7 @@ var MyTagsPage = React.createClass({
   		this.setState({
   			master: response
   		});
+      this.props.onMaster(response);
   	})
     .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject))
     .then(response => response.json())
@@ -235,6 +250,7 @@ var MyTagsPage = React.createClass({
       this.setState({
 				downloadedProject: r
 			})
+      this.props.onDownload(r);
 			var newArray = [];
 			var newObj = {};
 			for (var i = 0; i < this.state.downloadedProject.length; i++) {
@@ -280,25 +296,37 @@ var MyTagsPage = React.createClass({
 var AvailableTagsPage = React.createClass({
   getInitialState: function() {
     return {
-      splicedArray: [],
+      splicedArray: this.props.masters,
       sidePanel: {},
       currentProject: "6668600890",
-      master: [],
-      downloadedProject: []
+      master: this.props.masters,
+      downloadedProject: this.props.downloadedProject
     }
   },
   componentDidMount: function() {
-  	console.log('availabletagspage mounted')
-  	console.log(this.props, "props for availabletagspage")
-    fetch('http://localhost:4001/master')
-    .then((response) => response.json())
-    .then(response => {
+      var newArray = [];
+      var newObj = {};
+      var counter = 0;
+      for (var j = 0; j < this.state.master.length; j++) {
+        for (var i = 0; i < this.state.downloadedProject.length; i++) {
+          if (this.state.downloadedProject[i].name === this.state.master[j].name) {
+            newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
+            newObj.added = true;
+            newArray.push(newObj);
+            counter++;
+            console.log(newObj.name, "splicedarray pushed")
+          } 
+        }
+        if (counter === 0) {
+            newArray.push(this.state.master[j]);
+            console.log(this.state.master[j].name, "master pushed")
+        }
+        counter = 0;
+      };
       this.setState({
-        splicedArray: response
+        splicedArray: newArray
       })
-	}).catch((e) => {
-      console.log("Err: " , e);
-    })
+      console.log(newArray, 'newArray');
   },
 
   onSelect: function(item, rowinfo) {
@@ -313,7 +341,7 @@ var AvailableTagsPage = React.createClass({
     return (
       <div className="flex height--1-1">
         <AvailableTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
-        <AvailableSidePanel info={this.state.sidePanel} />
+        <AvailableSidePanel info={this.state.sidePanel} {...this.props} />
       </div>
     )
   }
@@ -391,8 +419,7 @@ var AvailableTableContent = React.createClass({
               <th className = "cell-collapse">Logo</th>
               <th>Name</th>
               <th>Category</th>
-              <th>Called On</th>
-              <th className="cell-collapse">Status</th>
+              <th className="cell-collapse">&nbsp;&nbsp;Status</th>
             </tr>
           </thead>
           <tbody>
@@ -432,8 +459,12 @@ var AvailableTableRow = React.createClass({
           <td id="row-centered"> <img src={this.props.rowinfo.logo}/></td>
           <td id="row-centered">{this.props.rowinfo.displayName}</td>
           <td id="row-centered">{this.props.rowinfo.category} </td>
-          <td id="row-centered">{this.props.rowinfo.called} </td>
-          <td id="row-centered"> Enabled </td>
+          {this.props.rowinfo.added ? 
+            <td id="row-centered" align="center"> &nbsp; Added </td>
+            :
+            <td id="row-centered" align="center"> Unadded </td>
+          }
+
        </tr>
     )
 	}
@@ -541,10 +572,10 @@ var MySidePanel = React.createClass({
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
 		            </div>
-			        <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
-			          <option value='true'>Enabled</option>
-			          <option value='false'>Disabled</option>
-			        </select>
+            <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
+              <option value={true}>Enabled</option>
+              <option value={false}>Disabled</option>
+            </select>
 				    <div>
 				    	<button className="btn-uniform-add button button--highlight" onClick={this.onUpdateTag}>Update Tag</button>
 					</div>
@@ -602,8 +633,8 @@ var AvailableSidePanel = React.createClass({
       data: data,
       success: function(data) {
         console.log('Add tag successful');
-
-      },
+        this.props.onDownload(this.props.downloadedProjects.concat(data));
+      }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
       }
@@ -620,12 +651,27 @@ var AvailableSidePanel = React.createClass({
 
 //this change the enable and triggers
   onChange: function(e) {
-    var newState = Object.assign({}, this.state);
-    newState[e.target.name] = e.target.value;
-    this.setState(newState);
+    console.log(e, "e")
+    if (e.target.name === "active") {
+      if (this.state.active === false) {
+        this.setState({
+          active: true
+        })
+      } else if (this.state.active === true) {
+        this.setState({
+          active: false
+        })
+      } 
+    } else {
+      var newState = Object.assign({}, this.state);
+      newState[e.target.name] = e.target.value;
+      this.setState(newState);
+    }
+    console.log(this.state, "state of available panels page")
   },
 
 	render: function() {
+    console.log(this.props, "props for available side panel")
 		if (Object.keys(this.props.info).length !== 0) {
 			return (
 				<div className="sidepanel background--faint">
@@ -650,16 +696,33 @@ var AvailableSidePanel = React.createClass({
 				      <option value='inHeader'>In header</option>
 				      <option value='onPageLoad'>On page load</option>
 				    </select>
-		            <div className="flex">
-		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
-		            </div>
-				    <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
-				      <option value={true}>Enabled</option>
-				      <option value={false}>Disabled</option>
-				    </select>
-				    <div>
-				    	<button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
-					</div>
+            <div className="flex togglebutton">
+  		        {this.state.active === true ?    
+                  <div>      
+                    <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
+                    <button className="button" name='active' onClick={this.onChange}>Disabled</button>
+                  </div>
+               :
+                  <div>
+                    <button className="button" name='active' onClick={this.onChange}>Enabled</button>
+                    <button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
+                  </div>
+                }
+            </div>
+            {this.props.info.added === true ? 
+                  <div> 
+                    <div>
+                      <button className="btn-uniform-add button button--highlight" disabled>Add Tag</button>
+                    </div>
+                    <div className="greenbox">
+                      This tag has now been added to 'My Tags.' Go to 'My Tags' to Update, Delete, or Disable this tag.
+                    </div>
+                  </div>
+              :
+                  <div>
+                    <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
+                  </div>
+            }
 			  </div>
 			)
 		} else {
@@ -692,13 +755,13 @@ var MyInputFields = React.createClass({
 
 var AvailableInputFields = React.createClass({
 	render: function () {
-		console.log(this.props, "props")
+		console.log(this.props, "props for available input fields")
 		return (
 			<div>
 	          <div className="flex">
 	               <div className="flex--1 sd-headsmall">{this.props.token.tokenDisplayName}</div>
 	            </div>
-		        <div> {this.props.token.description} <a href={this.props.token.learnmorelink} target="_blank"> Learn More. </a> </div>
+		        <div> {this.props.token.tokenDescription} <a href={this.props.token.learnmorelink} target="_blank"> Learn More. </a> </div>
 		        <input className='text-input width--200 text-input-styled' placeholder={this.props.token.placeholder} value={this.props.token.value} onChange={this.props.onChange}/>
 		    </div>
 		)
@@ -772,7 +835,7 @@ var NewTemplate = React.createClass({
 		return (
       <form method='post'>
        <div className="form-group">
-         <div className="flex--1 sd-headsmall">Enter a name for snippet (please don't include spaces):</div>
+         <div className="flex--1 sd-headsmall">Enter a name for snippet (please don not include spaces):</div>
          <input type="text" className="text-input width--200 text-input-styled" name='type' />
        </div>
        <div className="form-group">
