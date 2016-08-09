@@ -13,16 +13,24 @@ module.exports = {
   body: null,
   project: null,
   findMaster: function(project) {
+    console.log("[stage] findMaster");
     this.project = project;
     return Master.find({})
   },
   createTag: function(masters) {
+    console.log("[stage] createTag");
     //storing all masters
     this.masters = masters;
     var fields = [];
+    // console.log('masterssss', masters)
     var master = masters.filter(function(item) {
+      // console.log('this.body.type', this.body.type)
+      // console.log('this.body', this.body)
+
       return item.name === this.body.type
     }.bind(this))[0];
+    // console.log('master',  master)
+
     for(var i = 0; i < master.tokens.length; i++) {
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
     }
@@ -31,16 +39,18 @@ module.exports = {
       fields: fields,
       tagDescription: master.tagDescription,
       trackingTrigger: this.body.trackingTrigger,
-      custom: this.body.custom,
+      template: this.body.template,
       projectId: this.project.projectId,
       active: this.body.active,
       hasCallback: master.hasCallback,
       pageName: this.body.pageName,
       eventName: this.body.eventName
     })
+    console.log('thi is the new tag', t)
     return t.save()
   },
   updateProject: function(tag) {
+    console.log("[stage] updateProject");
     this.project.tags.push(tag._id);
     return new Promise(function(resolve, reject) {
       if(tag.trackingTrigger !== "onDocumentReady" && tag.trackingTrigger !== "inHeader" && tag.trackingTrigger !== "onPageLoad" && tag.trackingTrigger !== "onEvent") {
@@ -58,9 +68,13 @@ module.exports = {
       }.bind(this))
   },
   populateProject: function(updatedProject) {
+    console.log("[stage] populateProject");
     return updatedProject.populate({path: 'tags'}).execPopulate()
   },
   getJavascript: function(populatedProject) {
+    console.log("[stage] getJavascript");
+
+    console.log("[getJavascript] masters", this.masters);
     var tags = this.project.tags;
 
 //do everything separately
@@ -126,6 +140,7 @@ module.exports = {
      })
   },
   buildJavascript: function(response) {
+    console.log("[stage] buildJavascript");
     var j = JSON.parse(response).project_javascript;
 
 

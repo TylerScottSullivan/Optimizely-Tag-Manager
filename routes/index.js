@@ -35,28 +35,28 @@ router.post('/request', function(req, res, next) {
   })
 })
 
-router.post('/customSnippet', function(req, res, next) {
-  console.log('req.body', req.body)
-  var t = new Tag({
-    name: 'custom',
-    displayName: req.body.name,
-    tagDescription: req.body.tagDescription,
-    fields: [],
-    approved: true,
-    custom: req.body.custom,
-    trackingTrigger: req.body.trackingTrigger,
-    projectId: req.body.projectId,
-    active: req.body.active
-  })
-  t.save(function(err, tag) {
-    if (err) {
-      console.log("Error in index.js line 49 saving custom snippet tag", err)
-    }
-    else {
-      res.status(200).send("Okay with saving the custom snippet")
-    }
-  })
-})
+// router.post('/customSnippet', function(req, res, next) {
+//   console.log('req.body', req.body)
+//   var t = new Tag({
+//     name: 'custom',
+//     displayName: req.body.name,
+//     tagDescription: req.body.tagDescription,
+//     fields: [],
+//     approved: true,
+//     custom: req.body.custom,
+//     trackingTrigger: req.body.trackingTrigger,
+//     projectId: req.body.projectId,
+//     active: req.body.active
+//   })
+//   t.save(function(err, tag) {
+//     if (err) {
+//       console.log("Error in index.js line 49 saving custom snippet tag", err)
+//     }
+//     else {
+//       res.status(200).send("Okay with saving the custom snippet")
+//     }
+//   })
+// })
 
 router.post('/', function(req, res, next) {
 
