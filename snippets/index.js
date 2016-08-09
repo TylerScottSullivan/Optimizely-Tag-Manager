@@ -7,4 +7,5 @@ module.exports = {
   // AMPLITUDE: require('./amplitude'),
 
   // MIXPANEL: require('./mixpanel')
-segment: require('./segment'),}
+  segment: require('./segment'),
+}

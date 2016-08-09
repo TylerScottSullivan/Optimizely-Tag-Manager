@@ -76,7 +76,6 @@ const customStyles = {
 
 var SearchBar = React.createClass({
 	  getInitialState: function() {
-	  	console.log('got initial state')
 	    return {
         modalIsOpen: false,
         name: '',
@@ -90,7 +89,7 @@ var SearchBar = React.createClass({
 	  },
 
 	  openModal: function() {
-	  	console.log('opened modal')
+	  	// console.log('opened modal')
 	    this.setState({modalIsOpen: true});
 	  },
 
@@ -179,7 +178,7 @@ var SearchBar = React.createClass({
                      <div className="flex--1 sd-headsmall"> Name</div>
                 </div>
                 <div className="flex--1"> Please add the name of your snippet. </div>
-                <input name='name' value={this.state.name} onChange={this.onChange}/>
+                <input required name='name' value={this.state.name} onChange={this.onChange}/>
 				   		  <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Description</div>
 				          </div>
@@ -252,7 +251,7 @@ var MyTagsPage = React.createClass({
 			this.setState({
 				splicedArray: newArray
 			})
-      console.log('newArrayyy', this.state.splicedArray)
+      // console.log('newArrayyy', this.state.splicedArray)
 
 		}).catch((e) => {
       	console.log("Err: " , e);
@@ -266,8 +265,8 @@ var MyTagsPage = React.createClass({
   },
 
   render: function() {
-    console.log('splicedArray', this.state.splicedArray)
-    console.log('my sidepanelll', this.state.sidePanel)
+    // console.log('splicedArray', this.state.splicedArray)
+    // console.log('my sidepanelll', this.state.sidePanel)
     return (
       <div className="flex height--1-1">
         <MyTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>
@@ -288,8 +287,8 @@ var AvailableTagsPage = React.createClass({
     }
   },
   componentDidMount: function() {
-  	console.log('availabletagspage mounted')
-  	console.log(this.props, "props for availabletagspage")
+  	// console.log('availabletagspage mounted')
+  	// console.log(this.props, "props for availabletagspage")
     fetch('http://localhost:4001/master')
     .then((response) => response.json())
     .then(response => {
@@ -305,8 +304,8 @@ var AvailableTagsPage = React.createClass({
     this.setState({
       sidePanel: rowinfo
     });
-    console.log(rowinfo, "rowinfo")
-    console.log(this.state.sidePanel, " sidePanel in state");
+    // console.log(rowinfo, "rowinfo")
+    // console.log(this.state.sidePanel, " sidePanel in state");
   },
 
   render: function() {
@@ -335,7 +334,7 @@ var MyTableContent = React.createClass({
   },
 
   render: function() {
-    console.log('my table content splicedArray', this.props.splicedArray)
+    // console.log('my table content splicedArray', this.props.splicedArray)
     return (
      	<div className="flex--1 soft-double--sides">
      	<SearchBar value={this.props.splicedArray}/>
@@ -366,8 +365,8 @@ var MyTableContent = React.createClass({
 var AvailableTableContent = React.createClass({
 
   componentDidMount: function() {
-  	  	console.log('availabletablecontent mounted')
-  	  	console.log(this.props, "props for availabltable content")
+  	  	// console.log('availabletablecontent mounted')
+  	  	// console.log(this.props, "props for availabltable content")
   	this.tableSort();
   },
 
@@ -380,7 +379,7 @@ var AvailableTableContent = React.createClass({
   },
 
   render: function() {
-  	console.log("[AvailableTableContent props]", this.props.splicedArray);
+  	// console.log("[AvailableTableContent props]", this.props.splicedArray);
     return (
      	<div className="flex--1 soft-double--sides">
      	<SearchBar/>
@@ -410,7 +409,7 @@ var AvailableTableContent = React.createClass({
 
 var MyTableRow = React.createClass({
 	render: function() {
-		console.log(this.props, "props")
+		// console.log(this.props, "props")
 		return (
    		 <tr onClick={this.props.onSelect}>
           <td id="row-centered"> <img src={this.props.rowinfo.logo}/></td>
@@ -425,8 +424,8 @@ var MyTableRow = React.createClass({
 
 var AvailableTableRow = React.createClass({
 	render: function() {
-	  	console.log('availabletablerow mounted')
-		console.log(this.props, "props for availabletablerow")
+	  // 	console.log('availabletablerow mounted')
+		// console.log(this.props, "props for availabletablerow")
 		return (
    		 <tr onClick={this.props.onSelect}>
           <td id="row-centered"> <img src={this.props.rowinfo.logo}/></td>
@@ -461,19 +460,17 @@ var MySidePanel = React.createClass({
     }
   },
 
-  onUpdateTag: function() {
+  onUpdate: function() {
     var data = {};
-
-    data.fields = this.state.fields.map(function(field){
+    // console.log('fields before', this.state.fields)
+    data.fields = JSON.stringify(this.state.fields.map(function(field){
     	var returnfield = {};
     	returnfield[field.name] = field.value;
     	return returnfield;
-    })
-
+    }))
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
-    console.log('updating tag', data)
 
     return $.ajax({
       url: '/updatetag/' + this.props.info._id,
@@ -502,7 +499,7 @@ var MySidePanel = React.createClass({
 
   onChangeTokens: function(field, e) {
     var newState = Object.assign({}, this.state);
-    newState.tokens[field].value = e.target.value;
+    newState.fields[field].value = e.target.value;
     this.setState(newState);
   },
 
@@ -516,7 +513,7 @@ var MySidePanel = React.createClass({
 	render: function() {
 		if (Object.keys(this.props.info).length !== 0) {
 			return (
-				<div className="sidepanel background--faint">
+				<div data-toggle='validator' className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
 			      	<div className="flex">
 				    	<div> <img className='sidepanel-logo' src={this.state.info.logo}/> </div>
@@ -546,11 +543,11 @@ var MySidePanel = React.createClass({
 			          <option value='false'>Disabled</option>
 			        </select>
 				    <div>
-				    	<button className="btn-uniform-add button button--highlight" onClick={this.onUpdateTag}>Update Tag</button>
+				    	<button className="btn-uniform-add button button--highlight" onClick={this.onUpdate}>Update Tag</button>
 					</div>
 					<div>
 						<button className="btn-uniform-del button button--highlight" onClick={this.onDelete}>Delete</button>
-			  		</div>
+			  	</div>
 			  </div>
 			)
 		} else {
@@ -567,7 +564,8 @@ var AvailableSidePanel = React.createClass({
       tokens: this.props.info.tokens,
       projectId: "6668600890",
       trackingTrigger: 'inHeader',
-      active: true
+      active: true,
+      errors: {}
     };
   },
 
@@ -580,11 +578,17 @@ var AvailableSidePanel = React.createClass({
     }
   },
 
-  onAddTag: function() {
+  onAddTag: function(e) {
+    e.preventDefault();
     var data = {};
+    var errors = {}
 
-    this.state.tokens.map(function(token){
-      data[token.tokenName] = token.value
+    this.state.tokens.map((token) => {
+      if (!token.value) {
+        // Input validation
+        errors[token.tokenDisplayName] = `${token.tokenDisplayName} is required`;
+      }
+      data[token.tokenName] = token.value;
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
@@ -594,20 +598,26 @@ var AvailableSidePanel = React.createClass({
     data.custom = this.props.info.custom;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    console.log('dataaaaa', data)
 
-    return $.ajax({
-      url: '/' + window.location.search,
-      type: 'POST',
-      data: data,
-      success: function(data) {
-        console.log('Add tag successful');
+    // console.log("errors", Object.keys(errors))
 
-      },
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
+    if (Object.keys(errors).length === 0) {
+      return $.ajax({
+        url: '/' + window.location.search,
+        type: 'POST',
+        data: data,
+        success: function(data) {
+          console.log('Add tag successful');
+        },
+        error: function(err) {
+          console.error("Err posting", err.toString());
+        }
+      });
+    } else {
+      this.setState({
+        errors: errors
+      });
+    }
   },
 
   onChangeTokens: function(index, e) {
@@ -628,7 +638,7 @@ var AvailableSidePanel = React.createClass({
 	render: function() {
 		if (Object.keys(this.props.info).length !== 0) {
 			return (
-				<div className="sidepanel background--faint">
+				<form data-toggle='validator' className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
 			      	<div className="flex">
 				    	<div> <img className='sidepanel-logo' src={this.props.info.logo}/> </div>
@@ -640,9 +650,12 @@ var AvailableSidePanel = React.createClass({
 	            	<div className='tagdesc'>{this.props.info.tagDescription}</div>
 	            	<label className="label label--rule">
 	            	</label>
-			        {this.state.tokens.map(function(token, item) {
-			        	return <AvailableInputFields key={item} token={token} onChange={this.onChangeTokens.bind(this, item)}/>
-			        }.bind(this))}
+			        {this.state.tokens.map((token, item) => {
+                var err = this.state.errors[token.tokenDisplayName];
+                console.log(`${token.tokenDisplayName} has error: ${err}`);
+			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)} required/>
+			        })}
+              <div className="help-block with-errors"></div>
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Called On: </div>
 		            </div>
@@ -660,7 +673,7 @@ var AvailableSidePanel = React.createClass({
 				    <div>
 				    	<button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
 					</div>
-			  </div>
+			  </form>
 			)
 		} else {
 			return <div>
@@ -676,15 +689,16 @@ var AvailableSidePanel = React.createClass({
 
 var MyInputFields = React.createClass({
 	render: function () {
-		console.log(this.props, "props")
+    var error = (this.props.error) ? 'validation' : '';
+    console.log('error name', error)
 		return (
 			<div>
-	            <div className="flex">
-	               <div className="flex--1 sd-headsmall">{this.props.field.tokenName}</div>
-	            </div>
-		        <div> {this.props.field.description} <a href={this.props.field.learnmorelink} target="_blank"> Learn More. </a> </div>
-		        <input className='text-input width--200 text-input-styled' placeholder={this.props.field.placeholder} value={this.props.field.value} onChange={this.props.onChange}/>
-		    </div>
+            <div className="flex">
+               <div className="flex--1 sd-headsmall" name='tokenName'>{this.props.field.tokenName}</div>
+            </div>
+		        <div name='description'> {this.props.field.description} <a href={this.props.field.learnmorelink} target="_blank"> Learn More. </a> </div>
+		        <input name='value' className='text-input width--200 text-input-styled {error}' placeholder={this.props.field.placeholder} value={this.props.field.value} onChange={this.props.onChange}/>
+	    </div>
 		)
 	}
 })
@@ -692,15 +706,16 @@ var MyInputFields = React.createClass({
 
 var AvailableInputFields = React.createClass({
 	render: function () {
-		console.log(this.props, "props")
+    var error = (this.props.error) ? 'validation' : '';
 		return (
 			<div>
 	          <div className="flex">
 	               <div className="flex--1 sd-headsmall">{this.props.token.tokenDisplayName}</div>
 	            </div>
 		        <div> {this.props.token.description} <a href={this.props.token.learnmorelink} target="_blank"> Learn More. </a> </div>
-		        <input className='text-input width--200 text-input-styled' placeholder={this.props.token.placeholder} value={this.props.token.value} onChange={this.props.onChange}/>
-		    </div>
+		        <input required='true' className={`text-input width--200 text-input-styled ${error}`} placeholder={this.props.token.placeholder} value={this.props.token.value} onChange={this.props.onChange}/>
+            {(this.props.error !== false) ? <div class='warning'>{this.props.error}</div> : null }
+      </div>
 		)
 	}
 })
@@ -738,8 +753,7 @@ var NewTemplate = React.createClass({
 
   onSubmit: function() {
     var data = {};
-    // console.log("[state]", this.state);
-    // console.log("[info]", this.props.info);
+
     this.state.tokens.map(function(token){
       data[token.tokenName] = token.value
     })
@@ -751,7 +765,6 @@ var NewTemplate = React.createClass({
     data.custom = this.props.info.custom;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    console.log('dataaaaa', data)
 
     return $.ajax({
       url: '/' + window.location.search,
