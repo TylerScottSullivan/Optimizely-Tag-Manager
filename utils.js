@@ -44,7 +44,7 @@ module.exports = {
       pageName: this.body.pageName,
       eventName: this.body.eventName
     })
-    console.log('thi is the new tag', t)
+    console.log('this is the new tag', t)
     return t.save()
   },
   updateProject: function(tag) {

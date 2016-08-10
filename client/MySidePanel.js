@@ -4,14 +4,27 @@ var MyInputFields = require('./MyInputFields');
 var MySidePanel = React.createClass({
 
   getInitialState: function() {
+    var triggerOptions;
+    $.ajax({
+      url: '/options' + window.location.search,
+      type: 'GET',
+      success: function(data) {
+        console.log('get options successful');
+        this.setState({triggerOptions: data})
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
     return {
       info: this.props.info,
       fields: this.props.info.fields,
-      projectId: "6668600890",
-      trackingTrigger: this.props.info.trackingTrigger,
-      active: this.props.info.active,
+      projectId: "6919181723",
+      trackingTrigger: 'inHeader',
+      active: 'true',
       tagId: this.props.info._id,
-      errors: {}
+      errors: {},
+      triggerOptions: null
     };
   },
 
@@ -100,7 +113,7 @@ var MySidePanel = React.createClass({
         this.setState({
           active: false
         })
-      } 
+      }
     } else {
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
@@ -128,7 +141,7 @@ var MySidePanel = React.createClass({
             newObj = $.extend({}, this.props.info.fields[j], this.props.info.tokens[i])
             newTokenField.push(newObj);
             console.log(newObj.name, "splicedtokenField pushed")
-          } 
+          }
         }
       };
       console.log(newTokenField, 'newtokenfield')
@@ -158,13 +171,14 @@ var MySidePanel = React.createClass({
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Called On: </div>
 		            </div>
+<<<<<<< HEAD
 				    <select className="form-control" name='trackingTrigger' value={this.props.info.trackingTrigger} onChange={this.onChange}>
 				      <option value='inHeader'>In header</option>
 				      <option value='onPageLoad'>On page load</option>
 				    </select>
             <div className="flex togglebutton">
-              {this.state.active === true ?    
-                  <div>      
+              {this.state.active === true ?
+                  <div>
                     <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
                     <button className="button" name='active' onClick={this.onChange}>Disabled</button>
                   </div>
@@ -175,6 +189,21 @@ var MySidePanel = React.createClass({
                   </div>
                 }
             </div>
+=======
+                <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+                  {this.state.triggerOptions.map((trigger) => {
+                    return <option value={trigger}>{trigger}</option>
+                    })
+                  }
+    				    </select>
+		            <div className="flex">
+		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
+		            </div>
+			        <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
+			          <option value='true'>Enabled</option>
+			          <option value='false'>Disabled</option>
+			        </select>
+>>>>>>> mojia
 				    <div>
 				    	<button className="btn-uniform-add button button--highlight" onClick={this.onUpdate}>Update Tag</button>
             </div>

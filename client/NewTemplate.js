@@ -11,19 +11,22 @@ var NewTemplate = React.createClass({
       discription: '',
       fields: [],
       template: '',
-      hasCallback: false,
-      projectId: "6668600890",
-      email: ''
+      hasCallback: 'true',
+      projectId: "6919181723",
+      email: '',
+      approved: false,
+      checkForType: '',
+      checkFor: ''
     };
   },
 
   onChangeFields: function(index, e) {
     var fields = this.state.fields;
     fields[index][e.target.name] = e.target.value;
-
     this.setState({
       fields: fields
     });
+    console.log('on change fields', this.state.fields)
   },
 
   //this change the enable and triggers
@@ -31,30 +34,37 @@ var NewTemplate = React.createClass({
     var newState = Object.assign({}, this.state);
     newState[e.target.name] = e.target.value;
     this.setState(newState);
+    console.log('newState', newState)
   },
 
   onChangeSnippet: function(newVal) {
       this.setState({
         template: newVal
       });
+      console.log('onchangeSnippet', this.state.template)
   },
 
   onSubmit: function() {
     var data = {};
-
+    data.fields = []
     this.state.fields.map(function(field, i){
+      data.fields.push({})
       data.fields[i]['tokenName'] = field.tokenName;
-      data.fields[i]['token'] = field.token;
       data.fields[i]['tokenDescription'] = field.tokenDescription;
+      var token = field.tokenName.replace(/ /g, '_');
+      data.fields[i]['token'] = token;
     })
-
     data.type = this.state.type;
     data.email = this.state.email;
     data.description = this.state.description;
     data.displayName = this.state.displayName;
     data.hasCallback = this.state.hasCallback;
     data.template = this.state.template;
+    data.approved = this.state.approved;
+    data.checkForType = this.state.checkForType;
+    data.checkFor = this.state.checkFor;
 
+    console.log('this is the full data', data)
     return $.ajax({
       url: '/template',
       type: 'POST',
@@ -88,36 +98,30 @@ var NewTemplate = React.createClass({
 
   //change the language later
 	render: function () {
-    var hasCallback = (this.state.hasCallback === true) ? <div>{"Please put {{{...}}} around your callback"}</div> : null;
 		return (
       <form method='post'>
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter a name for snippet (please do not include spaces):</div>
-         <input type="text" className="text-input width--200 text-input-styled" name='type' />
+         <input type="text" className="text-input width--200 text-input-styled" name='type' onChange={this.onChange}/>
        </div>
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter display name for snippet:</div>
-         <input type="text" className="text-input width--200 text-input-styled" name='displayName'/>
+         <input type="text" className="text-input width--200 text-input-styled" name='displayName' onChange={this.onChange}/>
        </div>
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter description for snippet:</div>
-         <input type="text" className="text-input width--200 text-input-styled" name='description'/>
+         <input type="text" className="text-input width--200 text-input-styled" name='description' onChange={this.onChange}/>
        </div>
        <button onClick={this.onAddField} className="btn-uniform-add button button--highlight">Add field</button>
 
        <div>
          {
           this.state.fields.map((item, index) => {
-             var token;
+
              var tokenHere;
-            //  console.log('item here', item)
-             if (item.tokenName.indexOf(' ') > 1) {
-               token = '{{' + item.tokenName.replace(/ /g, '_') + '}}';
-             } else {
-               token = `{{${item.tokenName}}}`;
-             }
+             var token = '{{' + item.tokenName.replace(/ /g, '_') + '}}';
              if (item.tokenName) {
-               tokenHere = <div value={token}>{`Your field token name is ${token}`}</div>
+               tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>{`Your field token name is ${token}`}</div>
              } else {
                tokenHere = null;
              }
@@ -133,7 +137,7 @@ var NewTemplate = React.createClass({
                    <input  type="text" value={item.tokenDescription} onChange={this.onChangeFields.bind(this, index)} className="text-input width--200 text-input-styled" name='tokenDescription' />
                  </div>
                  <button onClick={this.onDeleteField.bind(this, index)} className="btn-uniform-add button button--highlight">Delete</button>
-             </div>
+               </div>
             )
           })
          }
@@ -141,14 +145,23 @@ var NewTemplate = React.createClass({
 
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Does your snippet take any callback?</div>
-         <select className="form-control" name='hasCallback' value={this.state.hasCallback} onChange={this.onChange}>
+         <select className="form-control" name='hasCallback' onChange={this.onChange}>
            <option value={true}>Yes</option>
            <option value={false}>No</option>
          </select>
-         {hasCallback}
+         <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
        </div>
+       <div class="form-group">
+         <label className="flex--1 sd-headsmall">What is the name of your tag when should be checking for:</label>
+         <input type="text" className="text-input width--200 text-input-styled" name='checkFor' value={this.state.checkFor} onChange={this.onChange} />
+       </div>
+       <label className="flex--1 sd-headsmall">What type is your tag when it's ready?</label>
+       <select class="form-control" name='checkForType' onChange={this.onChange}>
+         <option value='function'>function</option>
+         <option value='object'>object</option>
+       </select>
        <div className="form-group">
-       <div className="flex--1 sd-headsmall">Enter your code</div>
+         <div className="flex--1 sd-headsmall">Enter your code</div>
          <div className="editor">
            <AceEditor
              className="editor text-input width--200 text-input-styled"
@@ -165,7 +178,7 @@ var NewTemplate = React.createClass({
        </div>
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter your email:</div>
-         <input type="text" className="text-input width--200 text-input-styled" name='email'/>
+         <input type="text" className="text-input width--200 text-input-styled" name='email' value={this.state.email} onChange={this.onChange}/>
        </div>
        <button type="submit" onClick={this.onSubmit} className="btn-uniform-add button button--highlight">Submit</button>
       </form>
