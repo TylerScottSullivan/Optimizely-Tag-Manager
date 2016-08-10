@@ -89,18 +89,22 @@ module.exports = {
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
-      inHeaderJavascript = inHeaders[i].render(tags, this.masters);
+      inHeaderJavascript += inHeaders[i].render(tags, this.masters);
     }
     var onDocumentReadyJavascript = '';
     for(var i = 0; i < onDocumentReadys.length; i++) {
       //TODO: wrap this in onDocumentReady here, not in function
-      onDocumentReadyJavascript = onDocumentReadys[i].render(tags, this.masters);
+      onDocumentReadyJavascript += onDocumentReadys[i].render(tags, this.masters);
     }
     var pagesToIds = {'select_dropdown_1': "6824293401", "shopping_cart": "6824330423"}
 
+    //to make callbacks work: we are going to know what the "checkFor" and "checkForType"
+    //we are going to need to do this when we are rendering
+    //we want to add var interval = window.setInterval(function(master.checkFor, innerCallback) { if(typeof(master.checkFor)) === master.checkForType {callback()}}, 2000 );
+    //window.setTimeout(function(){ window.clearInterval(interval); }, 5000);
+    //to the end of the code every time we render (only if they indicate they want it to be callBackable)
 
-
-    //get all pages call
+    //get all events call
     var onEventsObject = {};
     var marker = false;
     for(var i = 0; i < onEvents.length; i++) {
@@ -168,7 +172,7 @@ module.exports = {
   },
   getTagOptions: function(project) {
     this.project = project;
-    return Tag.find({'hasCallback': true});
+    return Tag.find({'hasCallback': true, 'projectId': this.project.projectId});
   },
   getOptions: function(tags) {
         //get names of options

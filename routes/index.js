@@ -90,7 +90,7 @@ router.post('/', function(req, res, next) {
 router.post('/deletetag/:tagid', function(req, res, next) {
   var utils = require('../utils')
   Tag.remove({"_id": req.params.tagid})
-     .then(utils.getProject.bind(utils, 6668600890, req.params.tagid))
+     .then(utils.getProject.bind(utils, req.query.projectId, req.params.tagid))
      .then(utils.removeTagFromProject.bind(utils))
      .then(utils.populateProject.bind(utils))
      .then(utils.getJavascript.bind(utils))
@@ -107,7 +107,7 @@ router.post('/deletetag/:tagid', function(req, res, next) {
 // /masters
 // GET: gets all current master templates
 router.get('/master', (req, res, next) => {
-  Master.find(function(err, masters) {
+  Master.find({"approved": true}, function(err, masters) {
     if (err) {
       console.log("err found in finding masters", err)
     } else {
@@ -181,15 +181,22 @@ router.get('/template', function(req, res, next){
 router.post('/template', function(req, res, next) {
   var tokens = [];
   tokens.push({'tokenName': req.body.tokenName, 'tokenDisplayName': req.body.tokenDisplayName, 'tokenDescription': req.body.tokenDescription, 'tokenCode': '123456789'})
+  var template = req.body.custom;
+  console.log(req.body.hasCallback)
+  if (req.body.usingOurCallback) {
+    template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === '+req.body.checkForType+') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
+  }
   var m = new Master({
     name: req.body.type,
     displayName: req.body.displayName,
     tokens: tokens,
     tagDescription: req.body.description,
-    hasCallback: true,
+    hasCallback: req.body.hasCallback,
     approved: false,
-    template: req.body.custom,
-    callbackCode: 'abcdefg'
+    template: template,
+    callbackCode: 'abcdefg',
+    checkFor: req.body.checkFor,
+    checkForType: req.body.checkForType
   })
   m.save(function(err, master) {
     if (err) console.log(error, "HEyyyyyy got an error");
