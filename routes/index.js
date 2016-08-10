@@ -163,10 +163,11 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
+  console.log('I am inside options');
 
   var signedRequest = req.query.signed_request;
+  console.log(signedRequest, 'signedrequest')
   var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
-
   Project.find({'projectId': userContext.context.environment.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))

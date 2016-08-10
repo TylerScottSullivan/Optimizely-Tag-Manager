@@ -7,7 +7,7 @@ var MyTagsPage = React.createClass({
     return {
       splicedArray: [], //merge master templates and the downloaded project
       sidePanel: {},
-      currentProject: "6668600890",
+      currentProject: "6919181723",
       master: []
     }
   },
