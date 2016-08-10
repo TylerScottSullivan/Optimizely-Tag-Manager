@@ -49,13 +49,14 @@ var SearchBar = React.createClass({
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
       data.projectId = this.state.projectId;
-      data.name = this.state.name;
+      data.name = "custom";
+      data.displayName = this.state.name;
       data.tagDescription = this.state.tagDescription;
-      data.custom = this.state.custom;
+      data.template = this.state.custom;
       this.setState({modalIsOpen: false});
 
       return $.ajax({
-        url: '/',
+        url: '/' + window.location.search,
         type: 'POST',
         data: data,
         success: function(data) {

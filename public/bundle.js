@@ -540,14 +540,14 @@ var MyInputFields = React.createClass({
 				React.createElement(
 					'div',
 					{ className: 'flex--1 sd-headsmall', name: 'tokenName' },
-					this.props.field.tokenName
+					this.props.field.tokenDisplayName
 				)
 			),
 			React.createElement(
 				'div',
 				{ name: 'description' },
 				' ',
-				this.props.field.description,
+				this.props.field.tokenUpdateDesc,
 				' ',
 				React.createElement(
 					'a',
@@ -583,8 +583,8 @@ var MySidePanel = React.createClass({
       info: this.props.info,
       fields: this.props.info.fields,
       projectId: "6668600890",
-      trackingTrigger: 'inHeader',
-      active: 'true',
+      trackingTrigger: this.props.info.trackingTrigger,
+      active: this.props.info.active,
       tagId: this.props.info._id,
       errors: {}
     };
@@ -666,12 +666,54 @@ var MySidePanel = React.createClass({
 
   //this change the enable and triggers
   onChange: function onChange(e) {
-    var newState = Object.assign({}, this.state);
-    newState[e.target.name] = e.target.value;
-    this.setState(newState);
+    e.preventDefault();
+    console.log(e, "e");
+    if (e.target.name === "active") {
+      if (this.state.active === false) {
+        this.setState({
+          active: true
+        });
+      } else if (this.state.active === true) {
+        this.setState({
+          active: false
+        });
+      }
+    } else {
+      var newState = Object.assign({}, this.state);
+      newState[e.target.name] = e.target.value;
+      this.setState(newState);
+    }
   },
 
   render: function render() {
+    if (this.props.info.fields) {
+      console.log(this.props.info.fields, 'fields');
+      console.log(this.props.info.fields[0], 'fields 0');
+      console.log(this.props.info.tokens, 'tokens');
+      console.log(this.props.info.tokens[0], 'tokens 0');
+
+      var newTokenField = [];
+      var newObj = {};
+      console.log("hello here");
+      for (var j = 0; j < this.props.info.fields.length; j++) {
+        console.log("hello why aren'y ou going through my loop");
+        console.log('iterating');
+        for (var i = 0; i < this.props.info.tokens.length; i++) {
+          console.log(this.props.info.tokens[i].tokenName, "tokenName");
+          console.log(this.props.info.fields[j].name, 'fieldName');
+          if (this.props.info.tokens[i].tokenName === this.props.info.fields[j].name) {
+            newObj = $.extend({}, this.props.info.fields[j], this.props.info.tokens[i]);
+            newTokenField.push(newObj);
+            console.log(newObj.name, "splicedtokenField pushed");
+          }
+        }
+      };
+      console.log(newTokenField, 'newtokenfield');
+      var splicedTokenField = newTokenField;
+      console.log(splicedTokenField, 'splicedTokenField');
+    }
+
+    console.log(this.props, "props for mySidePanel");
     if (Object.keys(this.props.info).length !== 0) {
       return React.createElement(
         'div',
@@ -711,10 +753,10 @@ var MySidePanel = React.createClass({
         React.createElement(
           'div',
           { className: 'tagdesc' },
-          this.state.tagDescription
+          this.state.info.tagDescription
         ),
         React.createElement('label', { className: 'label label--rule' }),
-        this.state.fields.map(function (field, item) {
+        splicedTokenField.map(function (field, item) {
           var err = this.state.errors[field.name];
           return React.createElement(MyInputFields, { key: item, error: err || false, field: field, value: this.state.fields[item].value, onChange: this.onChangeTokens.bind(this, item) });
         }.bind(this)),
@@ -729,7 +771,7 @@ var MySidePanel = React.createClass({
         ),
         React.createElement(
           'select',
-          { className: 'form-control', name: 'trackingTrigger', value: this.state.trackingTrigger, onChange: this.onChange },
+          { className: 'form-control', name: 'trackingTrigger', value: this.props.info.trackingTrigger, onChange: this.onChange },
           React.createElement(
             'option',
             { value: 'inHeader' },
@@ -743,25 +785,33 @@ var MySidePanel = React.createClass({
         ),
         React.createElement(
           'div',
-          { className: 'flex' },
-          React.createElement(
+          { className: 'flex togglebutton' },
+          this.state.active === true ? React.createElement(
             'div',
-            { className: 'flex--1 sd-headsmall' },
-            ' Enabled or Disabled: '
-          )
-        ),
-        React.createElement(
-          'select',
-          { className: 'form-control', name: 'active', value: this.state.active, onChange: this.onChange },
-          React.createElement(
-            'option',
-            { value: true },
-            'Enabled'
-          ),
-          React.createElement(
-            'option',
-            { value: false },
-            'Disabled'
+            null,
+            React.createElement(
+              'button',
+              { className: 'button button--highlight', name: 'active', onClick: this.onChange },
+              'Enabled'
+            ),
+            React.createElement(
+              'button',
+              { className: 'button', name: 'active', onClick: this.onChange },
+              'Disabled'
+            )
+          ) : React.createElement(
+            'div',
+            null,
+            React.createElement(
+              'button',
+              { className: 'button', name: 'active', onClick: this.onChange },
+              'Enabled'
+            ),
+            React.createElement(
+              'button',
+              { className: 'button button--highlight', name: 'active', onClick: this.onChange },
+              'Disabled'
+            )
           )
         ),
         React.createElement(
@@ -990,9 +1040,6 @@ var MyTagsPage = React.createClass({
       var newObj = {};
       for (var i = 0; i < _this.state.downloadedProject.length; i++) {
         //this is to render the custom tags
-        if (_this.state.downloadedProject[i].name === 'custom') {
-          newArray.push(_this.state.downloadedProject[i]);
-        }
         for (var j = 0; j < _this.state.master.length; j++) {
           if (_this.state.downloadedProject[i].name === _this.state.master[j].name) {
             newObj = $.extend({}, _this.state.master[j], _this.state.downloadedProject[i]);
@@ -1003,7 +1050,7 @@ var MyTagsPage = React.createClass({
       _this.setState({
         splicedArray: newArray
       });
-      // console.log('newArrayyy', this.state.splicedArray)
+      console.log('newArrayyy', newArray);
     }).catch(function (e) {
       console.log("Err: ", e);
     });
@@ -1296,13 +1343,14 @@ var SearchBar = React.createClass({
 				data.active = this.state.active;
 				data.trackingTrigger = this.state.trackingTrigger;
 				data.projectId = this.state.projectId;
-				data.name = this.state.name;
+				data.name = "custom";
+				data.displayName = this.state.name;
 				data.tagDescription = this.state.tagDescription;
-				data.custom = this.state.custom;
+				data.template = this.state.custom;
 				this.setState({ modalIsOpen: false });
 
 				return $.ajax({
-						url: '/',
+						url: '/' + window.location.search,
 						type: 'POST',
 						data: data,
 						success: function success(data) {

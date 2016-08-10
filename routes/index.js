@@ -88,6 +88,7 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/deletetag/:tagid', function(req, res, next) {
+  var utils = require('../utils')
   Tag.remove({"_id": req.params.tagid})
      .then(utils.getProject.bind(utils))
      .then(utils.populateProject.bind(utils))
@@ -104,7 +105,6 @@ router.post('/deletetag/:tagid', function(req, res, next) {
 // /masters
 // GET: gets all current master templates
 router.get('/master', (req, res, next) => {
-  var utils = require('../utils')
   Master.find(function(err, masters) {
     if (err) {
       console.log("err found in finding masters", err)
@@ -119,6 +119,7 @@ router.get('/master', (req, res, next) => {
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/download/:projectid', (req, res, next) => {
+  var utils = require('../utils')
   Tag.find({'projectId': req.params.projectid}, function(err, tags) {
     if (err) {
       console.log('err finding tags in download/:projectid', err)
