@@ -90,11 +90,13 @@ router.post('/', function(req, res, next) {
 router.post('/deletetag/:tagid', function(req, res, next) {
   var utils = require('../utils')
   Tag.remove({"_id": req.params.tagid})
-     .then(utils.getProject.bind(utils))
+     .then(utils.getProject.bind(utils, 6668600890, req.params.tagid))
+     .then(utils.removeTagFromProject.bind(utils))
      .then(utils.populateProject.bind(utils))
      .then(utils.getJavascript.bind(utils))
      .then(utils.buildJavascript.bind(utils))
      .then(function(response) {
+       console.log("GOT TO THE END OF THE DELTE CHAIN")
        res.status(200).send('I am alright')
      })
      .catch(function(err) {

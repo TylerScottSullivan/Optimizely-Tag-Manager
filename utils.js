@@ -58,9 +58,11 @@ module.exports = {
       }.bind(this))
   },
   populateProject: function(updatedProject) {
+    console.log("this is my updated project: ", updatedProject)
     return updatedProject.populate({path: 'tags'}).execPopulate()
   },
   getJavascript: function(populatedProject) {
+    this.project = populatedProject;
     var tags = this.project.tags;
 
 //do everything separately
@@ -146,6 +148,7 @@ module.exports = {
     //add our javascript piece to the originalJavascriptStartSection
     var finalJavascript = originalJavascriptStartSection + "//--------------------HorizonsJavascriptStart--------------------\n" + this.combinedJavascript + '\n//--------------------HorizonsJavascriptEnd--------------------' + originalJavascriptEndSection;
     var token = process.env.API_TOKEN;
+    console.log("PUTTING", finalJavascript)
     return rp({
          uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
          method: 'PUT',
@@ -198,7 +201,15 @@ module.exports = {
     })
     return this.tagNames.concat(eventNames);
   },
-  getProject: function(tag) {
-    return Project.find({'_id': tag.projectId})
+  getProject: function(projectId, tagid) {
+    this.tagid = tagid;
+    return Project.findOne({'projectId': projectId})
+  },
+  removeTagFromProject: function(project) {
+    console.log("project.tags 1", project.tags)
+    console.log("project index", project.tags)
+    project.tags.splice(project.tags.indexOf(this.tagid), 1);
+    console.log("project.tags 2", project.tags)
+    return project.save();
   }
 }
