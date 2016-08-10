@@ -176,17 +176,16 @@ router.get('/template', function(req, res, next){
 })
 
 router.post('/template', function(req, res, next) {
-  var tokens = [];
-  tokens.push({'tokenName': req.body.tokenName, 'tokenDisplayName': req.body.tokenDisplayName, 'tokenDescription': req.body.tokenDescription, 'tokenCode': '123456789'})
+  // var tokens = [];
+  // tokens.push({'tokenName': req.body.token, 'tokenDisplayName': req.body.tokenName, 'tokenDescription': req.body.tokenDescription})
   var m = new Master({
     name: req.body.type,
     displayName: req.body.displayName,
-    tokens: tokens,
+    tokens: req.body.fields,
     tagDescription: req.body.description,
-    hasCallback: true,
+    hasCallback: req.body.hasCallback,
     approved: false,
-    template: req.body.custom,
-    callbackCode: 'abcdefg'
+    template: req.body.template
   })
   m.save(function(err, master) {
     if (err) console.log(error, "HEyyyyyy got an error");

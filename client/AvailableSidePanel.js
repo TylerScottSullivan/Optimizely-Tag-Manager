@@ -3,13 +3,26 @@ var AvailableInputFields = require('./AvailableInputFields');
 
 var AvailableSidePanel = React.createClass({
   getInitialState: function() {
+    var triggerOptions;
+    $.ajax({
+      url: '/options',
+      type: 'GET',
+      success: function(data) {
+        console.log('get options successful', data);
+        triggerOptions = data;
+      },
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
       projectId: "6668600890",
       trackingTrigger: 'inHeader',
       active: true,
-      errors: {}
+      errors: {},
+      triggerOptions: triggerOptions
     };
   },
 
@@ -101,6 +114,12 @@ var AvailableSidePanel = React.createClass({
 		               <div className="flex--1 sd-headsmall"> Called On: </div>
 		            </div>
 				    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+              {this.state.triggerOptions.map((trigger) => {
+
+
+                
+                })
+              }
 				      <option value='inHeader'>In header</option>
 				      <option value='onPageLoad'>On page load</option>
 				    </select>
