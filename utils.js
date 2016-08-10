@@ -183,6 +183,9 @@ module.exports = {
     return Tag.find({'hasCallback': true, 'projectId': this.project.projectId});
   },
   getOptions: function(tags) {
+        if (tags.length === 0) {
+          return '[]';
+        }
         //get names of options
         this.tagNames = tags.map(function(item) {
           return item.name;
@@ -198,7 +201,7 @@ module.exports = {
         //make call to optimizely for all pages associated with the id
         var token = process.env.API_TOKEN;
         return rp({
-             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + 6668600890,
+             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.tags[i].projectId,
              method: 'GET',
              headers: {
                "Token": token,
@@ -211,8 +214,6 @@ module.exports = {
         //res.send(JSON.stringify(tags));
   },
   addProjectOptions: function(data) {
-    console.log("TAGS", this.tagNames)
-    console.log("DATA", data)
     var eventNames = JSON.parse(data).map(function(item) {
       return item.api_name;
     })
