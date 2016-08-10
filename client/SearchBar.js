@@ -18,6 +18,19 @@ const customStyles = {
 
 var SearchBar = React.createClass({
 	  getInitialState: function() {
+      var triggerOptions;
+      $.ajax({
+        url: '/options' + window.location.search,
+        type: 'GET',
+        success: function(data) {
+          console.log('get options successful');
+          this.setState({triggerOptions: data})
+          console.log('triggerOptions', this.state.triggerOptions)
+        }.bind(this),
+        error: function(err) {
+          console.error("Err posting", err.toString());
+        }
+      });
 	    return {
         modalIsOpen: false,
         name: 'custom',
@@ -26,9 +39,10 @@ var SearchBar = React.createClass({
         fields: '',
         template: '',
         trackingTrigger: 'inHeader',
-        projectId: "6668600890",
+        projectId: "6919181723",
         active: false,
-        errors: {}
+        errors: {},
+        triggerOptions: []
       };
 	  },
 
@@ -161,15 +175,17 @@ var SearchBar = React.createClass({
                   {(errorTagDescription) ? <div className='warning'>{this.state.errors['tagDescription']}</div> : null }
 
                 <div className="flex">
-				               <div className="flex--1 sd-headsmall"> Called On: </div>
-				            </div>
-							    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
-							      <option value='inHeader'>In header</option>
-							      <option value='onPageLoad'>On page load</option>
-							    </select>
-				            <div className="flex">
-				               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
-				            </div>
+				          <div className="flex--1 sd-headsmall"> Called On: </div>
+				        </div>
+                <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+                  {this.state.triggerOptions.map((trigger) => {
+                    return <option value={trigger}>{trigger}</option>
+                    })
+                  }
+    				    </select>
+		            <div className="flex">
+		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
+		            </div>
 						    <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
 						      <option value='inHeader'>Enabled</option>
 						      <option value='onPageLoad'>Disabled</option>

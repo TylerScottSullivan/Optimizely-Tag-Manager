@@ -5,12 +5,12 @@ var AvailableSidePanel = React.createClass({
   getInitialState: function() {
     var triggerOptions;
     $.ajax({
-      url: '/options',
+      url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful', data);
-        triggerOptions = data;
-      },
+        console.log('get options successful');
+        this.setState({triggerOptions: data})
+      }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
       }
@@ -18,11 +18,11 @@ var AvailableSidePanel = React.createClass({
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      projectId: "6668600890",
+      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: true,
       errors: {},
-      triggerOptions: triggerOptions
+      triggerOptions: null
     };
   },
 
@@ -96,10 +96,10 @@ var AvailableSidePanel = React.createClass({
 				<div className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
 			      	<div className="flex">
-				    	<div> <img className='sidepanel-logo' src={this.props.info.logo}/> </div>
-				    	<div className='flex flex-v-center'>
-				      		<div className = 'sidepanel-displayname'> {this.props.info.displayName} </div>
-				     	</div>
+				    	  <div> <img className='sidepanel-logo' src={this.props.info.logo}/> </div>
+  				    	<div className='flex flex-v-center'>
+  				      		<div className = 'sidepanel-displayname'> {this.props.info.displayName} </div>
+  				     	</div>
 		        	</div>
 		        	<div className='sd-headsmall deschead'> DESCRIPTION </div>
 	            	<div className='tagdesc'>{this.props.info.tagDescription}</div>
@@ -115,13 +115,9 @@ var AvailableSidePanel = React.createClass({
 		            </div>
 				    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
               {this.state.triggerOptions.map((trigger) => {
-
-
-                
+                return <option value={trigger}>{trigger}</option>
                 })
               }
-				      <option value='inHeader'>In header</option>
-				      <option value='onPageLoad'>On page load</option>
 				    </select>
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>

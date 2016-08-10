@@ -7,7 +7,7 @@ var AvailableTagsPage = React.createClass({
     return {
       splicedArray: [],
       sidePanel: {},
-      currentProject: "6668600890",
+      currentProject: "6919181723",
       master: [],
       downloadedProject: []
     }

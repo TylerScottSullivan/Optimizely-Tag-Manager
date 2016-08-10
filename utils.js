@@ -46,7 +46,7 @@ module.exports = {
       pageName: this.body.pageName,
       eventName: this.body.eventName
     })
-    console.log('thi is the new tag', t)
+    console.log('this is the new tag', t)
     return t.save()
   },
   updateProject: function(tag) {
@@ -193,7 +193,7 @@ module.exports = {
         //make call to optimizely for all pages associated with the id
         var token = process.env.API_TOKEN;
         return rp({
-             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + 6668600890,
+             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + 6919181723,
              method: 'GET',
              headers: {
                "Token": token,

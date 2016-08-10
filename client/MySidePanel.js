@@ -4,14 +4,27 @@ var MyInputFields = require('./MyInputFields');
 var MySidePanel = React.createClass({
 
   getInitialState: function() {
+    var triggerOptions;
+    $.ajax({
+      url: '/options' + window.location.search,
+      type: 'GET',
+      success: function(data) {
+        console.log('get options successful');
+        this.setState({triggerOptions: data})
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
     return {
       info: this.props.info,
       fields: this.props.info.fields,
-      projectId: "6668600890",
+      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: 'true',
       tagId: this.props.info._id,
-      errors: {}
+      errors: {},
+      triggerOptions: null
     };
   },
 
@@ -116,10 +129,12 @@ var MySidePanel = React.createClass({
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Called On: </div>
 		            </div>
-				    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
-				      <option value='inHeader'>In header</option>
-				      <option value='onPageLoad'>On page load</option>
-				    </select>
+                <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+                  {this.state.triggerOptions.map((trigger) => {
+                    return <option value={trigger}>{trigger}</option>
+                    })
+                  }
+    				    </select>
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
 		            </div>
