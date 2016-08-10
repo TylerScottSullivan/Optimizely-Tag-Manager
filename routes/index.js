@@ -35,28 +35,28 @@ router.post('/request', function(req, res, next) {
   })
 })
 
-router.post('/customSnippet', function(req, res, next) {
-  console.log('req.body', req.body)
-  var t = new Tag({
-    name: 'custom',
-    displayName: req.body.name,
-    tagDescription: req.body.tagDescription,
-    fields: [],
-    approved: true,
-    custom: req.body.custom,
-    trackingTrigger: req.body.trackingTrigger,
-    projectId: req.body.projectId,
-    active: req.body.active
-  })
-  t.save(function(err, tag) {
-    if (err) {
-      console.log("Error in index.js line 49 saving custom snippet tag", err)
-    }
-    else {
-      res.status(200).send("Okay with saving the custom snippet")
-    }
-  })
-})
+// router.post('/customSnippet', function(req, res, next) {
+//   console.log('req.body', req.body)
+//   var t = new Tag({
+//     name: 'custom',
+//     displayName: req.body.name,
+//     tagDescription: req.body.tagDescription,
+//     fields: [],
+//     approved: true,
+//     custom: req.body.custom,
+//     trackingTrigger: req.body.trackingTrigger,
+//     projectId: req.body.projectId,
+//     active: req.body.active
+//   })
+//   t.save(function(err, tag) {
+//     if (err) {
+//       console.log("Error in index.js line 49 saving custom snippet tag", err)
+//     }
+//     else {
+//       res.status(200).send("Okay with saving the custom snippet")
+//     }
+//   })
+// })
 
 router.post('/', function(req, res, next) {
 
@@ -121,6 +121,7 @@ router.get('/master', (req, res, next) => {
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/download/:projectid', (req, res, next) => {
+  var utils = require('../utils')
   Tag.find({'projectId': req.params.projectid}, function(err, tags) {
     if (err) {
       console.log('err finding tags in download/:projectid', err)
@@ -189,7 +190,7 @@ router.post('/template', function(req, res, next) {
   var m = new Master({
     name: req.body.type,
     displayName: req.body.displayName,
-    tokens: tokens,
+    tokens: req.body.fields,
     tagDescription: req.body.description,
     hasCallback: req.body.hasCallback,
     approved: false,

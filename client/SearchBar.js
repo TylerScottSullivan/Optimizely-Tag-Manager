@@ -20,18 +20,19 @@ var SearchBar = React.createClass({
 	  getInitialState: function() {
 	    return {
         modalIsOpen: false,
-        name: '',
+        name: 'custom',
+        displayName: null,
         tagDescription: '',
         fields: '',
-        custom: '',
+        template: '',
         trackingTrigger: 'inHeader',
         projectId: "6668600890",
-        active: false
+        active: false,
+        errors: {}
       };
 	  },
 
 	  openModal: function() {
-	  	// console.log('opened modal')
 	    this.setState({modalIsOpen: true});
 	  },
 
@@ -46,25 +47,48 @@ var SearchBar = React.createClass({
 
     addCustomTag: function() {
       var data = {};
+      var errors = {}
+
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
       data.projectId = this.state.projectId;
-      data.name = this.state.name;
-      data.tagDescription = this.state.tagDescription;
-      data.custom = this.state.custom;
       this.setState({modalIsOpen: false});
+      data.type = this.state.name;
 
-      return $.ajax({
-        url: '/',
-        type: 'POST',
-        data: data,
-        success: function(data) {
-          console.log('Add custom tag successful')
-        },
-        error: function(err) {
-          console.error("Err posting", err.toString());
-        }
-      });
+      if (! this.state.name) {
+        errors['displayName'] = 'name is required';
+      } else {
+        data.displayName = this.state.displayName;
+      }
+
+      if (! this.state.tagDescription) {
+        errors['tagDescription'] = 'tag description is required';
+      } else {
+        data.tagDescription = this.state.tagDescription;
+      }
+
+      if (! this.state.template) {
+        errors['template'] = 'please add a custom tag';
+      } else {
+        data.template = this.state.template;
+      }
+      if (Object.keys(errors).length === 0) {
+        return $.ajax({
+          url: '/' + window.location.search,
+          type: 'POST',
+          data: data,
+          success: function(data) {
+            console.log('Add custom tag successful')
+          },
+          error: function(err) {
+            console.error("Err posting", err.toString());
+          }
+        });
+      } else {
+        this.setState({
+          errors: errors
+        });
+      }
     },
 
     onChange: function(e) {
@@ -75,11 +99,15 @@ var SearchBar = React.createClass({
 
     onChangeSnippet: function(newVal) {
         this.setState({
-          custom: newVal
+          template: newVal
         });
     },
 
 	  render: function() {
+      var errorName = (this.state.errors['displayName']) ? 'validation' : '';
+      var errorTagDescription = (this.state.errors['tagDescription']) ? 'validation' : '';
+      var errorCustom = (this.state.errors['template']) ? 'validation' : '';
+
 	    return (
 	    	<div>
 	        <ul className="flex push-double--ends">
@@ -104,29 +132,35 @@ var SearchBar = React.createClass({
 				      	<div className='modaltext'>
 					      <div> Please create your own tag by inserting Javascript </div>
 					      <div className="editor">
+
 					        <AceEditor
-					        	className="editor"
+					        	className={`editor ${errorCustom}`}
   							    mode="javascript"
   							    theme="tomorrow"
-  							    name="custom"
+  							    name="template"
   							    height="120px"
   							    width="620px"
   							    editorProps={{$blockScrolling: true}}
-                    value={this.state.custom}
+                    value={this.state.template}
                     onChange={this.onChangeSnippet}
                   />
+                  {(errorCustom) ? <div className='warning'>{this.state.errors['template']}</div> : null }
 						  </div>
               <div className="flex">
                      <div className="flex--1 sd-headsmall"> Name</div>
                 </div>
                 <div className="flex--1"> Please add the name of your snippet. </div>
-                <input required name='name' value={this.state.name} onChange={this.onChange}/>
-				   		  <div className="flex">
+                <input name='displayName' className={`${errorName}`} value={this.state.displayName} onChange={this.onChange}/>
+                {(errorName) ? <div className='warning'>{this.state.errors['displayName']}</div> : null }
+
+                <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Description</div>
 				          </div>
 				          <div className="flex--1"> Please add the description of your tag below. </div>
-				          <input name='tagDescription' value={this.state.tagDescription} onChange={this.onChange}/>
-						    <div className="flex">
+				          <input name='tagDescription' className={`$(errorTagDescription)`} value={this.state.tagDescription} onChange={this.onChange}/>
+                  {(errorTagDescription) ? <div className='warning'>{this.state.errors['tagDescription']}</div> : null }
+
+                <div className="flex">
 				               <div className="flex--1 sd-headsmall"> Called On: </div>
 				            </div>
 							    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
