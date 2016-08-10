@@ -113,8 +113,8 @@ var SearchBar = React.createClass({
   							    height="120px"
   							    width="620px"
   							    editorProps={{$blockScrolling: true}}
-                    value={this.state.custom}
-                    onChange={this.onChangeSnippet}
+                    			value={this.state.custom}
+                    			onChange={this.onChangeSnippet}
                   />
 						  </div>
               <div className="flex">

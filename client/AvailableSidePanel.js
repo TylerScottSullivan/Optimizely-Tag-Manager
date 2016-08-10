@@ -149,7 +149,9 @@ var AvailableSidePanel = React.createClass({
                       <button className="btn-uniform-add button button--highlight" disabled>Add Tag</button>
                     </div>
                     <div className="greenbox">
-                      This tag has now been added to 'My Tags.' Go to 'My Tags' to Update, Delete, or Disable this tag.
+                      <p> This tag has now been added to 'My Tags.' This change may take up to 10 minutes before it is updated within your Optimizely tag. </p>
+
+                      <p> Go to 'My Tags' to Update, Delete, or Disable this tag. </p>
                     </div>
                   </div>
               :
