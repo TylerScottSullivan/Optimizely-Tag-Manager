@@ -50,7 +50,7 @@ var AvailableSidePanel = React.createClass({
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.projectId = this.state.projectId;
-    data.type = this.props.info.name;
+    data.name = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
@@ -61,14 +61,20 @@ var AvailableSidePanel = React.createClass({
         url: '/' + window.location.search,
         type: 'POST',
         data: data,
-        success: function(data) {
+        success: function(response) {
           console.log('Add tag successful');
-        },
+          console.log(data, "data");
+          console.log(this.props.downloadedProject.concat(data), "concated downloadedProject")
+          this.props.onDownload(this.props.downloadedProject.concat(data))
+          console.log('datapushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhed')
+        }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
+          console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr help')
         }
       });
     } else {
+      console.log('there is an error omg');
       this.setState({
         errors: errors
       });
@@ -85,6 +91,7 @@ var AvailableSidePanel = React.createClass({
 
 //this change the enable and triggers
   onChange: function(e) {
+    e.preventDefault();
     console.log(e, "e")
     if (e.target.name === "active") {
       if (this.state.active === false) {

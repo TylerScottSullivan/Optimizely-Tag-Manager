@@ -10,9 +10,9 @@ var AvailableTableRow = React.createClass({
           <td id="row-centered">{this.props.rowinfo.displayName}</td>
           <td id="row-centered">{this.props.rowinfo.category} </td>
           {this.props.rowinfo.added ? 
-            <td id="row-centered" align="center"> &nbsp; Added </td>
+            <td id="row-centered"> &nbsp; Added </td>
             :
-            <td id="row-centered" align="center"> Unadded </td>
+            <td id="row-centered"> Unadded </td>
           }
 
        </tr>

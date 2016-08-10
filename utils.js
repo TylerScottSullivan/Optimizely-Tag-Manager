@@ -24,9 +24,6 @@ module.exports = {
     var fields = [];
     // console.log('masterssss', masters)
     var master = masters.filter(function(item) {
-      // console.log('this.body.type', this.body.type)
-      // console.log('this.body', this.body)
-
       return item.name === this.body.type
     }.bind(this))[0];
     // console.log('master',  master)
@@ -68,13 +65,11 @@ module.exports = {
       }.bind(this))
   },
   populateProject: function(updatedProject) {
-    console.log("[stage] populateProject");
+    console.log("this is my updated project: ", updatedProject)
     return updatedProject.populate({path: 'tags'}).execPopulate()
   },
   getJavascript: function(populatedProject) {
-    console.log("[stage] getJavascript");
-
-    console.log("[getJavascript] masters", this.masters);
+    this.project = populatedProject;
     var tags = this.project.tags;
 
 //do everything separately
@@ -161,6 +156,7 @@ module.exports = {
     //add our javascript piece to the originalJavascriptStartSection
     var finalJavascript = originalJavascriptStartSection + "//--------------------HorizonsJavascriptStart--------------------\n" + this.combinedJavascript + '\n//--------------------HorizonsJavascriptEnd--------------------' + originalJavascriptEndSection;
     var token = process.env.API_TOKEN;
+    console.log("PUTTING", finalJavascript)
     return rp({
          uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
          method: 'PUT',
@@ -213,15 +209,15 @@ module.exports = {
     })
     return this.tagNames.concat(eventNames);
   },
-  approve: function(master) {
-    //change approved to true
-    master.approved = true;
-    master.save(function(err, master) {
-      if (err) console.log(err, "error in approve of utils")
-      else {
-        console.log("THIS IS THE MASTER AFTER UPDATE IN APPROVE OF UTILS", master);
-        return master;
-      }
-    })
+  getProject: function(projectId, tagid) {
+    this.tagid = tagid;
+    return Project.findOne({'projectId': projectId})
+  },
+  removeTagFromProject: function(project) {
+    console.log("project.tags 1", project.tags)
+    console.log("project index", project.tags)
+    project.tags.splice(project.tags.indexOf(this.tagid), 1);
+    console.log("project.tags 2", project.tags)
+    return project.save();
   }
 }

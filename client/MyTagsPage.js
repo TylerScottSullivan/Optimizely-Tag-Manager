@@ -31,9 +31,6 @@ var MyTagsPage = React.createClass({
       var newObj = {};
       for (var i = 0; i < this.state.downloadedProject.length; i++) {
         //this is to render the custom tags
-        if (this.state.downloadedProject[i].name === 'custom') {
-          newArray.push(this.state.downloadedProject[i])
-        }
         for (var j = 0; j < this.state.master.length; j++) {
           if (this.state.downloadedProject[i].name === this.state.master[j].name) {
             newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
@@ -44,7 +41,7 @@ var MyTagsPage = React.createClass({
       this.setState({
         splicedArray: newArray
       })
-      // console.log('newArrayyy', this.state.splicedArray)
+      console.log('newArrayyy', newArray)
 
     }).catch((e) => {
         console.log("Err: " , e);

@@ -88,11 +88,20 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/deletetag/:tagid', function(req, res, next) {
-  Tag.remove({"_id": req.params.tagid}, function(err, results) {
-    if (err) console.log('error deleting', err)
-    console.log(results);
-    res.status(200).send("ITS ALL GOOD IN THE HOOD")
-  })
+  var utils = require('../utils')
+  Tag.remove({"_id": req.params.tagid})
+     .then(utils.getProject.bind(utils, 6668600890, req.params.tagid))
+     .then(utils.removeTagFromProject.bind(utils))
+     .then(utils.populateProject.bind(utils))
+     .then(utils.getJavascript.bind(utils))
+     .then(utils.buildJavascript.bind(utils))
+     .then(function(response) {
+       console.log("GOT TO THE END OF THE DELTE CHAIN")
+       res.status(200).send('I am alright')
+     })
+     .catch(function(err) {
+       console.log("Error at the end of /", err)
+     })
 })
 
 // /masters
@@ -112,6 +121,7 @@ router.get('/master', (req, res, next) => {
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/download/:projectid', (req, res, next) => {
+  var utils = require('../utils')
   Tag.find({'projectId': req.params.projectid}, function(err, tags) {
     if (err) {
       console.log('err finding tags in download/:projectid', err)

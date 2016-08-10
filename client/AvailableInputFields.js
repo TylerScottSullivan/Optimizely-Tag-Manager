@@ -2,7 +2,6 @@ var React = require('react');
 
 var AvailableInputFields = React.createClass({
 	render: function () {
-	console.log(this.props, "props for available input fields")
     var error = (this.props.error) ? 'validation' : '';
 		return (
 			<div>
