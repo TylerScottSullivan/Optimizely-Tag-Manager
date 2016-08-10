@@ -26,10 +26,20 @@
     <label>Enter a token description, code 123456789:</label>
     <input type="text" class="form-control" name='tokenDescription'>
   </div>
+  <label>Is it callbackable?:</label>
+  <select class="form-control" name='usingOurCallback'>
+    <option value='true'>Yes</option>
+    <option value='false'>No</option>
+  </select>
   <div class="form-group">
-    <label>Your callback code is abcdefg:</label>
-    <!-- <input type="text" class="form-control" name='WRITE_TOKEN'> -->
+    <label>What are we looking for?:</label>
+    <input type="text" class="form-control" name='checkFor'>
   </div>
+  <label>What type should it be when ready?:</label>
+  <select class="form-control" name='checkForType'>
+    <option value='function'>function</option>
+    <option value='object'>object</option>
+  </select>
   <div class="form-group">
   <label for="comment">Enter your code</label>
   <textarea name="custom" class="form-control" rows="5" id="comment"></textarea>

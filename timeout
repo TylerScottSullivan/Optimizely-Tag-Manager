@@ -1,0 +1,297 @@
+var x = function(checkFor, callback) {
+  if(checkFor instanceof Array) {
+    x(checkFor, callback);
+  }
+  else {
+    callback();
+  };
+};
+setTimeout(x(_gaq, function() {console.log('wow i worked!');}), 3000);
+
+
+var interval = window.setInterval(function(master.checkFor, innerCallback) { if(typeof(master.checkFor)) === master.checkForType {callback()}}, 2000 );
+
+window.setTimeout(function(){ window.clearInterval(interval); }, 5000);
+
+need to know the master shit here
+
+
+var onEventsObjectFunction = function() {
+    return {};
+};
+(function(e, t) {
+    var n = e.amplitude || {
+        _q: [],
+        _iq: {}
+    };
+    var r = t.createElement("script");
+    r.type = "text/javascript";
+    r.async = true;
+    r.src = "https://d24n15hnbwhuhn.cloudfront.net/libs/amplitude-3.0.2-min.gz.js";
+    r.onload = function() {
+        e.amplitude.runQueuedFunctions();
+    };
+    var i = t.getElementsByTagName("script")[0];
+    i.parentNode.insertBefore(r, i);
+
+    function s(e, t) {
+        e.prototype[t] = function() {
+            this._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            return this;
+        };
+    }
+    var o = function() {
+        this._q = [];
+        return this;
+    };
+    var a = ["add", "append", "clearAll", "prepend", "set", "setOnce", "unset"];
+    for (var u = 0; u < a.length; u++) {
+        s(o, a[u]);
+    }
+    n.Identify = o;
+    var c = function() {
+        this._q = [];
+        return this;
+    };
+    var p = ["setProductId", "setQuantity", "setPrice", "setRevenueType", "setEventProperties"];
+    for (var l = 0; l < p.length; l++) {
+        s(c, p[l]);
+    }
+    n.Revenue = c;
+    var d = ["init", "logEvent", "logRevenue", "setUserId", "setUserProperties", "setOptOut", "setVersionName", "setDomain", "setDeviceId", "setGlobalUserProperties", "identify", "clearUserProperties", "setGroup", "logRevenueV2", "regenerateDeviceId"];
+
+    function v(e) {
+        function t(t) {
+            e[t] = function() {
+                e._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            };
+        }
+        for (var n = 0; n < d.length; n++) {
+            t(d[n]);
+        }
+    }
+    v(n);
+    n.getInstance = function(e) {
+        e = (!e || e.length === 0 ? "$default_instance" : e).toLowerCase();
+        if (!n._iq.hasOwnProperty(e)) {
+            n._iq[e] = {
+                _q: []
+            };
+            v(n._iq[e]);
+        }
+        return n._iq[e];
+    };
+    e.amplitude = n;
+})(window, document);
+
+amplitude.getInstance().init(ABHIFITNESS);
+'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function('+req.body.checkFor+', '+req.body.checkFor+'_callback) {if ((typeof('+req.body.checkFor+')) === 'function') {callback();}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 5000);'
+$(document).ready(function() {});
+
+
+
+var onEventsObjectFunction = function() {
+    return {};
+};
+(function(e, t) {
+    var n = e.amplitude || {
+        _q: [],
+        _iq: {}
+    };
+    var r = t.createElement("script");
+    r.type = "text/javascript";
+    r.async = true;
+    r.src = "https://d24n15hnbwhuhn.cloudfront.net/libs/amplitude-3.0.2-min.gz.js";
+    r.onload = function() {
+        e.amplitude.runQueuedFunctions();
+    };
+    var i = t.getElementsByTagName("script")[0];
+    i.parentNode.insertBefore(r, i);
+
+    function s(e, t) {
+        e.prototype[t] = function() {
+            this._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            return this;
+        };
+    }
+    var o = function() {
+        this._q = [];
+        return this;
+    };
+    var a = ["add", "append", "clearAll", "prepend", "set", "setOnce", "unset"];
+    for (var u = 0; u < a.length; u++) {
+        s(o, a[u]);
+    }
+    n.Identify = o;
+    var c = function() {
+        this._q = [];
+        return this;
+    };
+    var p = ["setProductId", "setQuantity", "setPrice", "setRevenueType", "setEventProperties"];
+    for (var l = 0; l < p.length; l++) {
+        s(c, p[l]);
+    }
+    n.Revenue = c;
+    var d = ["init", "logEvent", "logRevenue", "setUserId", "setUserProperties", "setOptOut", "setVersionName", "setDomain", "setDeviceId", "setGlobalUserProperties", "identify", "clearUserProperties", "setGroup", "logRevenueV2", "regenerateDeviceId"];
+
+    function v(e) {
+        function t(t) {
+            e[t] = function() {
+                e._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            };
+        }
+        for (var n = 0; n < d.length; n++) {
+            t(d[n]);
+        }
+    }
+    v(n);
+    n.getInstance = function(e) {
+        e = (!e || e.length === 0 ? "$default_instance" : e).toLowerCase();
+        if (!n._iq.hasOwnProperty(e)) {
+            n._iq[e] = {
+                _q: []
+            };
+            v(n._iq[e]);
+        }
+        return n._iq[e];
+    };
+    e.amplitude = n;
+})(window, document);
+
+amplitude.getInstance().init(ABHIFITNESS);
+var amplitude_callback = function() {};
+var interval = window.setInterval(function(amplitude, amplitude_callback) {
+    if ((typeof amplitude) === 'function') {
+        callback();
+    }
+}, 2000);
+window.setTimeout(function() {
+    window.clearInterval(interval);
+}, 5000);
+$(document).ready(function() {});
+
+
+//new
+template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function('+req.body.checkFor+', '+req.body.checkFor+'_callback) {if ((typeof '+req.body.checkFor+') === \''+req.body.checkForType+'\') {'+req.body.checkFor+'_callback();}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 5000);
+
+//old
+template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function('+req.body.checkFor+', '+req.body.checkFor+'_callback) {if ((typeof('+req.body.checkFor+')) === '+req.body.checkForType+') {callback();}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 5000);'
+
+template += '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === '+req.body.checkForType+') {amplitude_callback();window.clearInterval(interval);}}, 2000);
+window.setTimeout(function() {window.clearInterval(interval);}, 4000);
+
+
+
+
+
+
+
+
+
+
+
+console.log("more time3");
+//--------------------HorizonsJavascriptStart--------------------
+var onEventsObjectFunction = function() {
+    return {};
+};
+(function(i, s, o, g, r, a, m) {
+    i['GoogleAnalyticsObject'] = r;
+    i[r] = i[r] || function() {
+        (i[r].q = i[r].q || []).push(arguments);
+    };
+    i[r].l = 1 * new Date();
+    a = s.createElement(o);
+    m = s.getElementsByTagName(o)[0];
+    a.async = 1;
+    a.src = g;
+    m.parentNode.insertBefore(a, m);
+})(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+ga('create', 'UA-81435328-1', 'auto');
+ga('send', 'pageview');
+ga(function() {
+
+});
+(function(e, t) {
+    var n = e.amplitude || {
+        _q: [],
+        _iq: {}
+    };
+    var r = t.createElement("script");
+    r.type = "text/javascript";
+    r.async = true;
+    r.src = "https://d24n15hnbwhuhn.cloudfront.net/libs/amplitude-3.0.2-min.gz.js";
+    r.onload = function() {
+        e.amplitude.runQueuedFunctions();
+    };
+    var i = t.getElementsByTagName("script")[0];
+    i.parentNode.insertBefore(r, i);
+
+    function s(e, t) {
+        e.prototype[t] = function() {
+            this._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            return this;
+        };
+    }
+    var o = function() {
+        this._q = [];
+        return this;
+    };
+    var a = ["add", "append", "clearAll", "prepend", "set", "setOnce", "unset"];
+    for (var u = 0; u < a.length; u++) {
+        s(o, a[u]);
+    }
+    n.Identify = o;
+    var c = function() {
+        this._q = [];
+        return this;
+    };
+    var p = ["setProductId", "setQuantity", "setPrice", "setRevenueType", "setEventProperties"];
+    for (var l = 0; l < p.length; l++) {
+        s(c, p[l]);
+    }
+    n.Revenue = c;
+    var d = ["init", "logEvent", "logRevenue", "setUserId", "setUserProperties", "setOptOut", "setVersionName", "setDomain", "setDeviceId", "setGlobalUserProperties", "identify", "clearUserProperties", "setGroup", "logRevenueV2", "regenerateDeviceId"];
+
+    function v(e) {
+        function t(t) {
+            e[t] = function() {
+                e._q.push([t].concat(Array.prototype.slice.call(arguments, 0)));
+            };
+        }
+        for (var n = 0; n < d.length; n++) {
+            t(d[n]);
+        }
+    }
+    v(n);
+    n.getInstance = function(e) {
+        e = (!e || e.length === 0 ? "$default_instance" : e).toLowerCase();
+        if (!n._iq.hasOwnProperty(e)) {
+            n._iq[e] = {
+                _q: []
+            };
+            v(n._iq[e]);
+        }
+        return n._iq[e];
+    };
+    e.amplitude = n;
+})(window, document);
+
+amplitude.getInstance().init('ABHIFITNESS');
+var amplitude_callback = function() {
+    console.log("THIS IS A TOKEN: ", "SEGMENTTOKENDUDE");
+    console.log(function() {});
+};
+var interval = window.setInterval(function() {
+
+            if ((typeof amplitude) === 'object') {
+                amplitude_callback();
+              window.clearInterval(interval);
+            }
+        }, 2000);
+window.setTimeout(function() {
+    window.clearInterval(interval);
+}, 4000);
+$(document).ready(function() {});
+//--------------------HorizonsJavascriptEnd--------------------
+console.log("HAYYYYY I'm OUTSIDE THIS");

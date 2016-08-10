@@ -12,6 +12,7 @@ var Handlebars = require('handlebars')
 module.exports = {
   body: null,
   project: null,
+  tagid: null,
   findMaster: function(project) {
     console.log("[stage] findMaster");
     this.project = project;
@@ -74,6 +75,10 @@ module.exports = {
 
 //do everything separately
 
+    tags = tags.filter(function(item) {
+      return item.active === true;
+    })
+
     //wrap page type things
     var inHeaders = tags.filter(function(item){
                     return item.trackingTrigger === "inHeader";
@@ -91,18 +96,22 @@ module.exports = {
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
-      inHeaderJavascript = inHeaders[i].render(tags, this.masters);
+      inHeaderJavascript += inHeaders[i].render(tags, this.masters);
     }
     var onDocumentReadyJavascript = '';
     for(var i = 0; i < onDocumentReadys.length; i++) {
       //TODO: wrap this in onDocumentReady here, not in function
-      onDocumentReadyJavascript = onDocumentReadys[i].render(tags, this.masters);
+      onDocumentReadyJavascript += onDocumentReadys[i].render(tags, this.masters);
     }
     var pagesToIds = {'select_dropdown_1': "6824293401", "shopping_cart": "6824330423"}
 
+    //to make callbacks work: we are going to know what the "checkFor" and "checkForType"
+    //we are going to need to do this when we are rendering
+    //we want to add var interval = window.setInterval(function(master.checkFor, innerCallback) { if(typeof(master.checkFor)) === master.checkForType {callback()}}, 2000 );
+    //window.setTimeout(function(){ window.clearInterval(interval); }, 5000);
+    //to the end of the code every time we render (only if they indicate they want it to be callBackable)
 
-
-    //get all pages call
+    //get all events call
     var onEventsObject = {};
     var marker = false;
     for(var i = 0; i < onEvents.length; i++) {
@@ -171,7 +180,7 @@ module.exports = {
   },
   getTagOptions: function(project) {
     this.project = project;
-    return Tag.find({'hasCallback': true});
+    return Tag.find({'hasCallback': true, 'projectId': this.project.projectId});
   },
   getOptions: function(tags) {
         //get names of options
@@ -210,7 +219,13 @@ module.exports = {
     return this.tagNames.concat(eventNames);
   },
   getProject: function(projectId, tagid) {
-    this.tagid = tagid;
+    if (tagid) {
+      this.tagid = tagid;
+    }
+    //using this method for both passing in a projectId or a tag
+    if(projectId.projectId) {
+      projectId = projectId.projectId
+    }
     return Project.findOne({'projectId': projectId})
   },
   removeTagFromProject: function(project) {
@@ -219,5 +234,23 @@ module.exports = {
     project.tags.splice(project.tags.indexOf(this.tagid), 1);
     console.log("project.tags 2", project.tags)
     return project.save();
+  },
+  setMaster: function(master) {
+    //set the master and find the correct tag
+    this.master = master;
+    return Tag.findById(req.params.tagid)
+  },
+  updateTag: function(tag) {
+    // tag.name = req.body.name;
+    for(var i = 0; i < this.master.tokens.length; i++) {
+      fields.push({'name': this.master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
+    }
+    tag.fields = fields;
+    tag.approved = this.body.approved;
+    tag.trackingTrigger = this.body.trackingTrigger;
+    tag.template = this.body.template;
+    tag.projectId = this.body.projectId;
+    tag.active = this.body.active;
+    return tag.save();
   }
 }
