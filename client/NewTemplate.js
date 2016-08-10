@@ -121,7 +121,7 @@ var NewTemplate = React.createClass({
              var tokenHere;
              var token = '{{' + item.tokenName.replace(/ /g, '_') + '}}';
              if (item.tokenName) {
-               tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>{`Your field token name is ${token}`}</div>
+               tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>Your field token name is <code>{token}</code></div>
              } else {
                tokenHere = null;
              }

@@ -53,11 +53,10 @@ var MyTagsPage = React.createClass({
     this.setState({
       sidePanel: rowinfo //this is an object
     });
+    console.log('this is the info passed on', this.state.sidePanel)
   },
 
   render: function() {
-    // console.log('splicedArray', this.state.splicedArray)
-    // console.log('my sidepanelll', this.state.sidePanel)
     return (
       <div className="flex height--1-1">
         <MyTableContent splicedArray={this.state.splicedArray} onSelect={this.onSelect}/>

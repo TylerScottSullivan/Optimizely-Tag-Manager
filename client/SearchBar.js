@@ -25,7 +25,6 @@ var SearchBar = React.createClass({
         success: function(data) {
           console.log('get options successful');
           this.setState({triggerOptions: data})
-          console.log('triggerOptions', this.state.triggerOptions)
         }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());

@@ -474,7 +474,6 @@ var MyInputFields = React.createClass({
 
 	render: function render() {
 		var error = this.props.error ? 'validation' : '';
-		console.log('error name', error);
 		return React.createElement(
 			'div',
 			null,
@@ -500,7 +499,7 @@ var MyInputFields = React.createClass({
 				),
 				' '
 			),
-			React.createElement('input', { name: 'value', className: 'text-input width--200 text-input-styled ' + error, placeholder: this.props.field.placeholder, value: this.props.field.value, onChange: this.props.onChange }),
+			React.createElement('input', { name: 'value', className: 'text-input width--200 text-input-styled ' + error, value: this.props.field.value, onChange: this.props.onChange }),
 			this.props.error !== false ? React.createElement(
 				'div',
 				{ className: 'warning' },
@@ -528,13 +527,13 @@ var MySidePanel = React.createClass({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function (data) {
-        console.log('get options successful');
         this.setState({ triggerOptions: data });
       }.bind(this),
       error: function error(err) {
         console.error("Err posting", err.toString());
       }
     });
+    // console.log('this is the info fields that i want', this.props.info)
     return {
       info: this.props.info,
       fields: this.props.info.fields,
@@ -598,7 +597,6 @@ var MySidePanel = React.createClass({
         errors: errors
       });
     }
-    console.log('errrsssss', this.state.errors);
   },
 
   onDelete: function onDelete() {
@@ -946,11 +944,10 @@ var MyTagsPage = React.createClass({
     this.setState({
       sidePanel: rowinfo //this is an object
     });
+    console.log('this is the info passed on', this.state.sidePanel);
   },
 
   render: function render() {
-    // console.log('splicedArray', this.state.splicedArray)
-    // console.log('my sidepanelll', this.state.sidePanel)
     return React.createElement(
       'div',
       { className: 'flex height--1-1' },
@@ -1123,7 +1120,12 @@ var NewTemplate = React.createClass({
             tokenHere = React.createElement(
               'div',
               { name: 'token', value: token, onChange: _this.onChangeFields },
-              'Your field token name is ' + token
+              'Your field token name is ',
+              React.createElement(
+                'code',
+                null,
+                token
+              )
             );
           } else {
             tokenHere = null;
@@ -1318,7 +1320,6 @@ var SearchBar = React.createClass({
       success: function (data) {
         console.log('get options successful');
         this.setState({ triggerOptions: data });
-        console.log('triggerOptions', this.state.triggerOptions);
       }.bind(this),
       error: function error(err) {
         console.error("Err posting", err.toString());
