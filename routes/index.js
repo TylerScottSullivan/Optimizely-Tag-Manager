@@ -8,6 +8,17 @@ var request = require('request-promise');
 var snippets = require('../snippets')
 var findOrCreate = require('mongoose-findorcreate')
 
+router.use(function(req, res, next) {
+  //getting the signedRequest from Optimizely
+  var signedRequest = req.query.signed_request;
+
+  //decoding the signedRequest using the secret
+  var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
+
+  //setting req.optimizely up for future use
+  req.optimizely = userContext.context.environment;
+  next();
+});
 /* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Express' });
@@ -35,44 +46,14 @@ router.post('/request', function(req, res, next) {
   })
 })
 
-router.post('/customSnippet', function(req, res, next) {
-  console.log('req.body', req.body)
-  var t = new Tag({
-    name: 'custom',
-    displayName: req.body.name,
-    tagDescription: req.body.tagDescription,
-    fields: [],
-    approved: true,
-    custom: req.body.custom,
-    trackingTrigger: req.body.trackingTrigger,
-    projectId: req.body.projectId,
-    active: req.body.active
-  })
-  t.save(function(err, tag) {
-    if (err) {
-      console.log("Error in index.js line 49 saving custom snippet tag", err)
-    }
-    else {
-      res.status(200).send("Okay with saving the custom snippet")
-    }
-  })
-})
-
 router.post('/', function(req, res, next) {
-
-  //getting the signedRequest from Optimizely
-  var signedRequest = req.query.signed_request;
-
-  //decoding the signedRequest using the secret
-  var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
-
   //either find or create a new project object, to which we will append a new tag w/appropriate fields
   var utils = require('../utils')
   utils.body = req.body;
-  Project.findOrCreate({'projectId': userContext.context.environment.current_project},
-                       {'accountId': userContext.context.environment.current_account,
+  Project.findOrCreate({'projectId': req.optimizely.current_project},
+                       {'accountId': req.optimizely.current_account,
                        'tags': [],
-                       'projectId': userContext.context.environment.current_project})
+                       'projectId': req.optimizely.current_project})
         .then(utils.findMaster.bind(utils))
         .then(utils.createTag.bind(utils))
         .then(utils.updateProject.bind(utils))
@@ -90,7 +71,7 @@ router.post('/', function(req, res, next) {
 router.post('/deletetag/:tagid', function(req, res, next) {
   var utils = require('../utils')
   Tag.remove({"_id": req.params.tagid})
-     .then(utils.getProject.bind(utils, 6668600890, req.params.tagid))
+     .then(utils.getProject.bind(utils, req.optimizely.current_project, req.params.tagid))
      .then(utils.removeTagFromProject.bind(utils))
      .then(utils.populateProject.bind(utils))
      .then(utils.getJavascript.bind(utils))
@@ -107,7 +88,7 @@ router.post('/deletetag/:tagid', function(req, res, next) {
 // /masters
 // GET: gets all current master templates
 router.get('/master', (req, res, next) => {
-  Master.find(function(err, masters) {
+  Master.find({"approved": true}, function(err, masters) {
     if (err) {
       console.log("err found in finding masters", err)
     } else {
@@ -136,38 +117,30 @@ router.get('/download/:projectid', (req, res, next) => {
 // /updatetag/:projectid/:tagid
 // Post: updated information for tag
 router.post('/updatetag/:tagid', (req, res, next) => {
-  console.log('req.body ini the bad end', req.body)
-  Tag.findById(req.params.tagid, function(err, tag) {
-    if (err) {
-      console.log('err updating tags', err)
-    } else {
-      // tag.name = req.body.name;
-      tag.fields = JSON.parse(req.body.fields);
-      tag.approved = req.body.approved;
-      // tag.tagDescription = req.body.tagDescription;
-      tag.trackingTrigger = req.body.trackingTrigger;
-      tag.custom = req.body.custom;
-      tag.rank = req.body.rank;
-      tag.projectId = req.body.projectId;
-      tag.active = req.body.active;
-      tag.save(function(err) {
-        if (err) {
-          console.log("err saving tag in update", err)
-        } else {
-          res.send("update success")
-        }
-      })
-    }
-  })
+  var utils = require('../utils')
+  utils.body = req.body;
+  utils.tagid = req.params.tagid;
+  Project.findById(req.optimizely.current_project)
+         .then(utils.findMaster.bind(utils))
+         .then(utils.setMaster.bind(utils))
+         .then(utils.updateTag.bind(utils))
+         .then(utils.getProject.bind(utils))
+         .then(utils.populateProject.bind(utils))
+         .then(utils.getJavascript.bind(utils))
+         .then(utils.buildJavascript.bind(utils))
+         .then(function(response) {
+            res.status(200).send("Tag has been updated.")
+         })
+         .catch(function(err) {
+           console.log("Error at the end of /update", err)
+         })
 })
 
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
+  console.log('I am inside options');
 
-  var signedRequest = req.query.signed_request;
-  var userContext = canvasSdk.extractUserContext(process.env.SECRET, signedRequest);
-
-  Project.find({'projectId': userContext.context.environment.current_project})
+  Project.find({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
@@ -188,15 +161,22 @@ router.get('/template', function(req, res, next){
 router.post('/template', function(req, res, next) {
   var tokens = [];
   tokens.push({'tokenName': req.body.tokenName, 'tokenDisplayName': req.body.tokenDisplayName, 'tokenDescription': req.body.tokenDescription, 'tokenCode': '123456789'})
+  var template = req.body.custom;
+  console.log(req.body.hasCallback)
+  if (req.body.usingOurCallback) {
+    template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === '+req.body.checkForType+') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
+  }
   var m = new Master({
     name: req.body.type,
     displayName: req.body.displayName,
-    tokens: tokens,
+    tokens: req.body.fields,
     tagDescription: req.body.description,
-    hasCallback: true,
+    hasCallback: req.body.hasCallback,
     approved: false,
-    template: req.body.custom,
-    callbackCode: 'abcdefg'
+    template: template,
+    callbackCode: 'abcdefg',
+    checkFor: req.body.checkFor,
+    checkForType: req.body.checkForType
   })
   m.save(function(err, master) {
     if (err) console.log(error, "HEyyyyyy got an error");
@@ -206,26 +186,26 @@ router.post('/template', function(req, res, next) {
   })
 })
 
-router.get('/approve', function(req, res, next) {
-  Master.find({"approved": false}, function(err, masters) {
-    res.render('templateApproval', {masters: masters})
-  })
-})
-
-router.post('/approve', function(req, res, next) {
-  var utils = require('../utils')
-  //TODO this needs to be changed to incorporate master from form
-  //find the master to UPDATE
-  //change it's template to handlebars compiled code
-  //change approved to true
-  Master.findOne({'name': 'segment'})
-        .then(utils.approve.bind(utils))
-        .then(function(response) {
-          res.status(200).send('I am guccigucci')
-        })
-        .catch(function(err) {
-          console.log("Error at the end of /options", err)
-        })
-})
+// router.get('/approve', function(req, res, next) {
+//   Master.find({"approved": false}, function(err, masters) {
+//     res.render('templateApproval', {masters: masters})
+//   })
+// })
+//
+// router.post('/approve', function(req, res, next) {
+//   var utils = require('../utils')
+//   //TODO this needs to be changed to incorporate master from form
+//   //find the master to UPDATE
+//   //change it's template to handlebars compiled code
+//   //change approved to true
+//   Master.findOne({'name': 'segment'})
+//         .then(utils.approve.bind(utils))
+//         .then(function(response) {
+//           res.status(200).send('I am guccigucci')
+//         })
+//         .catch(function(err) {
+//           console.log("Error at the end of /options", err)
+//         })
+// })
 
 module.exports = router;

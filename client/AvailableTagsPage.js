@@ -7,9 +7,9 @@ var AvailableTagsPage = React.createClass({
     return {
       splicedArray: this.props.masters,
       sidePanel: {},
-      currentProject: "6668600890",
-      master: this.props.masters,
-      downloadedProject: this.props.downloadedProject
+      currentProject: "6919181723",
+      master: [],
+      downloadedProject: []
     }
   },
 
@@ -48,7 +48,7 @@ var AvailableTagsPage = React.createClass({
             newArray.push(newObj);
             counter++;
             console.log(newObj.name, "splicedarray pushed")
-          } 
+          }
         }
         if (counter === 0) {
             newArray.push(this.state.master[j]);
