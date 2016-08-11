@@ -174,7 +174,6 @@ router.post('/template', function(req, res, next) {
     hasCallback: req.body.hasCallback,
     approved: false,
     template: template,
-    callbackCode: 'abcdefg',
     checkFor: req.body.checkFor,
     checkForType: req.body.checkForType
   })
