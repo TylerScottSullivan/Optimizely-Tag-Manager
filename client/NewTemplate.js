@@ -66,7 +66,7 @@ var NewTemplate = React.createClass({
 
     console.log('this is the full data', data)
     return $.ajax({
-      url: '/template',
+      url: '/template' + window.location.search,
       type: 'POST',
       data: data,
       success: function(data) {

@@ -96,7 +96,7 @@ var MySidePanel = React.createClass({
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
-        url: '/updatetag/' + this.props.info._id,
+        url: '/updatetag/' + this.props.info._id + window.location.search,
         type: 'POST',
         data: data,
         success: function(data) {
@@ -114,7 +114,7 @@ var MySidePanel = React.createClass({
 
   onDelete: function() {
     return $.ajax({
-      url: '/deletetag/' + this.props.info._id,
+      url: '/deletetag/' + this.props.info._id + window.location.search,
       type: 'POST',
       // data: {},
       success: function(data) {
@@ -208,7 +208,7 @@ var MySidePanel = React.createClass({
                       onAfterOpen={this.afterOpenModal}
                       onRequestClose={this.closeModal}
                       style={customStyles} >
-                  
+
                       <h2 ref="subtitle">Create Custom Tag</h2>
                       <div className='modaltext'>
                         <div> Please create your own tag by inserting Javascript </div>
@@ -272,7 +272,7 @@ var MySidePanel = React.createClass({
               <p> To Re-Add this tag, go to your "Available Tags" tab. </p>
             </div>
             <div className="yellowbox">
-              This tag has now been updated. This change may take up to 10 minutes before it is updated within your Optimizely tag. 
+              This tag has now been updated. This change may take up to 10 minutes before it is updated within your Optimizely tag.
             </div>
 			  </div>
 			)
