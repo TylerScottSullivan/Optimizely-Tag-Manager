@@ -12,7 +12,6 @@ var NewTemplate = React.createClass({
       fields: [],
       template: '',
       hasCallback: 'true',
-      projectId: "6919181723",
       email: '',
       approved: false,
       checkForType: '',

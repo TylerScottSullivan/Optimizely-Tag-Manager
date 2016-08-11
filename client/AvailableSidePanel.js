@@ -18,7 +18,6 @@ var AvailableSidePanel = React.createClass({
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: true,
       errors: {},
@@ -40,25 +39,25 @@ var AvailableSidePanel = React.createClass({
     var data = {};
     var errors = {}
 
-    this.state.tokens.map((token) => {
+    var field = this.state.tokens.map((token) => {
       if (!token.value) {
         // Input validation
         errors[token.tokenDisplayName] = `${token.tokenDisplayName} is required`;
       }
-      // data[token.tokenName] = token.value;
       var returnfield = {};
-      returnfield.name = token.name;
-      returnfield.value = token.value;
+      returnfield[token.tokenName] = token.value;
+      // returnfield.name = token.name;
+      // returnfield.value = token.value;
       return returnfield;
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
     data.name = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
+    data.field = field;
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -145,8 +144,8 @@ var AvailableSidePanel = React.createClass({
               }
             </select>
             <div className="flex togglebutton">
-              {this.state.active === true ?    
-                  <div>      
+              {this.state.active === true ?
+                  <div>
                     <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
                     <button className="button" name='active' onClick={this.onChange}>Disabled</button>
                   </div>
@@ -157,8 +156,8 @@ var AvailableSidePanel = React.createClass({
                   </div>
                 }
             </div>
-            {this.props.info.added === true ? 
-                  <div> 
+            {this.props.info.added === true ?
+                  <div>
                     <div>
                       <button className="btn-uniform-add button button--highlight" disabled>Add Tag</button>
                     </div>
