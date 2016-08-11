@@ -40,7 +40,7 @@ var MySidePanel = React.createClass({
       active: this.props.info.active,
       tagId: this.props.info._id,
       errors: {},
-      triggerOptions: null
+      triggerOptions: null,
     };
   },
 
@@ -125,6 +125,7 @@ var MySidePanel = React.createClass({
 
   onChangeTokens: function(field, e) {
     var newState = Object.assign({}, this.state);
+    newState.errors[e.target.name] = false;
     newState.fields[field].value = e.target.value;
     this.setState(newState);
   },
