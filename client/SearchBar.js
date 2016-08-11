@@ -88,7 +88,8 @@ var SearchBar = React.createClass({
           url: '/' + window.location.search,
           type: 'POST',
           data: data,
-          success: function(data) {
+          success: function(response) {
+          	this.props.onDownload(this.props.downloadedProject.concat(data))
             console.log('Add custom tag successful')
           },
           error: function(err) {
