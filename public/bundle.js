@@ -24,7 +24,7 @@ var AvailableInputFields = React.createClass({
 				'div',
 				null,
 				' ',
-				this.props.token.tokenDescription,
+				this.props.token.description,
 				' ',
 				React.createElement(
 					'a',
@@ -33,7 +33,7 @@ var AvailableInputFields = React.createClass({
 				),
 				' '
 			),
-			React.createElement('input', { required: 'true', className: 'text-input width--200 text-input-styled ' + error, placeholder: this.props.token.placeholder, value: this.props.token.value, onChange: this.props.onChange }),
+			React.createElement('input', { className: 'text-input width--200 text-input-styled ' + error, placeholder: this.props.token.placeholder, value: this.props.token.value, onChange: this.props.onChange }),
 			this.props.error !== false ? React.createElement(
 				'div',
 				{ className: 'warning' },
@@ -55,13 +55,26 @@ var AvailableSidePanel = React.createClass({
   displayName: 'AvailableSidePanel',
 
   getInitialState: function getInitialState() {
+    var triggerOptions;
+    $.ajax({
+      url: '/options' + window.location.search,
+      type: 'GET',
+      success: function (data) {
+        console.log('get options successful');
+        this.setState({ triggerOptions: data });
+      }.bind(this),
+      error: function error(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      projectId: "6668600890",
+      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: true,
-      errors: {}
+      errors: {},
+      triggerOptions: null
     };
   },
 
@@ -91,11 +104,9 @@ var AvailableSidePanel = React.createClass({
     data.projectId = this.state.projectId;
     data.name = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
-    data.custom = this.props.info.custom;
+    data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-
-    // console.log("errors", Object.keys(errors))
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -155,11 +166,10 @@ var AvailableSidePanel = React.createClass({
   render: function render() {
     var _this = this;
 
-    console.log(this.props, "props for available side panel");
     if (Object.keys(this.props.info).length !== 0) {
       return React.createElement(
-        'form',
-        { 'data-toggle': 'validator', className: 'sidepanel background--faint' },
+        'div',
+        { className: 'sidepanel background--faint' },
         React.createElement(
           'h2',
           { className: 'push-double--bottom sp-headbig' },
@@ -200,7 +210,6 @@ var AvailableSidePanel = React.createClass({
         React.createElement('label', { className: 'label label--rule' }),
         this.state.tokens.map(function (token, item) {
           var err = _this.state.errors[token.tokenDisplayName];
-          console.log(token.tokenDisplayName + ' has error: ' + err);
           return React.createElement(AvailableInputFields, { key: item, error: err || false, token: token, onChange: _this.onChangeTokens.bind(_this, item), required: true });
         }),
         React.createElement('div', { className: 'help-block with-errors' }),
@@ -216,16 +225,13 @@ var AvailableSidePanel = React.createClass({
         React.createElement(
           'select',
           { className: 'form-control', name: 'trackingTrigger', value: this.state.trackingTrigger, onChange: this.onChange },
-          React.createElement(
-            'option',
-            { value: 'inHeader' },
-            'In header'
-          ),
-          React.createElement(
-            'option',
-            { value: 'onPageLoad' },
-            'On page load'
-          )
+          this.state.triggerOptions.map(function (trigger) {
+            return React.createElement(
+              'option',
+              { value: trigger },
+              trigger
+            );
+          })
         ),
         React.createElement(
           'div',
@@ -467,9 +473,9 @@ var AvailableTagsPage = React.createClass({
     return {
       splicedArray: this.props.masters,
       sidePanel: {},
-      currentProject: "6668600890",
-      master: this.props.masters,
-      downloadedProject: this.props.downloadedProject
+      currentProject: "6919181723",
+      master: [],
+      downloadedProject: []
     };
   },
 
@@ -610,6 +616,18 @@ var MySidePanel = React.createClass({
 
 
   getInitialState: function getInitialState() {
+    var triggerOptions;
+    $.ajax({
+      url: '/options' + window.location.search,
+      type: 'GET',
+      success: function (data) {
+        console.log('get options successful');
+        this.setState({ triggerOptions: data });
+      }.bind(this),
+      error: function error(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
     return {
       modalIsOpen: false,
       info: this.props.info,
@@ -618,7 +636,8 @@ var MySidePanel = React.createClass({
       trackingTrigger: this.props.info.trackingTrigger,
       active: this.props.info.active,
       tagId: this.props.info._id,
-      errors: {}
+      errors: {},
+      triggerOptions: null
     };
   },
 
@@ -887,16 +906,13 @@ var MySidePanel = React.createClass({
         React.createElement(
           'select',
           { className: 'form-control', name: 'trackingTrigger', value: this.props.info.trackingTrigger, onChange: this.onChange },
-          React.createElement(
-            'option',
-            { value: 'inHeader' },
-            'In header'
-          ),
-          React.createElement(
-            'option',
-            { value: 'onPageLoad' },
-            'On page load'
-          )
+          this.state.triggerOptions.map(function (trigger) {
+            return React.createElement(
+              'option',
+              { value: trigger },
+              trigger
+            );
+          })
         ),
         React.createElement(
           'div',
@@ -1234,25 +1250,27 @@ var NewTemplate = React.createClass({
 
   getInitialState: function getInitialState() {
     return {
-      active: null,
-      type: null,
-      displayName: null,
-      discription: null,
-      tokenName: null,
-      tokenDisplayName: null,
-      tokenDescription: null,
-      custom: null,
-      hascallback: null,
-      projectId: "6668600890"
+      type: '',
+      displayName: '',
+      discription: '',
+      fields: [],
+      template: '',
+      hasCallback: 'true',
+      projectId: "6919181723",
+      email: '',
+      approved: false,
+      checkForType: '',
+      checkFor: ''
     };
   },
 
-  onChangeTokens: function onChangeTokens(index, e) {
-    var tokens = this.state.tokens;
-    tokens[index].value = e.target.value;
+  onChangeFields: function onChangeFields(index, e) {
+    var fields = this.state.fields;
+    fields[index][e.target.name] = e.target.value;
     this.setState({
-      tokens: tokens
+      fields: fields
     });
+    console.log('on change fields', this.state.fields);
   },
 
   //this change the enable and triggers
@@ -1260,29 +1278,43 @@ var NewTemplate = React.createClass({
     var newState = Object.assign({}, this.state);
     newState[e.target.name] = e.target.value;
     this.setState(newState);
+    console.log('newState', newState);
+  },
+
+  onChangeSnippet: function onChangeSnippet(newVal) {
+    this.setState({
+      template: newVal
+    });
+    console.log('onchangeSnippet', this.state.template);
   },
 
   onSubmit: function onSubmit() {
     var data = {};
-
-    this.state.tokens.map(function (token) {
-      data[token.tokenName] = token.value;
+    data.fields = [];
+    this.state.fields.map(function (field, i) {
+      data.fields.push({});
+      data.fields[i]['tokenName'] = field.tokenName;
+      data.fields[i]['tokenDescription'] = field.tokenDescription;
+      var token = field.tokenName.replace(/ /g, '_');
+      data.fields[i]['token'] = token;
     });
-    data.active = this.state.active;
-    data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
-    data.type = this.props.info.name;
-    data.tagDescription = this.props.info.tagDescription;
-    data.custom = this.props.info.custom;
-    data.hasCallback = this.props.info.hasCallback;
-    data.callBacks = this.props.info.callBacks;
+    data.type = this.state.type;
+    data.email = this.state.email;
+    data.description = this.state.description;
+    data.displayName = this.state.displayName;
+    data.hasCallback = this.state.hasCallback;
+    data.template = this.state.template;
+    data.approved = this.state.approved;
+    data.checkForType = this.state.checkForType;
+    data.checkFor = this.state.checkFor;
 
+    console.log('this is the full data', data);
     return $.ajax({
-      url: '/' + window.location.search,
+      url: '/template',
       type: 'POST',
       data: data,
       success: function success(data) {
-        console.log('Add tag successful');
+        console.log('Add new template successful');
       },
       error: function error(err) {
         console.error("Err posting", err.toString());
@@ -1290,8 +1322,28 @@ var NewTemplate = React.createClass({
     });
   },
 
+  onAddField: function onAddField() {
+    var fields = this.state.fields.concat({
+      tokenName: '',
+      tokenDescription: '',
+      token: ''
+    });
+    this.setState({
+      fields: fields
+    });
+  },
+
+  onDeleteField: function onDeleteField(i) {
+    this.state.fields.splice(i, 1);
+    this.setState({
+      fields: this.state.fields
+    });
+  },
+
   //change the language later
   render: function render() {
+    var _this = this;
+
     return React.createElement(
       'form',
       { method: 'post' },
@@ -1303,7 +1355,7 @@ var NewTemplate = React.createClass({
           { className: 'flex--1 sd-headsmall' },
           'Enter a name for snippet (please do not include spaces):'
         ),
-        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'type' })
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'type', onChange: this.onChange })
       ),
       React.createElement(
         'div',
@@ -1313,7 +1365,7 @@ var NewTemplate = React.createClass({
           { className: 'flex--1 sd-headsmall' },
           'Enter display name for snippet:'
         ),
-        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'displayName' })
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'displayName', onChange: this.onChange })
       ),
       React.createElement(
         'div',
@@ -1323,37 +1375,60 @@ var NewTemplate = React.createClass({
           { className: 'flex--1 sd-headsmall' },
           'Enter description for snippet:'
         ),
-        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'description' })
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'description', onChange: this.onChange })
+      ),
+      React.createElement(
+        'button',
+        { onClick: this.onAddField, className: 'btn-uniform-add button button--highlight' },
+        'Add field'
       ),
       React.createElement(
         'div',
-        { className: 'form-group' },
-        React.createElement(
-          'div',
-          { className: 'flex--1 sd-headsmall' },
-          'Enter a field name, code 123456789:'
-        ),
-        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'tokenName' })
-      ),
-      React.createElement(
-        'div',
-        { className: 'form-group' },
-        React.createElement(
-          'div',
-          { className: 'flex--1 sd-headsmall' },
-          'Enter a field display name, code 123456789:'
-        ),
-        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'tokenDisplayName' })
-      ),
-      React.createElement(
-        'div',
-        { className: 'form-group' },
-        React.createElement(
-          'div',
-          { className: 'flex--1 sd-headsmall' },
-          'Enter a field description, code 123456789:'
-        ),
-        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'tokenDescription' })
+        null,
+        this.state.fields.map(function (item, index) {
+
+          var tokenHere;
+          var token = '{{' + item.tokenName.replace(/ /g, '_') + '}}';
+          if (item.tokenName) {
+            tokenHere = React.createElement(
+              'div',
+              { name: 'token', value: token, onChange: _this.onChangeFields },
+              'Your field token name is ' + token
+            );
+          } else {
+            tokenHere = null;
+          }
+          return React.createElement(
+            'div',
+            null,
+            React.createElement(
+              'div',
+              { className: 'form-group' },
+              React.createElement(
+                'div',
+                { className: 'flex--1 sd-headsmall' },
+                'Enter a field name:'
+              ),
+              React.createElement('input', { type: 'text', value: item.tokenName, onChange: _this.onChangeFields.bind(_this, index), className: 'text-input width--200 text-input-styled', name: 'tokenName' })
+            ),
+            tokenHere,
+            React.createElement(
+              'div',
+              { className: 'form-group' },
+              React.createElement(
+                'div',
+                { className: 'flex--1 sd-headsmall' },
+                'Enter a field display description:'
+              ),
+              React.createElement('input', { type: 'text', value: item.tokenDescription, onChange: _this.onChangeFields.bind(_this, index), className: 'text-input width--200 text-input-styled', name: 'tokenDescription' })
+            ),
+            React.createElement(
+              'button',
+              { onClick: _this.onDeleteField.bind(_this, index), className: 'btn-uniform-add button button--highlight' },
+              'Delete'
+            )
+          );
+        })
       ),
       React.createElement(
         'div',
@@ -1365,18 +1440,70 @@ var NewTemplate = React.createClass({
         ),
         React.createElement(
           'select',
-          { className: 'form-control', name: 'hasCallback', value: this.state.hasCallback, onChange: this.onChange },
+          { className: 'form-control', name: 'hasCallback', onChange: this.onChange },
           React.createElement(
             'option',
-            { value: 'yes' },
+            { value: true },
             'Yes'
           ),
           React.createElement(
             'option',
-            { value: 'no' },
+            { value: false },
             'No'
           )
+        ),
+        React.createElement(
+          'div',
+          null,
+          this.state.hasCallback === 'true' ? React.createElement(
+            'div',
+            null,
+            'Please put ',
+            React.createElement(
+              'code',
+              null,
+              "{{{...}}}"
+            ),
+            ' around your callback'
+          ) : null
         )
+      ),
+      React.createElement(
+        'div',
+        { 'class': 'form-group' },
+        '   ',
+        React.createElement(
+          'label',
+          { className: 'flex--1 sd-headsmall' },
+          'What is the name of your tag when should be checking for:'
+        ),
+        '   ',
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'checkFor', value: this.state.checkFor, onChange: this.onChange }),
+        ' '
+      ),
+      ' ',
+      React.createElement(
+        'label',
+        { className: 'flex--1 sd-headsmall' },
+        'What type is your tag when it\'s ready?'
+      ),
+      ' ',
+      React.createElement(
+        'select',
+        { 'class': 'form-control', name: 'checkForType', onChange: this.onChange },
+        '   ',
+        React.createElement(
+          'option',
+          { value: 'function' },
+          'function'
+        ),
+        '   ',
+        React.createElement(
+          'option',
+          { value: 'object' },
+          'object'
+        ),
+        ' '
       ),
       React.createElement(
         'div',
@@ -1384,15 +1511,6 @@ var NewTemplate = React.createClass({
         React.createElement(
           'div',
           { className: 'flex--1 sd-headsmall' },
-          'Your callback code is abcdefg:'
-        )
-      ),
-      React.createElement(
-        'div',
-        { className: 'form-group' },
-        React.createElement(
-          'div',
-          { 'for': 'comment', className: 'flex--1 sd-headsmall' },
           'Enter your code'
         ),
         React.createElement(
@@ -1402,13 +1520,24 @@ var NewTemplate = React.createClass({
             className: 'editor text-input width--200 text-input-styled',
             mode: 'javascript',
             theme: 'tomorrow',
-            name: 'custom',
-            height: '1000px',
-            width: '600px',
+            height: '100px',
+            width: '1000px',
+            id: 'comment',
             editorProps: { $blockScrolling: true },
-            id: 'comment'
+            value: this.state.template,
+            onChange: this.onChangeSnippet
           })
         )
+      ),
+      React.createElement(
+        'div',
+        { className: 'form-group' },
+        React.createElement(
+          'div',
+          { className: 'flex--1 sd-headsmall' },
+          'Enter your email:'
+        ),
+        React.createElement('input', { type: 'text', className: 'text-input width--200 text-input-styled', name: 'email', value: this.state.email, onChange: this.onChange })
       ),
       React.createElement(
         'button',
@@ -1436,253 +1565,306 @@ var react = require('react-ace');
 var Modal = require('react-modal');
 
 var customStyles = {
-		content: {
-				top: '50%',
-				left: '50%',
-				right: 'auto',
-				bottom: 'auto',
-				marginRight: '-50%',
-				transform: 'translate(-50%, -50%)',
-				height: '550px',
-				width: '700px'
-		}
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    height: '550px',
+    width: '700px'
+  }
 };
 
 var SearchBar = React.createClass({
-		displayName: 'SearchBar',
+  displayName: 'SearchBar',
 
-		getInitialState: function getInitialState() {
-				return {
-						modalIsOpen: false,
-						name: '',
-						tagDescription: '',
-						fields: '',
-						custom: '',
-						trackingTrigger: 'inHeader',
-						projectId: "6668600890",
-						active: false
-				};
-		},
+  getInitialState: function getInitialState() {
+    var triggerOptions;
+    $.ajax({
+      url: '/options' + window.location.search,
+      type: 'GET',
+      success: function (data) {
+        console.log('get options successful');
+        this.setState({ triggerOptions: data });
+        console.log('triggerOptions', this.state.triggerOptions);
+      }.bind(this),
+      error: function error(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
+    return {
+      modalIsOpen: false,
+      name: 'custom',
+      displayName: null,
+      tagDescription: '',
+      fields: '',
+      template: '',
+      trackingTrigger: 'inHeader',
+      projectId: "6919181723",
+      active: false,
+      errors: {},
+      triggerOptions: []
+    };
+  },
 
-		openModal: function openModal() {
-				// console.log('opened modal')
-				this.setState({ modalIsOpen: true });
-		},
+  openModal: function openModal() {
+    this.setState({ modalIsOpen: true });
+  },
 
-		afterOpenModal: function afterOpenModal() {
-				// references are now sync'd and can be accessed.
-				this.refs.subtitle.style.color = '#0081BA';
-		},
+  afterOpenModal: function afterOpenModal() {
+    // references are now sync'd and can be accessed.
+    this.refs.subtitle.style.color = '#0081BA';
+  },
 
-		closeModal: function closeModal() {
-				this.setState({ modalIsOpen: false });
-		},
+  closeModal: function closeModal() {
+    this.setState({ modalIsOpen: false });
+  },
 
-		addCustomTag: function addCustomTag() {
-				var data = {};
-				data.active = this.state.active;
-				data.trackingTrigger = this.state.trackingTrigger;
-				data.projectId = this.state.projectId;
-				data.name = "custom";
-				data.displayName = this.state.name;
-				data.tagDescription = this.state.tagDescription;
-				data.template = this.state.custom;
-				this.setState({ modalIsOpen: false });
+  addCustomTag: function addCustomTag() {
+    var data = {};
+    var errors = {};
 
-				return $.ajax({
-						url: '/' + window.location.search,
-						type: 'POST',
-						data: data,
-						success: function success(data) {
-								console.log('Add custom tag successful');
-						},
-						error: function error(err) {
-								console.error("Err posting", err.toString());
-						}
-				});
-		},
+    data.active = this.state.active;
+    data.trackingTrigger = this.state.trackingTrigger;
+    data.projectId = this.state.projectId;
+    this.setState({ modalIsOpen: false });
+    data.type = this.state.name;
 
-		onChange: function onChange(e) {
-				var newState = Object.assign({}, this.state);
-				newState[e.target.name] = e.target.value;
-				this.setState(newState);
-		},
+    if (!this.state.name) {
+      errors['displayName'] = 'name is required';
+    } else {
+      data.displayName = this.state.displayName;
+    }
 
-		onChangeSnippet: function onChangeSnippet(newVal) {
-				this.setState({
-						custom: newVal
-				});
-		},
+    if (!this.state.tagDescription) {
+      errors['tagDescription'] = 'tag description is required';
+    } else {
+      data.tagDescription = this.state.tagDescription;
+    }
 
-		render: function render() {
-				return React.createElement(
-						'div',
-						null,
-						React.createElement(
-								'ul',
-								{ className: 'flex push-double--ends' },
-								React.createElement(
-										'li',
-										{ className: 'push-triple--right' },
-										React.createElement(
-												'div',
-												{ className: 'button-group' },
-												React.createElement(
-														'div',
-														null,
-														' '
-												),
-												React.createElement(
-														'div',
-														{ className: 'search' },
-														React.createElement('input', { type: 'text', className: 'text-input text-input--search width--200', placeholder: 'Filter by Name' })
-												),
-												React.createElement(
-														'button',
-														{ className: 'button', type: 'button' },
-														'Search'
-												)
-										)
-								),
-								React.createElement(
-										'li',
-										{ className: 'anchor--right' },
-										React.createElement(
-												'button',
-												{ className: 'button button--highlight', onClick: this.openModal },
-												'Create Custom Tag'
-										),
-										React.createElement(
-												Modal,
-												{
-														isOpen: this.state.modalIsOpen,
-														onAfterOpen: this.afterOpenModal,
-														onRequestClose: this.closeModal,
-														style: customStyles },
-												React.createElement(
-														'h2',
-														{ ref: 'subtitle' },
-														'Create Custom Tag'
-												),
-												React.createElement(
-														'div',
-														{ className: 'modaltext' },
-														React.createElement(
-																'div',
-																null,
-																' Please create your own tag by inserting Javascript '
-														),
-														React.createElement(
-																'div',
-																{ className: 'editor' },
-																React.createElement(_reactAce2.default, {
-																		className: 'editor',
-																		mode: 'javascript',
-																		theme: 'tomorrow',
-																		name: 'custom',
-																		height: '120px',
-																		width: '620px',
-																		editorProps: { $blockScrolling: true },
-																		value: this.state.custom,
-																		onChange: this.onChangeSnippet
-																})
-														),
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1 sd-headsmall' },
-																		' Name'
-																)
-														),
-														React.createElement(
-																'div',
-																{ className: 'flex--1' },
-																' Please add the name of your snippet. '
-														),
-														React.createElement('input', { required: true, name: 'name', value: this.state.name, onChange: this.onChange }),
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1 sd-headsmall' },
-																		' Description'
-																)
-														),
-														React.createElement(
-																'div',
-																{ className: 'flex--1' },
-																' Please add the description of your tag below. '
-														),
-														React.createElement('input', { name: 'tagDescription', value: this.state.tagDescription, onChange: this.onChange }),
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1 sd-headsmall' },
-																		' Called On: '
-																)
-														),
-														React.createElement(
-																'select',
-																{ className: 'form-control', name: 'trackingTrigger', value: this.state.trackingTrigger, onChange: this.onChange },
-																React.createElement(
-																		'option',
-																		{ value: 'inHeader' },
-																		'In header'
-																),
-																React.createElement(
-																		'option',
-																		{ value: 'onPageLoad' },
-																		'On page load'
-																)
-														),
-														React.createElement(
-																'div',
-																{ className: 'flex' },
-																React.createElement(
-																		'div',
-																		{ className: 'flex--1 sd-headsmall' },
-																		' Enabled or Disabled: '
-																)
-														),
-														React.createElement(
-																'select',
-																{ className: 'form-control', name: 'active', value: this.state.active, onChange: this.onChange },
-																React.createElement(
-																		'option',
-																		{ value: 'inHeader' },
-																		'Enabled'
-																),
-																React.createElement(
-																		'option',
-																		{ value: 'onPageLoad' },
-																		'Disabled'
-																)
-														)
-												),
-												React.createElement(
-														'div',
-														{ className: 'flex space-between' },
-														React.createElement(
-																'button',
-																{ className: 'button button--highlight', onClick: this.addCustomTag },
-																' Add Custom Tag '
-														),
-														React.createElement(
-																'button',
-																{ className: 'button button--highlight', onClick: this.closeModal },
-																' Close '
-														)
-												)
-										)
-								)
-						)
-				);
-		}
+    if (!this.state.template) {
+      errors['template'] = 'please add a custom tag';
+    } else {
+      data.template = this.state.template;
+    }
+    if (Object.keys(errors).length === 0) {
+      return $.ajax({
+        url: '/' + window.location.search,
+        type: 'POST',
+        data: data,
+        success: function success(data) {
+          console.log('Add custom tag successful');
+        },
+        error: function error(err) {
+          console.error("Err posting", err.toString());
+        }
+      });
+    } else {
+      this.setState({
+        errors: errors
+      });
+    }
+  },
+
+  onChange: function onChange(e) {
+    var newState = Object.assign({}, this.state);
+    newState[e.target.name] = e.target.value;
+    this.setState(newState);
+  },
+
+  onChangeSnippet: function onChangeSnippet(newVal) {
+    this.setState({
+      template: newVal
+    });
+  },
+
+  render: function render() {
+    var errorName = this.state.errors['displayName'] ? 'validation' : '';
+    var errorTagDescription = this.state.errors['tagDescription'] ? 'validation' : '';
+    var errorCustom = this.state.errors['template'] ? 'validation' : '';
+
+    return React.createElement(
+      'div',
+      null,
+      React.createElement(
+        'ul',
+        { className: 'flex push-double--ends' },
+        React.createElement(
+          'li',
+          { className: 'push-triple--right' },
+          React.createElement(
+            'div',
+            { className: 'button-group' },
+            React.createElement(
+              'div',
+              null,
+              ' '
+            ),
+            React.createElement(
+              'div',
+              { className: 'search' },
+              React.createElement('input', { type: 'text', className: 'text-input text-input--search width--200', placeholder: 'Filter by Name' })
+            ),
+            React.createElement(
+              'button',
+              { className: 'button', type: 'button' },
+              'Search'
+            )
+          )
+        ),
+        React.createElement(
+          'li',
+          { className: 'anchor--right' },
+          React.createElement(
+            'button',
+            { className: 'button button--highlight', onClick: this.openModal },
+            'Create Custom Tag'
+          ),
+          React.createElement(
+            Modal,
+            {
+              isOpen: this.state.modalIsOpen,
+              onAfterOpen: this.afterOpenModal,
+              onRequestClose: this.closeModal,
+              style: customStyles },
+            React.createElement(
+              'h2',
+              { ref: 'subtitle' },
+              'Create Custom Tag'
+            ),
+            React.createElement(
+              'div',
+              { className: 'modaltext' },
+              React.createElement(
+                'div',
+                null,
+                ' Please create your own tag by inserting Javascript '
+              ),
+              React.createElement(
+                'div',
+                { className: 'editor' },
+                React.createElement(_reactAce2.default, {
+                  className: 'editor ' + errorCustom,
+                  mode: 'javascript',
+                  theme: 'tomorrow',
+                  name: 'template',
+                  height: '120px',
+                  width: '620px',
+                  editorProps: { $blockScrolling: true },
+                  value: this.state.template,
+                  onChange: this.onChangeSnippet
+                }),
+                errorCustom ? React.createElement(
+                  'div',
+                  { className: 'warning' },
+                  this.state.errors['template']
+                ) : null
+              ),
+              React.createElement(
+                'div',
+                { className: 'flex' },
+                React.createElement(
+                  'div',
+                  { className: 'flex--1 sd-headsmall' },
+                  ' Name'
+                )
+              ),
+              React.createElement(
+                'div',
+                { className: 'flex--1' },
+                ' Please add the name of your snippet. '
+              ),
+              React.createElement('input', { name: 'displayName', className: '' + errorName, value: this.state.displayName, onChange: this.onChange }),
+              errorName ? React.createElement(
+                'div',
+                { className: 'warning' },
+                this.state.errors['displayName']
+              ) : null,
+              React.createElement(
+                'div',
+                { className: 'flex' },
+                React.createElement(
+                  'div',
+                  { className: 'flex--1 sd-headsmall' },
+                  ' Description'
+                )
+              ),
+              React.createElement(
+                'div',
+                { className: 'flex--1' },
+                ' Please add the description of your tag below. '
+              ),
+              React.createElement('input', { name: 'tagDescription', className: '$(errorTagDescription)', value: this.state.tagDescription, onChange: this.onChange }),
+              errorTagDescription ? React.createElement(
+                'div',
+                { className: 'warning' },
+                this.state.errors['tagDescription']
+              ) : null,
+              React.createElement(
+                'div',
+                { className: 'flex' },
+                React.createElement(
+                  'div',
+                  { className: 'flex--1 sd-headsmall' },
+                  ' Called On: '
+                )
+              ),
+              React.createElement(
+                'select',
+                { className: 'form-control', name: 'trackingTrigger', value: this.state.trackingTrigger, onChange: this.onChange },
+                this.state.triggerOptions.map(function (trigger) {
+                  return React.createElement(
+                    'option',
+                    { value: trigger },
+                    trigger
+                  );
+                })
+              ),
+              React.createElement(
+                'div',
+                { className: 'flex' },
+                React.createElement(
+                  'div',
+                  { className: 'flex--1 sd-headsmall' },
+                  ' Enabled or Disabled: '
+                )
+              ),
+              React.createElement(
+                'select',
+                { className: 'form-control', name: 'active', value: this.state.active, onChange: this.onChange },
+                React.createElement(
+                  'option',
+                  { value: 'inHeader' },
+                  'Enabled'
+                ),
+                React.createElement(
+                  'option',
+                  { value: 'onPageLoad' },
+                  'Disabled'
+                )
+              )
+            ),
+            React.createElement(
+              'div',
+              { className: 'flex space-between' },
+              React.createElement(
+                'button',
+                { className: 'button button--highlight', onClick: this.addCustomTag },
+                ' Add Custom Tag '
+              ),
+              React.createElement(
+                'button',
+                { className: 'button button--highlight', onClick: this.closeModal },
+                ' Close '
+              )
+            )
+          )
+        )
+      )
+    );
+  }
 });
 
 module.exports = SearchBar;
@@ -1798,7 +1980,7 @@ var App = React.createClass({
     return {
       masters: [],
       downloadedProject: [],
-      currentProject: "6668600890" };
+      currentProject: "6919181723" };
   },
 
   onDownload: function onDownload(projects) {

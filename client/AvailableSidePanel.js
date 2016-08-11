@@ -131,7 +131,6 @@ var AvailableSidePanel = React.createClass({
 			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)} required/>
 			        })}
               <div className="help-block with-errors"></div>
-<<<<<<< HEAD
                 <div className="flex">
                    <div className="flex--1 sd-headsmall"> Called On: </div>
                 </div>
@@ -170,7 +169,7 @@ var AvailableSidePanel = React.createClass({
                     <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
                   </div>
             }
-        </form>
+          </div>
       )
     } else {
       return (
