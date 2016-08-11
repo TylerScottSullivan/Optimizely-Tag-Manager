@@ -9,13 +9,13 @@ var MySidePanel = React.createClass({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful');
         this.setState({triggerOptions: data})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
       }
     });
+    // console.log('this is the info fields that i want', this.props.info)
     return {
       info: this.props.info,
       fields: this.props.info.fields,
@@ -54,7 +54,8 @@ var MySidePanel = React.createClass({
         errors[field.name] = `${field.name} is required`;
       } else {
     	var returnfield = {};
-    	returnfield[field.name] = field.value;
+    	returnfield.name = field.name;
+      returnfield.value = field.value;
     	return returnfield;
       }
     }))
@@ -78,7 +79,6 @@ var MySidePanel = React.createClass({
         errors: errors
       });
     }
-    console.log('errrsssss', this.state.errors)
   },
 
   onDelete: function() {
