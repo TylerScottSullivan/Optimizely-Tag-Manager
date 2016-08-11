@@ -64,7 +64,7 @@ var SearchBar = React.createClass({
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
       this.setState({modalIsOpen: false});
-      data.type = this.state.name;
+      data.name = this.state.name;
 
       if (! this.state.name) {
         errors['displayName'] = 'name is required';

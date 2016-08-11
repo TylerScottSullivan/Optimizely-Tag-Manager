@@ -24,7 +24,8 @@ var tagSchema = mongoose.Schema({
   hasCallback: Boolean,
   callbacks: Array,
   pageName: String,
-  eventName: String
+  eventName: String,
+  template: String
 })
 
 //tags, masters, innerCallback
@@ -62,7 +63,11 @@ tagSchema.methods.render = function(tags, masters) {
 
   console.log("HANDLEBARSFIELDS: ", handleBarsFields);
   console.log("MASTERTEMPLATE: ", master.template);
-  var template = Handlebars.compile(master.template);
+  if (this.name === 'custom') {
+    var template = Handlebars.compile(this.template);
+  } else {
+    var template = Handlebars.compile(master.template);
+  }
   return template(handleBarsFields);
   //return snippets[this.name](this.fields, this.trackingTrigger, innerCallback);
 }
