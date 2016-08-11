@@ -92,14 +92,15 @@ var MySidePanel = React.createClass({
     console.log('here are the new fields', data)
     data.active = this.state.info.active;
     data.trackingTrigger = this.state.trackingTrigger;
-
+    console.log(data, "data sent")
     if (Object.keys(errors).length === 0) {
       return $.ajax({
         url: '/updatetag/' + this.props.info._id + window.location.search,
         type: 'POST',
         data: data,
         success: function(data) {
-          console.log('Update tag successful')},
+          console.log('Update tag successful');
+        },
         error: function(err) {
           console.error("Err posting", err.toString());
         }
