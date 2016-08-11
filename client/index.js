@@ -34,7 +34,7 @@ var App = React.createClass({
     return {
     	masters: [],
     	downloadedProject: [],
-    	currentProject: "6919181723", //this needs to be fetched
+    	// currentProject: "6919181723", //this needs to be fetched
     }
   },
 
