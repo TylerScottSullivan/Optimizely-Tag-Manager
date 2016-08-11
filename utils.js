@@ -184,17 +184,22 @@ module.exports = {
        })
   },
   getTagOptions: function(project) {
+    console.log('projectssss', project)
     this.project = project;
     return Tag.find({'hasCallback': true, 'projectId': this.project.projectId});
   },
   getOptions: function(tags) {
+    console.log('tagsssss', tags)
         if (tags.length === 0) {
+          this.tagNames = ['inHeader', 'onDocumentReady'];
           return '[]';
         }
         //get names of options
         this.tagNames = tags.map(function(item) {
           return item.name;
         });
+
+        console.log('tagName', this.tagNames)
 
         //inHeader/onDocumentReady should intuitively come first
         this.tagNames.unshift("inHeader");

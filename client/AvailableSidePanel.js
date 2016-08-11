@@ -21,7 +21,7 @@ var AvailableSidePanel = React.createClass({
       trackingTrigger: 'inHeader',
       active: true,
       errors: {},
-      triggerOptions: null
+      triggerOptions: []
     };
   },
 
@@ -69,11 +69,9 @@ var AvailableSidePanel = React.createClass({
           console.log(data, "data");
           console.log(this.props.downloadedProject.concat(data), "concated downloadedProject")
           this.props.onDownload(this.props.downloadedProject.concat(data))
-          console.log('datapushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhed')
         }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
-          console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr help')
         }
       });
     } else {
