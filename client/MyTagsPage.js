@@ -32,8 +32,14 @@ var MyTagsPage = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     this.setState({
       downloadedProject: nextProps.downloadedProject,
-      master: nextProps.masters
+      master: nextProps.masters,
     })
+
+    if(typeof this.state.sidePanelIndex !== "undefined") {
+      this.setState({
+         sidePanel: nextProps.downloadedProject[this.state.sidePanelIndex]
+       })
+    }
 
   },
 

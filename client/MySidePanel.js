@@ -70,13 +70,14 @@ var MySidePanel = React.createClass({
   onUpdate: function() {
     var data = {};
     var errors = {}
+    data.fields = [];
 
-    this.state.fields.map(function(field, i){
+    this.state.fields.map(function(field){
       if (! field.value) {
         errors[field.name] = `${field.name} is required`;
       } else {
-    	data[field.name] = field.value;
-      errors.splice(i, 1)
+    	   data[field.name] = field.value;
+         data.fields.push({"name": field.name, "value": field.value})
       }
     })
     console.log('here are the new fields', data)
@@ -88,9 +89,13 @@ var MySidePanel = React.createClass({
         url: '/updatetag/' + this.props.info._id + window.location.search,
         type: 'POST',
         data: data,
-        success: function(data) {
+        success: function(response) {
           console.log('Update tag successful');
-        },
+          console.log(this.props.downloaded.slice(0, this.props.index).concat(
+              Object.assign({}, this.props.downloaded[this.props.index], data), this.props.downloaded.slice(this.props.index + 1)), "what we are passing in")
+          this.props.onDownload(this.props.downloaded.slice(0, this.props.index).concat(
+              Object.assign({}, this.props.downloaded[this.props.index], data), this.props.downloaded.slice(this.props.index + 1)))
+        }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
         }
@@ -232,9 +237,9 @@ var MySidePanel = React.createClass({
 		            </div>
 				    <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
                   {this.state.triggerOptions.map((trigger) => {
-                    // if (trigger === this.state.info.trackingTrigger) {
-                    //   return <option value={trigger} selected> {trigger} </option>
-                    // }
+                    if (trigger === this.state.info.trackingTrigger) {
+                      return <option value={trigger} selected> {trigger} </option>
+                    }
                     return <option value={trigger} >{trigger}</option>
                     })
                   }
