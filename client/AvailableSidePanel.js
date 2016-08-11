@@ -45,7 +45,11 @@ var AvailableSidePanel = React.createClass({
         // Input validation
         errors[token.tokenDisplayName] = `${token.tokenDisplayName} is required`;
       }
-      data[token.tokenName] = token.value;
+      // data[token.tokenName] = token.value;
+      var returnfield = {};
+      returnfield.name = token.name;
+      returnfield.value = token.value;
+      return returnfield;
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;

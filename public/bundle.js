@@ -97,7 +97,11 @@ var AvailableSidePanel = React.createClass({
         // Input validation
         errors[token.tokenDisplayName] = token.tokenDisplayName + ' is required';
       }
-      data[token.tokenName] = token.value;
+      // data[token.tokenName] = token.value;
+      var returnfield = {};
+      returnfield.name = token.name;
+      returnfield.value = token.value;
+      return returnfield;
     });
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
@@ -499,7 +503,7 @@ var MyInputFields = React.createClass({
 				),
 				' '
 			),
-			React.createElement('input', { name: 'value', className: 'text-input width--200 text-input-styled ' + error, value: this.props.field.value, onChange: this.props.onChange }),
+			React.createElement('input', { name: 'value', className: 'text-input width--200 text-input-styled ' + error, value: this.props.value, onChange: this.props.onChange }),
 			this.props.error !== false ? React.createElement(
 				'div',
 				{ className: 'warning' },
@@ -572,7 +576,8 @@ var MySidePanel = React.createClass({
         errors[field.name] = field.name + ' is required';
       } else {
         var returnfield = {};
-        returnfield[field.name] = field.value;
+        returnfield.name = field.name;
+        returnfield.value = field.value;
         return returnfield;
       }
     }));

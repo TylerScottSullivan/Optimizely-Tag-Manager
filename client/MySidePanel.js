@@ -54,7 +54,8 @@ var MySidePanel = React.createClass({
         errors[field.name] = `${field.name} is required`;
       } else {
     	var returnfield = {};
-    	returnfield[field.name] = field.value;
+    	returnfield.name = field.name;
+      returnfield.value = field.value;
     	return returnfield;
       }
     }))
