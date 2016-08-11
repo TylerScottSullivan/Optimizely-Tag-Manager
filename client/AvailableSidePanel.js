@@ -8,7 +8,7 @@ var AvailableSidePanel = React.createClass({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful');
+        console.log('get options successful', data);
         this.setState({triggerOptions: data})
       }.bind(this),
       error: function(err) {

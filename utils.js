@@ -211,7 +211,7 @@ module.exports = {
         //make call to optimizely for all pages associated with the id
         var token = process.env.API_TOKEN;
         return rp({
-             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.tags[i].projectId,
+             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
              method: 'GET',
              headers: {
                "Token": token,

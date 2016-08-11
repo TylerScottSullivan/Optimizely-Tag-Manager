@@ -140,7 +140,7 @@ router.get('/options', function(req, res, next) {
   var utils = require('../utils')
   console.log('I am inside options');
 
-  Project.find({'projectId': req.optimizely.current_project})
+  Project.findOne({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
