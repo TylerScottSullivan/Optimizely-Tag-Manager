@@ -103,13 +103,13 @@ router.get('/master', (req, res, next) => {
 
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
-router.get('/download/:projectid', (req, res, next) => {
+router.get('/download', (req, res, next) => {
   var utils = require('../utils')
   Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
     if (err) {
       console.log('err finding tags in download/:projectid', err)
     } else {
-      console.log(tags)
+      console.log("++++++++++++++++++++++++++++++++++++++++DOWNLOAD TAGS ++++++++++++++++++++", tags)
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(tags)); //send an array of masters
     }
