@@ -55,6 +55,7 @@ router.post('/', function(req, res, next) {
                        'tags': [],
                        'projectId': req.optimizely.current_project})
         .then(utils.findMaster.bind(utils))
+        .then(utils.findTagSetMasters.bind(utils))
         .then(utils.createTag.bind(utils))
         .then(utils.updateProject.bind(utils))
         .then(utils.populateProject.bind(utils))
@@ -103,7 +104,7 @@ router.get('/master', (req, res, next) => {
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/download/:projectid', (req, res, next) => {
   var utils = require('../utils')
-  Tag.find({'projectId': req.params.projectid}, function(err, tags) {
+  Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
     if (err) {
       console.log('err finding tags in download/:projectid', err)
     } else {

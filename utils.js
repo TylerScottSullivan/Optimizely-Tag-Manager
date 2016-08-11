@@ -18,40 +18,48 @@ module.exports = {
     this.project = project;
     return Master.find({})
   },
-  createTag: function(masters) {
-    console.log("[stage] createTag");
-    //storing all masters
+  findTagSetMasters: function(masters) {
     this.masters = masters;
-    var fields = [];
-    // console.log('masterssss', masters)
-    var master = masters.filter(function(item) {
+    return Tag.findOne({"name": this.body.name, "projectId": this.project.projectId})
+  },
+  createTag: function(tag) {
+    //storing all masters
+    console.log(tag, "Tag")
+    if (!tag) {
+      var fields = [];
+      // console.log('masterssss', masters)
+      var master = this.masters.filter(function(item) {
 
-      return item.name === this.body.name
-    }.bind(this))[0];
-    // console.log('master',  master)
+        return item.name === this.body.name
+      }.bind(this))[0];
+      // console.log('master',  master)
 
-    for(var i = 0; i < master.tokens.length; i++) {
-      fields.push({
-        'name': master.tokens[i]['tokenName'],
-        'description': master.tokens[i]['description'],
-        'value': this.body[master.tokens[i]['tokenName']]
+      for(var i = 0; i < master.tokens.length; i++) {
+        fields.push({
+          'name': master.tokens[i]['tokenName'],
+          'description': master.tokens[i]['description'],
+          'value': this.body[master.tokens[i]['tokenName']]
+        })
+      }
+      t = new Tag({
+        name: master.name,
+        displayName: this.body.displayName,
+        fields: fields,
+        tagDescription: this.body.tagDescription,
+        trackingTrigger: this.body.trackingTrigger,
+        template: this.body.template,
+        projectId: this.project.projectId,
+        active: this.body.active,
+        hasCallback: master.hasCallback,
+        pageName: this.body.pageName,
+        eventName: this.body.eventName
       })
+      console.log('this is the new tag', t)
+      return t.save()
     }
-    t = new Tag({
-      name: master.name,
-      displayName: this.body.displayName,
-      fields: fields,
-      tagDescription: this.body.tagDescription,
-      trackingTrigger: this.body.trackingTrigger,
-      template: this.body.template,
-      projectId: this.project.projectId,
-      active: this.body.active,
-      hasCallback: master.hasCallback,
-      pageName: this.body.pageName,
-      eventName: this.body.eventName
-    })
-    console.log('this is the new tag', t)
-    return t.save()
+    else {
+      throw "Cannot create a tag twice"
+    }
   },
   updateProject: function(tag) {
     console.log("[stage] updateProject");
