@@ -79,10 +79,16 @@ var AvailableSidePanel = React.createClass({
 
   onChangeTokens: function(index, e) {
     var tokens = this.state.tokens;
+    var errors = this.state.errors;
+    errors[e.target.name] = false;
+    console.log('this is e', e.target)
+    console.log('errorsss', errors)
     tokens[index].value = e.target.value;
     this.setState({
-      tokens: tokens
+      tokens: tokens,
+      errors: this.state.errors
     });
+    console.log('this is the new state errorsss', this.state.errors)
   },
 
 //this change the enable and triggers
@@ -124,7 +130,9 @@ var AvailableSidePanel = React.createClass({
 	            	</label>
 			        {this.state.tokens.map((token, item) => {
                 var err = this.state.errors[token.tokenDisplayName];
-			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)} required/>
+                console.log('this is the tolken', token)
+                console.log('this is item', item)
+			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)}/>
 			        })}
               <div className="help-block with-errors"></div>
                 <div className="flex">
