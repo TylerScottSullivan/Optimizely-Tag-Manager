@@ -37,6 +37,7 @@
     "react-dom": "^15.2.1",
     "react-modal": "^1.4.0",
     "react-router": "^2.6.1",
+    "react-toggle": "^2.1.1",
     "reactable": "^0.13.2",
     "request": "^2.74.0",
     "request-promise": "^4.1.0",

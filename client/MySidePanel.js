@@ -25,13 +25,13 @@ var MySidePanel = React.createClass({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful');
         this.setState({triggerOptions: data})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
       }
     });
+    // console.log('this is the info fields that i want', this.props.info)
     return {
       modalIsOpen: false,
       info: this.props.info,
@@ -85,7 +85,8 @@ var MySidePanel = React.createClass({
         errors[field.name] = `${field.name} is required`;
       } else {
     	var returnfield = {};
-    	returnfield[field.name] = field.value;
+    	returnfield.name = field.name;
+      returnfield.value = field.value;
     	return returnfield;
       }
     }))
@@ -95,7 +96,7 @@ var MySidePanel = React.createClass({
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
-        url: '/updatetag/' + this.props.info._id,
+        url: '/updatetag/' + this.props.info._id + window.location.search,
         type: 'POST',
         data: data,
         success: function(data) {
@@ -109,12 +110,11 @@ var MySidePanel = React.createClass({
         errors: errors
       });
     }
-    console.log('errrsssss', this.state.errors)
   },
 
   onDelete: function() {
     return $.ajax({
-      url: '/deletetag/' + this.props.info._id,
+      url: '/deletetag/' + this.props.info._id + window.location.search,
       type: 'POST',
       // data: {},
       success: function(data) {
@@ -208,7 +208,7 @@ var MySidePanel = React.createClass({
                       onAfterOpen={this.afterOpenModal}
                       onRequestClose={this.closeModal}
                       style={customStyles} >
-                  
+
                       <h2 ref="subtitle">Create Custom Tag</h2>
                       <div className='modaltext'>
                         <div> Please create your own tag by inserting Javascript </div>
@@ -272,7 +272,7 @@ var MySidePanel = React.createClass({
               <p> To Re-Add this tag, go to your "Available Tags" tab. </p>
             </div>
             <div className="yellowbox">
-              This tag has now been updated. This change may take up to 10 minutes before it is updated within your Optimizely tag. 
+              This tag has now been updated. This change may take up to 10 minutes before it is updated within your Optimizely tag.
             </div>
 			  </div>
 			)

@@ -66,7 +66,7 @@ var NewTemplate = React.createClass({
 
     console.log('this is the full data', data)
     return $.ajax({
-      url: '/template',
+      url: '/template' + window.location.search,
       type: 'POST',
       data: data,
       success: function(data) {
@@ -121,7 +121,7 @@ var NewTemplate = React.createClass({
              var tokenHere;
              var token = '{{' + item.tokenName.replace(/ /g, '_') + '}}';
              if (item.tokenName) {
-               tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>{`Your field token name is ${token}`}</div>
+               tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>Your field token name is <code>{token}</code></div>
              } else {
                tokenHere = null;
              }

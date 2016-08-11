@@ -42,11 +42,11 @@ var MyTagsPage = React.createClass({
       sidePanel: rowinfo, //this is an object
       sidePanelIndex: item
     });
+    console.log('this is the info passed on', this.state.sidePanel)
   },
 
   render: function() {
-    // console.log('splicedArray', this.state.splicedArray)
-    // console.log('my sidepanelll', this.state.sidePanel)
+
       var currentInfo = this.state.sidePanel;
       var currentIndex = this.state.sidePanelIndex;
       var newArray = [];
