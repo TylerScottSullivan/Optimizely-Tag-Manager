@@ -253,8 +253,13 @@ module.exports = {
   },
   updateTag: function(tag) {
     // tag.name = req.body.name;
+    var fields = [];
     for(var i = 0; i < this.master.tokens.length; i++) {
-      fields.push({'name': this.master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
+      fields.push({
+        'name': this.master.tokens[i]['tokenName'],
+        'description': master.tokens[i]['description'],
+        'value': this.body[master.tokens[i]['tokenName']]
+      })
     }
     tag.fields = fields;
     tag.approved = this.body.approved;

@@ -39,16 +39,14 @@ var AvailableSidePanel = React.createClass({
     var data = {};
     var errors = {}
 
-    var field = this.state.tokens.map((token) => {
+
+
+    this.state.tokens.map((token) => {
       if (!token.value) {
         // Input validation
         errors[token.tokenDisplayName] = `${token.tokenDisplayName} is required`;
       }
-      var returnfield = {};
-      returnfield[token.tokenName] = token.value;
-      // returnfield.name = token.name;
-      // returnfield.value = token.value;
-      return returnfield;
+      data[token.tokenName] = token.value;
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
@@ -57,7 +55,6 @@ var AvailableSidePanel = React.createClass({
     data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    data.field = field;
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
