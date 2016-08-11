@@ -66,6 +66,7 @@ router.post('/', function(req, res, next) {
         })
         .catch(function(err) {
           console.log("Error at the end of /", err)
+          next(err);
         })
 });
 
