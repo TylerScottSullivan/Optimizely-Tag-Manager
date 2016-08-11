@@ -19,7 +19,6 @@ var MySidePanel = React.createClass({
     return {
       info: this.props.info,
       fields: this.props.info.fields,
-      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: 'true',
       tagId: this.props.info._id,
@@ -54,14 +53,12 @@ var MySidePanel = React.createClass({
         errors[field.name] = `${field.name} is required`;
       } else {
     	var returnfield = {};
-    	returnfield.name = field.name;
-      returnfield.value = field.value;
+    	returnfield[field.name] = field.value;
     	return returnfield;
       }
     }))
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({

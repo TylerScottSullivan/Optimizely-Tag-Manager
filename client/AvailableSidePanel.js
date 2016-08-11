@@ -18,7 +18,6 @@ var AvailableSidePanel = React.createClass({
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: true,
       errors: {},
@@ -40,25 +39,25 @@ var AvailableSidePanel = React.createClass({
     var data = {};
     var errors = {}
 
-    this.state.tokens.map((token) => {
+    var field = this.state.tokens.map((token) => {
       if (!token.value) {
         // Input validation
         errors[token.tokenDisplayName] = `${token.tokenDisplayName} is required`;
       }
-      // data[token.tokenName] = token.value;
       var returnfield = {};
-      returnfield.name = token.name;
-      returnfield.value = token.value;
+      returnfield[token.tokenName] = token.value;
+      // returnfield.name = token.name;
+      // returnfield.value = token.value;
       return returnfield;
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
     data.type = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
+    data.field = field;
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({

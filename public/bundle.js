@@ -70,7 +70,6 @@ var AvailableSidePanel = React.createClass({
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: true,
       errors: {},
@@ -92,25 +91,25 @@ var AvailableSidePanel = React.createClass({
     var data = {};
     var errors = {};
 
-    this.state.tokens.map(function (token) {
+    var field = this.state.tokens.map(function (token) {
       if (!token.value) {
         // Input validation
         errors[token.tokenDisplayName] = token.tokenDisplayName + ' is required';
       }
-      // data[token.tokenName] = token.value;
       var returnfield = {};
-      returnfield.name = token.name;
-      returnfield.value = token.value;
+      returnfield[token.tokenName] = token.value;
+      // returnfield.name = token.name;
+      // returnfield.value = token.value;
       return returnfield;
     });
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
     data.type = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
+    data.field = field;
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -541,7 +540,6 @@ var MySidePanel = React.createClass({
     return {
       info: this.props.info,
       fields: this.props.info.fields,
-      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: 'true',
       tagId: this.props.info._id,
@@ -576,14 +574,12 @@ var MySidePanel = React.createClass({
         errors[field.name] = field.name + ' is required';
       } else {
         var returnfield = {};
-        returnfield.name = field.name;
-        returnfield.value = field.value;
+        returnfield[field.name] = field.value;
         return returnfield;
       }
     }));
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
 
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -988,7 +984,6 @@ var NewTemplate = React.createClass({
       fields: [],
       template: '',
       hasCallback: 'true',
-      projectId: "6919181723",
       email: '',
       approved: false,
       checkForType: '',
@@ -1338,7 +1333,6 @@ var SearchBar = React.createClass({
       fields: '',
       template: '',
       trackingTrigger: 'inHeader',
-      projectId: "6919181723",
       active: false,
       errors: {},
       triggerOptions: []
@@ -1364,7 +1358,6 @@ var SearchBar = React.createClass({
 
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
     this.setState({ modalIsOpen: false });
     data.type = this.state.name;
 

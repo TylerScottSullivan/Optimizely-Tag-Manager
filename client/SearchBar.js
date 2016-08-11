@@ -38,7 +38,6 @@ var SearchBar = React.createClass({
         fields: '',
         template: '',
         trackingTrigger: 'inHeader',
-        projectId: "6919181723",
         active: false,
         errors: {},
         triggerOptions: []
@@ -64,7 +63,6 @@ var SearchBar = React.createClass({
 
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
-      data.projectId = this.state.projectId;
       this.setState({modalIsOpen: false});
       data.type = this.state.name;
 
