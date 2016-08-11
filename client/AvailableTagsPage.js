@@ -5,11 +5,10 @@ var AvailableSidePanel = require('./AvailableSidePanel');
 var AvailableTagsPage = React.createClass({
   getInitialState: function() {
     return {
-      splicedArray: this.props.masters,
       sidePanel: {},
       currentProject: "6919181723",
-      master: [],
-      downloadedProject: []
+      master: this.props.masters,
+      downloadedProject: this.props.downloadedProject
     }
   },
 
@@ -37,7 +36,15 @@ var AvailableTagsPage = React.createClass({
       var newObj = {};
       var counter = 0;
       var currentInfo = this.state.sidePanel;
+      console.log('running')
       for (var j = 0; j < this.state.master.length; j++) {
+        console.log('in loop j')
+        if (this.state.master[j].name === 'custom') {
+          continue;
+        }
+          console.log('in loop i')
+          console.log(this.state.downloadedProject, "projects name")
+          console.log(this.state.master[j].name, "masters name")
         for (var i = 0; i < this.state.downloadedProject.length; i++) {
           if (this.state.downloadedProject[i].name === this.state.master[j].name) {
             if (currentInfo.name === this.state.downloadedProject[i].name) {

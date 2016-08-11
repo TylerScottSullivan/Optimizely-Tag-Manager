@@ -119,8 +119,9 @@ router.get('/download/:projectid', (req, res, next) => {
 router.post('/updatetag/:tagid', (req, res, next) => {
   var utils = require('../utils')
   utils.body = req.body;
+  utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
-  Project.findById(req.optimizely.current_project)
+  Project.findOne({projectId: req.optimizely.current_project})
          .then(utils.findMaster.bind(utils))
          .then(utils.setMaster.bind(utils))
          .then(utils.updateTag.bind(utils))
@@ -139,7 +140,9 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
   console.log('I am inside options');
-
+  utils.body = req.body;
+  utils.body.projectId = req.optimizely.current_project;
+  utils.tagid = req.params.tagid;
   Project.find({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))

@@ -25,7 +25,6 @@ var SearchBar = React.createClass({
         success: function(data) {
           console.log('get options successful');
           this.setState({triggerOptions: data})
-          console.log('triggerOptions', this.state.triggerOptions)
         }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
@@ -39,7 +38,6 @@ var SearchBar = React.createClass({
         fields: '',
         template: '',
         trackingTrigger: 'inHeader',
-        projectId: "6919181723",
         active: false,
         errors: {},
         triggerOptions: []
@@ -65,11 +63,10 @@ var SearchBar = React.createClass({
 
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
-      data.projectId = this.state.projectId;
       this.setState({modalIsOpen: false});
-      data.type = this.state.name;
+      data.name = this.state.name;
 
-      if (! this.state.name) {
+      if (! this.state.displayName) {
         errors['displayName'] = 'name is required';
       } else {
         data.displayName = this.state.displayName;
@@ -105,11 +102,25 @@ var SearchBar = React.createClass({
       }
     },
 
-    onChange: function(e) {
+  onChange: function(e) {
+    e.preventDefault();
+    console.log(e, "e")
+    if (e.target.name === "active") {
+      if (this.state.active === false) {
+        this.setState({
+          active: true
+        })
+      } else if (this.state.active === true) {
+        this.setState({
+          active: false
+        })
+      }
+    } else {
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
       this.setState(newState);
-    },
+    }
+  },
 
     onChangeSnippet: function(newVal) {
         this.setState({
@@ -155,46 +166,50 @@ var SearchBar = React.createClass({
   							    height="120px"
   							    width="620px"
   							    editorProps={{$blockScrolling: true}}
-                    value={this.state.template}
-                    onChange={this.onChangeSnippet}
-                  />
-                  {(errorCustom) ? <div className='warning'>{this.state.errors['template']}</div> : null }
+					            value={this.state.template}
+					            onChange={this.onChangeSnippet}
+					        />
+                  			{(errorCustom) ? <div className='warning'>{this.state.errors['template']}</div> : null }
 						  </div>
-              <div className="flex">
-                     <div className="flex--1 sd-headsmall"> Name</div>
-                </div>
-                <div className="flex--1"> Please add the name of your snippet. </div>
-                <input name='displayName' className={`${errorName}`} value={this.state.displayName} onChange={this.onChange}/>
-                {(errorName) ? <div className='warning'>{this.state.errors['displayName']}</div> : null }
-
-                <div className="flex">
-				               <div className="flex--1 sd-headsmall"> Description</div>
+              			  <div className="flex">
+                     		<div className="flex--1 sd-headsmall"> Name</div>
+                		  </div>
+               			  <div className="flex--1"> Please add the name of your snippet. </div>
+                		  <input name='displayName' className={`${errorName}`} value={this.state.displayName} onChange={this.onChange}/>
+                		  {(errorName) ? <div className='warning'>{this.state.errors['displayName']}</div> : null }
+                		  <div className="flex">
+				             <div className="flex--1 sd-headsmall"> Description</div>
 				          </div>
 				          <div className="flex--1"> Please add the description of your tag below. </div>
 				          <input name='tagDescription' className={`$(errorTagDescription)`} value={this.state.tagDescription} onChange={this.onChange}/>
-                  {(errorTagDescription) ? <div className='warning'>{this.state.errors['tagDescription']}</div> : null }
-
-                <div className="flex">
-				          <div className="flex--1 sd-headsmall"> Called On: </div>
+                  		  {(errorTagDescription) ? <div className='warning'>{this.state.errors['tagDescription']}</div> : null }
+                		  <div className="flex">
+				          	<div className="flex--1 sd-headsmall"> Called On: </div>
+				          </div>
+                		  <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+                  			{this.state.triggerOptions.map((trigger) => {
+                    			return <option value={trigger}>{trigger}</option>
+                    			})
+                  			}
+    				      </select>
+			    		  <div className="flex togglebutton">
+			      			{this.state.active === true ?
+			         			<div>
+			            			<button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
+			            			<button className="button" name='active' onClick={this.onChange}>Disabled</button>
+			          			</div>
+			       				:
+			          			<div>
+			            			<button className="button" name='active' onClick={this.onChange}>Enabled</button>
+			            			<button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
+			          			</div>
+			        		}
+			    		  </div>
+			    		</div>
+					    <div className='flex space-between'>
+						  <button className="button button--highlight" onClick={this.addCustomTag}> Add Custom Tag </button>
+					      <button className="button button--highlight" onClick={this.closeModal}> Close </button>
 				        </div>
-                <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
-                  {this.state.triggerOptions.map((trigger) => {
-                    return <option value={trigger}>{trigger}</option>
-                    })
-                  }
-    				    </select>
-		            <div className="flex">
-		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
-		            </div>
-						    <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
-						      <option value='inHeader'>Enabled</option>
-						      <option value='onPageLoad'>Disabled</option>
-						    </select>
-						  </div>
-						  <div className='flex space-between'>
-							  <button className="button button--highlight" onClick={this.addCustomTag}> Add Custom Tag </button>
-						    <button className="button button--highlight" onClick={this.closeModal}> Close </button>
-					    </div>
 				    </Modal>
 	          </li>
 	        </ul>

@@ -8,7 +8,7 @@ var AvailableSidePanel = React.createClass({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful');
+        console.log('get options successful', data);
         this.setState({triggerOptions: data})
       }.bind(this),
       error: function(err) {
@@ -18,11 +18,10 @@ var AvailableSidePanel = React.createClass({
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      projectId: "6919181723",
       trackingTrigger: 'inHeader',
       active: true,
       errors: {},
-      triggerOptions: null
+      triggerOptions: []
     };
   },
 
@@ -49,7 +48,6 @@ var AvailableSidePanel = React.createClass({
     })
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
-    data.projectId = this.state.projectId;
     data.name = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.template = this.props.info.template;
@@ -66,11 +64,9 @@ var AvailableSidePanel = React.createClass({
           console.log(data, "data");
           console.log(this.props.downloadedProject.concat(data), "concated downloadedProject")
           this.props.onDownload(this.props.downloadedProject.concat(data))
-          console.log('datapushhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhed')
         }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
-          console.log('errrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr help')
         }
       });
     } else {
@@ -131,35 +127,55 @@ var AvailableSidePanel = React.createClass({
 			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)} required/>
 			        })}
               <div className="help-block with-errors"></div>
-		            <div className="flex">
-		               <div className="flex--1 sd-headsmall"> Called On: </div>
-		            </div>
-				    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+                <div className="flex">
+                   <div className="flex--1 sd-headsmall"> Called On: </div>
+                </div>
+            <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
               {this.state.triggerOptions.map((trigger) => {
                 return <option value={trigger}>{trigger}</option>
                 })
               }
-				    </select>
-		            <div className="flex">
-		               <div className="flex--1 sd-headsmall"> Enabled or Disabled: </div>
-		            </div>
-				    <select className="form-control" name='active' value={this.state.active} onChange={this.onChange}>
-				      <option value={true}>Enabled</option>
-				      <option value={false}>Disabled</option>
-				    </select>
-				    <div>
-				    	<button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
-					</div>
-			  </div>
-			)
-		} else {
-			return <div>
+            </select>
+            <div className="flex togglebutton">
+              {this.state.active === true ?
+                  <div>
+                    <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
+                    <button className="button" name='active' onClick={this.onChange}>Disabled</button>
+                  </div>
+               :
+                  <div>
+                    <button className="button" name='active' onClick={this.onChange}>Enabled</button>
+                    <button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
+                  </div>
+                }
+            </div>
+            {this.props.info.added === true ?
+                  <div>
+                    <div>
+                      <button className="btn-uniform-add button button--highlight" disabled>Add Tag</button>
+                    </div>
+                    <div className="greenbox">
+                      <p> This tag has now been added to 'My Tags.' This change may take up to 10 minutes before it is updated within your Optimizely tag. </p>
 
-        <div className="sidepanel background--faint">
-            <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
-          <div> Select a Tag to add to My Tags. </div>
+                      <p> Go to 'My Tags' to Update, Delete, or Disable this tag. </p>
+                    </div>
+                  </div>
+              :
+                  <div>
+                    <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
+                  </div>
+            }
           </div>
-      </div>;
+      )
+    } else {
+      return (
+        <div>
+          <div className="sidepanel background--faint">
+            <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
+            <div> Select a Tag to add to My Tags. </div>
+          </div>
+        </div>
+      )
     }
   }
 })
