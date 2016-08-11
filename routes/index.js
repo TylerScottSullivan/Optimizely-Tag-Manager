@@ -55,6 +55,7 @@ router.post('/', function(req, res, next) {
                        'tags': [],
                        'projectId': req.optimizely.current_project})
         .then(utils.findMaster.bind(utils))
+        .then(utils.findTagSetMasters.bind(utils))
         .then(utils.createTag.bind(utils))
         .then(utils.updateProject.bind(utils))
         .then(utils.populateProject.bind(utils))
@@ -65,6 +66,7 @@ router.post('/', function(req, res, next) {
         })
         .catch(function(err) {
           console.log("Error at the end of /", err)
+          next(err);
         })
 });
 
@@ -101,13 +103,13 @@ router.get('/master', (req, res, next) => {
 
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
-router.get('/download/:projectid', (req, res, next) => {
+router.get('/download', (req, res, next) => {
   var utils = require('../utils')
-  Tag.find({'projectId': req.params.projectid}, function(err, tags) {
+  Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
     if (err) {
       console.log('err finding tags in download/:projectid', err)
     } else {
-      console.log(tags)
+      console.log("++++++++++++++++++++++++++++++++++++++++DOWNLOAD TAGS ++++++++++++++++++++", tags)
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(tags)); //send an array of masters
     }
@@ -140,10 +142,11 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
   console.log('I am inside options');
+
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
-  Project.find({'projectId': req.optimizely.current_project})
+  Project.findOne({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
@@ -177,7 +180,6 @@ router.post('/template', function(req, res, next) {
     hasCallback: req.body.hasCallback,
     approved: false,
     template: template,
-    callbackCode: 'abcdefg',
     checkFor: req.body.checkFor,
     checkForType: req.body.checkForType
   })

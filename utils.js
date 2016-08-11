@@ -18,40 +18,48 @@ module.exports = {
     this.project = project;
     return Master.find({})
   },
-  createTag: function(masters) {
-    console.log("[stage] createTag");
-    //storing all masters
+  findTagSetMasters: function(masters) {
     this.masters = masters;
-    var fields = [];
-    // console.log('masterssss', masters)
-    var master = masters.filter(function(item) {
+    return Tag.findOne({"name": this.body.name, "projectId": this.project.projectId})
+  },
+  createTag: function(tag) {
+    //storing all masters
+    console.log(tag, "Tag")
+    if (!tag) {
+      var fields = [];
+      // console.log('masterssss', masters)
+      var master = this.masters.filter(function(item) {
 
-      return item.name === this.body.name
-    }.bind(this))[0];
-    // console.log('master',  master)
+        return item.name === this.body.name
+      }.bind(this))[0];
+      // console.log('master',  master)
 
-    for(var i = 0; i < master.tokens.length; i++) {
-      fields.push({
-        'name': master.tokens[i]['tokenName'],
-        'description': master.tokens[i]['description'],
-        'value': this.body[master.tokens[i]['tokenName']]
+      for(var i = 0; i < master.tokens.length; i++) {
+        fields.push({
+          'name': master.tokens[i]['tokenName'],
+          'description': master.tokens[i]['description'],
+          'value': this.body[master.tokens[i]['tokenName']]
+        })
+      }
+      t = new Tag({
+        name: master.name,
+        displayName: this.body.displayName,
+        fields: fields,
+        tagDescription: this.body.tagDescription,
+        trackingTrigger: this.body.trackingTrigger,
+        template: this.body.template,
+        projectId: this.project.projectId,
+        active: this.body.active,
+        hasCallback: master.hasCallback,
+        pageName: this.body.pageName,
+        eventName: this.body.eventName
       })
+      console.log('this is the new tag', t)
+      return t.save()
     }
-    t = new Tag({
-      name: master.name,
-      displayName: this.body.displayName,
-      fields: fields,
-      tagDescription: this.body.tagDescription,
-      trackingTrigger: this.body.trackingTrigger,
-      template: this.body.template,
-      projectId: this.project.projectId,
-      active: this.body.active,
-      hasCallback: master.hasCallback,
-      pageName: this.body.pageName,
-      eventName: this.body.eventName
-    })
-    console.log('this is the new tag', t)
-    return t.save()
+    else {
+      throw "Cannot create a tag twice"
+    }
   },
   updateProject: function(tag) {
     console.log("[stage] updateProject");
@@ -185,43 +193,45 @@ module.exports = {
        })
   },
   getTagOptions: function(project) {
-    console.log('projectssss', project)
     this.project = project;
     return Tag.find({'hasCallback': true, 'projectId': this.project.projectId});
   },
   getOptions: function(tags) {
-    console.log('tagsssss', tags)
-        if (tags.length === 0) {
-          this.tagNames = ['inHeader', 'onDocumentReady'];
-          return '[]';
-        }
-        //get names of options
-        this.tagNames = tags.map(function(item) {
-          return item.name;
-        });
+    console.log("++++++++++++++++++++++++++++++++++++++++++++++I GOT INTO THE GET OPTIONS ++++++++++++++++++++++++++++++++++++++++++++++")
+    if (tags.length === 0) {
+      this.tagNames = ['inHeader', 'onDocumentReady'];
+    }
+    //get names of options
+    this.tagNames = tags.map(function(item) {
+      return item.name;
+    });
 
-        console.log('tagName', this.tagNames)
+    console.log('tagName', this.tagNames)
 
-        //inHeader/onDocumentReady should intuitively come first
-        this.tagNames.unshift("inHeader");
-        this.tagNames.unshift("onDocumentReady");
+    //inHeader/onDocumentReady should intuitively come first
+    this.tagNames.unshift("inHeader");
+    this.tagNames.unshift("onDocumentReady");
 
-        //save current tags
-        this.tags = tags;
+    //save current tags
+    this.tags = tags;
 
-        //make call to optimizely for all pages associated with the id
-        var token = process.env.API_TOKEN;
-        return rp({
-             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
-             method: 'GET',
-             headers: {
-               "Token": token,
-               "Content-Type": "application/json"
-             }
-           })
+    //make call to optimizely for all pages associated with the id
+    var token = process.env.API_TOKEN;
+    console.log("HERE IS THE PROJECT ID", this.body.projectId)
+    return rp({
+         uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
+         method: 'GET',
+         headers: {
+           "Token": token,
+           "Content-Type": "application/json"
+         }
+       })
 
   },
   addProjectOptions: function(data) {
+    if (!data) {
+      data = "[]"
+    }
     var eventNames = JSON.parse(data).map(function(item) {
       return item.api_name;
     })
@@ -238,20 +248,15 @@ module.exports = {
     return Project.findOne({'projectId': projectId})
   },
   removeTagFromProject: function(project) {
-    console.log("project.tags 1", project.tags)
-    console.log("project index", project.tags)
     project.tags.splice(project.tags.indexOf(this.tagid), 1);
-    console.log("project.tags 2", project.tags)
     return project.save();
   },
   setMaster: function(masters) {
     //set the master and find the correct tag
     this.masters = masters;
-    console.log('master in setMaster', this.masters)
     return Tag.findById(this.tagid)
   },
   updateTag: function(tag) {
-    console.log('master in updateTag', this.masters)
     var master = this.masters.filter(function(item) {
       return item.name === tag.name
     }.bind(this))[0];
@@ -265,7 +270,6 @@ module.exports = {
     tag.template = this.body.template;
     tag.projectId = this.body.projectId;
     tag.active = this.body.active;
-    console.log('here is the updated tag', tag)
     return tag.save();
   }
 }
