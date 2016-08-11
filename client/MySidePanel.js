@@ -32,7 +32,6 @@ var MySidePanel = React.createClass({
       }
     });
     // console.log('this is the info fields that i want', this.props.info)
-    console.log('getting initial state')
     return {
       modalIsOpen: false,
       info: this.props.info,
@@ -60,7 +59,6 @@ var MySidePanel = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    console.log("will receive props")
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
@@ -73,20 +71,12 @@ var MySidePanel = React.createClass({
     var data = {};
     var errors = {}
 
-    // data.fields = JSON.stringify(this.state.fields.map(function(field){
-    //   if (! field.value) {
-    //     errors[field.name] = `${field.name} is required`;
-    //   } else {
-    // 	var returnfield = {};
-    // 	returnfield[field.name] = field.value;
-    // 	return returnfield;
-    //   }
-    // }))
     this.state.fields.map(function(field){
       if (! field.value) {
         errors[field.name] = `${field.name} is required`;
       } else {
     	data[field.name] = field.value;
+      // errors.splice(i, 1)
       }
     })
     console.log('here are the new fields', data)
@@ -136,14 +126,14 @@ var MySidePanel = React.createClass({
   //this change the enable and triggers
   onChange: function(e) {
     e.preventDefault();
-    console.log(e.target, "e")
-    console.log(this.state.active, 'state of active')
-    console.log(this.props.info.active, 'props of info of active')
-    console.log(this.state.info.active, "state of info of active")
+    // console.log(e.target, "e")
+    // console.log(this.state.active, 'state of active')
+    // console.log(this.props.info.active, 'props of info of active')
+    // console.log(this.state.info.active, "state of info of active")
     if (e.target.name === "active") {
-      console.log("is this getting called")
-      console.log(e.target.name, "target name")
-      console.log(e.target.value, "target value")
+      // console.log("is this getting called")
+      // console.log(e.target.name, "target name")
+      // console.log(e.target.value, "target value")
       this.setState({info: Object.assign({}, this.state.info, {active: !this.state.info.active})})
     } else {
       var newState = Object.assign({}, this.state);
@@ -153,19 +143,19 @@ var MySidePanel = React.createClass({
   },
 
 	render: function() {
-    console.log(this.props, "props for MySidePanel --- shouldn't have the info it's displaying????")
+    // console.log(this.props, "props for MySidePanel --- shouldn't have the info it's displaying????")
     if (this.props.info.fields) {
-      console.log(this.props.info.fields, 'fields');
-      console.log(this.props.info.fields[0], 'fields 0');
-      console.log(this.props.info.tokens, 'tokens');
-      console.log(this.props.info.tokens[0], 'tokens 0');
+      // console.log(this.props.info.fields, 'fields');
+      // console.log(this.props.info.fields[0], 'fields 0');
+      // console.log(this.props.info.tokens, 'tokens');
+      // console.log(this.props.info.tokens[0], 'tokens 0');
 
       var newTokenField = [];
       var newObj = {};
-      console.log("hello here")
+      // console.log("hello here")
       for (var j = 0; j < this.props.info.fields.length; j++) {
-        console.log("hello why aren'y ou going through my loop")
-        console.log('iterating')
+        // console.log("hello why aren'y ou going through my loop")
+        // console.log('iterating')
         for (var i = 0; i < this.props.info.tokens.length; i++) {
           console.log(this.props.info.tokens[i].tokenName, "tokenName");
           console.log(this.props.info.fields[j].name, 'fieldName')
@@ -181,7 +171,7 @@ var MySidePanel = React.createClass({
       console.log(splicedTokenField, 'splicedTokenField');
     }
 
-    console.log(this.props, "props for mySidePanel")
+    // console.log(this.props, "props for mySidePanel")
 		if (Object.keys(this.props.info).length !== 0) {
 			return (
 				<div data-toggle='validator' className="sidepanel background--faint">
@@ -241,13 +231,13 @@ var MySidePanel = React.createClass({
 		            </div>
 				    <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
                   {this.state.triggerOptions.map((trigger) => {
-                    if (trigger === this.state.info.trackingTrigger) {
-                      return <option value={trigger} selected> {trigger} </option> 
-                    }
+                    // if (trigger === this.state.info.trackingTrigger) {
+                    //   return <option value={trigger} selected> {trigger} </option>
+                    // }
                     return <option value={trigger} >{trigger}</option>
                     })
                   }
-                </select>
+              </select>
             <div className="flex togglebutton">
               {this.state.info.active === true ?
                   <div>

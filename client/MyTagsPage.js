@@ -7,7 +7,7 @@ var MyTagsPage = React.createClass({
     return {
       splicedArray: [], //merge master templates and the downloaded project
       sidePanel: {},
-      currentProject: "6919181723",
+      // currentProject: "6919181723",
       master: [],
       downloadedProject: []
     }
@@ -18,7 +18,7 @@ var MyTagsPage = React.createClass({
     .then(response =>{
       this.props.onMaster(response);
     })
-    .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject + window.location.search))
+    .then(() => fetch('http://localhost:4001/download/' + window.location.search))
     .then(response => response.json())
     .then((r) => {
       this.props.onDownload(r);
