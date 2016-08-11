@@ -141,10 +141,11 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
   console.log('I am inside options');
+
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
-  Project.find({'projectId': req.optimizely.current_project})
+  Project.findOne({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))

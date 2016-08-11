@@ -90,7 +90,7 @@ var MySidePanel = React.createClass({
       }
     })
     console.log('here are the new fields', data)
-    data.active = this.state.active;
+    data.active = this.state.info.active;
     data.trackingTrigger = this.state.trackingTrigger;
 
     if (Object.keys(errors).length === 0) {
