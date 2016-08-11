@@ -239,8 +239,11 @@ var MySidePanel = React.createClass({
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Called On: </div>
 		            </div>
-				    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+				    <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
                   {this.state.triggerOptions.map((trigger) => {
+                    if (trigger === this.state.info.trackingTrigger) {
+                      return <option value={trigger} selected> {trigger} </option> 
+                    }
                     return <option value={trigger} >{trigger}</option>
                     })
                   }
