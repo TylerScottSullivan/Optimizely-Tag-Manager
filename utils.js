@@ -39,8 +39,9 @@ module.exports = {
     }
     t = new Tag({
       name: master.name,
+      displayName: this.body.displayName,
       fields: fields,
-      tagDescription: master.tagDescription,
+      tagDescription: this.body.tagDescription,
       trackingTrigger: this.body.trackingTrigger,
       template: this.body.template,
       projectId: this.project.projectId,

@@ -25,7 +25,8 @@ var tagSchema = mongoose.Schema({
   callbacks: Array,
   pageName: String,
   eventName: String,
-  template: String
+  template: String,
+  displayName: String
 })
 
 //tags, masters, innerCallback

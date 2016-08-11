@@ -198,7 +198,7 @@ var MySidePanel = React.createClass({
 	            	</label>
                 {this.props.info.name === "custom" ?
                   <div>
-                    <button className="btn-uniform-add button button--highlight" onClick={this.openModal}> Edit {this.props.info.displayName} Code</button>
+                    <button className="btn-uniform-add button button--highlight" onClick={this.openModal}> Edit Custom Code</button>
 
                     <Modal
                       isOpen={this.state.modalIsOpen}
@@ -206,9 +206,9 @@ var MySidePanel = React.createClass({
                       onRequestClose={this.closeModal}
                       style={customStyles} >
 
-                      <h2 ref="subtitle">Create Custom Tag</h2>
+                      <h2 ref="subtitle">Update Custom Tag</h2>
                       <div className='modaltext'>
-                        <div> Please create your own tag by inserting Javascript </div>
+                        <div> Please update your Javascript code here. </div>
                         <div className="editor">
                           <AceEditor
                             className="editablecustom"
@@ -224,8 +224,8 @@ var MySidePanel = React.createClass({
                         </div>
                       </div>
                       <div className='flex space-between'>
-                        <button className="button button--highlight" onClick={this.addCustomTag}> Add Custom Tag </button>
-                        <button className="button button--highlight" onClick={this.closeModal}> Close</button>
+                        <button className="button button--highlight"> Update Custom Tag-Not Functional </button>
+                        <button className="button button--highlight" onClick={this.closeModal}> Cancel </button>
                       </div>
                     </Modal>
                   </div>
