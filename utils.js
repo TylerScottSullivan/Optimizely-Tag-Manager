@@ -212,7 +212,7 @@ module.exports = {
         //make call to optimizely for all pages associated with the id
         var token = process.env.API_TOKEN;
         return rp({
-             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.tags[i].projectId,
+             uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
              method: 'GET',
              headers: {
                "Token": token,
@@ -220,9 +220,6 @@ module.exports = {
              }
            })
 
-        //send info
-        //res.setHeader('Content-Type', 'application/json');
-        //res.send(JSON.stringify(tags));
   },
   addProjectOptions: function(data) {
     var eventNames = JSON.parse(data).map(function(item) {
@@ -247,20 +244,20 @@ module.exports = {
     console.log("project.tags 2", project.tags)
     return project.save();
   },
-  setMaster: function(master) {
+  setMaster: function(masters) {
     //set the master and find the correct tag
-    this.master = master;
-    return Tag.findById(req.params.tagid)
+    this.masters = masters;
+    console.log('master in setMaster', this.masters)
+    return Tag.findById(this.tagid)
   },
   updateTag: function(tag) {
-    // tag.name = req.body.name;
+    console.log('master in updateTag', this.masters)
+    var master = this.masters.filter(function(item) {
+      return item.name === tag.name
+    }.bind(this))[0];
     var fields = [];
-    for(var i = 0; i < this.master.tokens.length; i++) {
-      fields.push({
-        'name': this.master.tokens[i]['tokenName'],
-        'description': master.tokens[i]['description'],
-        'value': this.body[master.tokens[i]['tokenName']]
-      })
+    for(var i = 0; i < master.tokens.length; i++) {
+      fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
     }
     tag.fields = fields;
     tag.approved = this.body.approved;
@@ -268,6 +265,7 @@ module.exports = {
     tag.template = this.body.template;
     tag.projectId = this.body.projectId;
     tag.active = this.body.active;
+    console.log('here is the updated tag', tag)
     return tag.save();
   }
 }
