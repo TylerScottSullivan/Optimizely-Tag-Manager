@@ -71,12 +71,12 @@ var MySidePanel = React.createClass({
     var data = {};
     var errors = {}
 
-    this.state.fields.map(function(field){
+    this.state.fields.map(function(field, i){
       if (! field.value) {
         errors[field.name] = `${field.name} is required`;
       } else {
     	data[field.name] = field.value;
-      // errors.splice(i, 1)
+      errors.splice(i, 1)
       }
     })
     console.log('here are the new fields', data)
