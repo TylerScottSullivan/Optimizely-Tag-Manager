@@ -25,12 +25,17 @@ module.exports = {
     var fields = [];
     // console.log('masterssss', masters)
     var master = masters.filter(function(item) {
-      return item.name === this.body.type
+
+      return item.name === this.body.name
     }.bind(this))[0];
     // console.log('master',  master)
 
     for(var i = 0; i < master.tokens.length; i++) {
-      fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
+      fields.push({
+        'name': master.tokens[i]['tokenName'],
+        'description': master.tokens[i]['description'],
+        'value': this.body[master.tokens[i]['tokenName']]
+      })
     }
     t = new Tag({
       name: master.name,
