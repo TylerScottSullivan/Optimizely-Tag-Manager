@@ -40,7 +40,7 @@ var MySidePanel = React.createClass({
       active: this.props.info.active,
       tagId: this.props.info._id,
       errors: {},
-      triggerOptions: null
+      triggerOptions: null,
     };
   },
 
@@ -71,12 +71,12 @@ var MySidePanel = React.createClass({
     var data = {};
     var errors = {}
 
-    this.state.fields.map(function(field, i){
-      if (! field.value) {
+    this.state.fields.map(function(field){
+      if (!field.value) {
         errors[field.name] = `${field.name} is required`;
       } else {
     	data[field.name] = field.value;
-      errors.splice(i, 1)
+      // errors.splice(i, 1)
       }
     })
     console.log('here are the new fields', data)
@@ -119,6 +119,7 @@ var MySidePanel = React.createClass({
 
   onChangeTokens: function(field, e) {
     var newState = Object.assign({}, this.state);
+    newState.errors[e.target.name] = false;
     newState.fields[field].value = e.target.value;
     this.setState(newState);
   },

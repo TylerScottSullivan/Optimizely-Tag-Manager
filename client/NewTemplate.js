@@ -150,6 +150,14 @@ var NewTemplate = React.createClass({
          </select>
          <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
        </div>
+       <div className="form-group">
+         <div className="flex--1 sd-headsmall">Would you like us to make your code callbackable?</div>
+         <select className="form-control" name='hasCallback' onChange={this.onChange}>
+           <option value={true}>Yes</option>
+           <option value={false}>No</option>
+         </select>
+         <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
+       </div>
        <div class="form-group">
          <label className="flex--1 sd-headsmall">What is the name of your tag when should be checking for:</label>
          <input type="text" className="text-input width--200 text-input-styled" name='checkFor' value={this.state.checkFor} onChange={this.onChange} />
