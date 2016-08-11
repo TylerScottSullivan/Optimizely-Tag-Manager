@@ -25,7 +25,7 @@ module.exports = {
   createTag: function(tag) {
     //storing all masters
     console.log(tag, "Tag")
-    if (!tag) {
+    if (!tag || tag.name === "custom") {
       var fields = [];
       // console.log('masterssss', masters)
       var master = this.masters.filter(function(item) {
