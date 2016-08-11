@@ -71,23 +71,23 @@ var MySidePanel = React.createClass({
     var data = {};
     var errors = {}
 
-    // this.state.tokens.map((token) => {
-    //   if (!token.value) {
-    //     // Input validation
-    //     errors[token.tokenDisplayName] = `${token.tokenDisplayName} is required`;
+    // data.fields = JSON.stringify(this.state.fields.map(function(field){
+    //   if (! field.value) {
+    //     errors[field.name] = `${field.name} is required`;
+    //   } else {
+    // 	var returnfield = {};
+    // 	returnfield[field.name] = field.value;
+    // 	return returnfield;
     //   }
-    //   data[token.tokenName] = token.value;
-    // })
-
-    data.fields = JSON.stringify(this.state.fields.map(function(field){
+    // }))
+    this.state.fields.map(function(field){
       if (! field.value) {
         errors[field.name] = `${field.name} is required`;
       } else {
-    	var returnfield = {};
-    	returnfield[field.name] = field.value;
-    	return returnfield;
+    	data[field.name] = field.value;
       }
-    }))
+    })
+    console.log('here are the new fields', data)
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
 
