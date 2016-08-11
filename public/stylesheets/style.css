@@ -136,3 +136,25 @@ textarea {
 .warning {
   color: red
 }
+
+.redbox {
+	margin: 15px 0;
+	padding: 10px;
+	background-color: #F9E3E4;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #C60C0C;
+}
+
+.yellowbox {
+	margin: 15px 0;
+	padding: 10px;
+	background-color: #FCF8E3;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #FFD40C;
+}

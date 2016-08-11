@@ -154,10 +154,10 @@ var SearchBar = React.createClass({
   							    height="120px"
   							    width="620px"
   							    editorProps={{$blockScrolling: true}}
-                    value={this.state.template}
-                    onChange={this.onChangeSnippet}
-                  />
-                  {(errorCustom) ? <div className='warning'>{this.state.errors['template']}</div> : null }
+					            value={this.state.template}
+					            onChange={this.onChangeSnippet}
+					        />
+                  			{(errorCustom) ? <div className='warning'>{this.state.errors['template']}</div> : null }
 						  </div>
               <div className="flex">
                      <div className="flex--1 sd-headsmall"> Name</div>
