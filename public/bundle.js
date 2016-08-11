@@ -1176,12 +1176,12 @@ var MyTagsPage = React.createClass({
   componentDidMount: function componentDidMount() {
     var _this = this;
 
-    fetch('http://localhost:4001/master').then(function (response) {
+    fetch('http://localhost:4001/master' + window.location.search).then(function (response) {
       return response.json();
     }).then(function (response) {
       _this.props.onMaster(response);
     }).then(function () {
-      return fetch('http://localhost:4001/download/' + _this.state.currentProject);
+      return fetch('http://localhost:4001/download/' + _this.state.currentProject + window.location.search);
     }).then(function (response) {
       return response.json();
     }).then(function (r) {

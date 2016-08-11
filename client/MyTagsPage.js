@@ -13,12 +13,12 @@ var MyTagsPage = React.createClass({
     }
   },
   componentDidMount: function() {
-    fetch('http://localhost:4001/master')
+    fetch('http://localhost:4001/master' + window.location.search)
     .then((response) => response.json())
     .then(response =>{
       this.props.onMaster(response);
     })
-    .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject))
+    .then(() => fetch('http://localhost:4001/download/' + this.state.currentProject + window.location.search))
     .then(response => response.json())
     .then((r) => {
       this.props.onDownload(r);
