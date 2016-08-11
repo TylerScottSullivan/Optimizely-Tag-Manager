@@ -194,7 +194,7 @@ module.exports = {
   },
   getTagOptions: function(project) {
     this.project = project;
-    return Tag.find({'hasCallback': true, 'projectId': this.project.projectId});
+    return Tag.find({'hasCallback': true, 'projectId': this.project.projectId, "active": true});
   },
   getOptions: function(tags) {
     console.log("++++++++++++++++++++++++++++++++++++++++++++++I GOT INTO THE GET OPTIONS ++++++++++++++++++++++++++++++++++++++++++++++")
