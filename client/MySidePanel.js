@@ -32,6 +32,7 @@ var MySidePanel = React.createClass({
       }
     });
     // console.log('this is the info fields that i want', this.props.info)
+    console.log('getting initial state')
     return {
       modalIsOpen: false,
       info: this.props.info,
@@ -59,6 +60,7 @@ var MySidePanel = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    console.log("will receive props")
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
@@ -134,17 +136,15 @@ var MySidePanel = React.createClass({
   //this change the enable and triggers
   onChange: function(e) {
     e.preventDefault();
-    console.log(e, "e")
+    console.log(e.target, "e")
+    console.log(this.state.active, 'state of active')
+    console.log(this.props.info.active, 'props of info of active')
+    console.log(this.state.info.active, "state of info of active")
     if (e.target.name === "active") {
-      if (this.state.active === false) {
-        this.setState({
-          active: true
-        })
-      } else if (this.state.active === true) {
-        this.setState({
-          active: false
-        })
-      }
+      console.log("is this getting called")
+      console.log(e.target.name, "target name")
+      console.log(e.target.value, "target value")
+      this.setState({info: Object.assign({}, this.state.info, {active: !this.state.info.active})})
     } else {
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
@@ -239,14 +239,14 @@ var MySidePanel = React.createClass({
 		            <div className="flex">
 		               <div className="flex--1 sd-headsmall"> Called On: </div>
 		            </div>
-				    <select className="form-control" name='trackingTrigger' value={this.props.info.trackingTrigger} onChange={this.onChange}>
+				    <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
                   {this.state.triggerOptions.map((trigger) => {
-                    return <option value={trigger}>{trigger}</option>
+                    return <option value={trigger} >{trigger}</option>
                     })
                   }
                 </select>
             <div className="flex togglebutton">
-              {this.state.active === true ?
+              {this.state.info.active === true ?
                   <div>
                     <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
                     <button className="button" name='active' onClick={this.onChange}>Disabled</button>
