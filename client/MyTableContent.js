@@ -13,7 +13,7 @@ var MyTableContent = React.createClass({
   },
 
   tableSort: function() {
-  	  	$(this.refs.myTable).tablesorter();
+  	$(this.refs.myTable).tablesorter();
   },
 
   render: function() {
@@ -32,14 +32,15 @@ var MyTableContent = React.createClass({
               <th className="cell-collapse">Status</th>
             </tr>
           </thead>
+
           <tbody>
-            {//key is for adjacent elements in react to distinguish
-              this.props.splicedArray.map((rowinfo, item) => {
+            {this.props.splicedArray.map((rowinfo, item) => {
                 return <MyTableRow onSelect={() => this.props.onSelect(item, rowinfo)} key={item} rowinfo={rowinfo}/>
               })
             }
           </tbody>
         </table>
+        {(this.props.splicedArray.length ===0) ? <div className='welcome'>Welcome! Go to Available Tags to add your first tag.</div> : null }
       </div>
     )
   }

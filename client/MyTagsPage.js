@@ -46,9 +46,16 @@ var MyTagsPage = React.createClass({
   onSelect: function(item, rowinfo) {
     this.setState({
       sidePanel: rowinfo, //this is an object
-      sidePanelIndex: item
+      sidePanelIndex: item,
+      sidePanelDeleted: false
     });
     console.log('this is the info passed on', this.state.sidePanel)
+  },
+
+  onDelete: function() {
+    this.setState({
+      sidePanelDeleted: true
+    })
   },
 
   render: function() {
@@ -75,7 +82,7 @@ var MyTagsPage = React.createClass({
     return (
       <div className="flex height--1-1">
         <MyTableContent splicedArray={splicedArray} onSelect={this.onSelect} {...this.props} />
-        <MySidePanel info={currentInfo} index={currentIndex} downloaded={this.state.downloadedProject} {...this.props}/>
+        <MySidePanel info={currentInfo} index={currentIndex} downloaded={this.state.downloadedProject} splicedArray={splicedArray} deleted={this.state.sidePanelDeleted} onDelete={this.onDelete} {...this.props}/>
       </div>
     )
   }
