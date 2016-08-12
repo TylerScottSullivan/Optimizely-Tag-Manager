@@ -165,19 +165,27 @@ router.get('/template', function(req, res, next){
 })
 
 router.post('/template', function(req, res, next) {
+  console.log('i am inside template')
   var tokens = [];
-  tokens.push({'tokenName': req.body.tokenName, 'tokenDisplayName': req.body.tokenDisplayName, 'tokenDescription': req.body.tokenDescription, 'tokenCode': '123456789'})
-  var template = req.body.custom;
-  console.log(req.body.hasCallback)
-  if (req.body.usingOurCallback) {
+  console.log('req.body', req.body)
+  JSON.parse(req.body.fields).forEach((field)=>{
+    tokens.push({'tokenName': field.token, 'tokenDisplayName': field.tokenName, 'tokenDescription': field.tokenDescription})
+  })
+  console.log('tokens', tokens)
+  var template = req.body.template;
+  // console.log(req.body.hasCallback)
+  if (req.body.usesOurCallback) {
     template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === '+req.body.checkForType+') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
   }
+  console.log('template', template)
+
   var m = new Master({
     name: req.body.type,
     displayName: req.body.displayName,
-    tokens: req.body.fields,
+    tokens: tokens,
     tagDescription: req.body.description,
     hasCallback: req.body.hasCallback,
+    usesOurCallback: req.body.usesOurCallback,
     approved: false,
     template: template,
     checkFor: req.body.checkFor,
@@ -186,7 +194,9 @@ router.post('/template', function(req, res, next) {
   m.save(function(err, master) {
     if (err) console.log(error, "HEyyyyyy got an error");
     else {
-      res.redirect('/')
+      console.log('saving new template correct', master)
+      // res.redirect('/')
+      res.send('i am all good')
     }
   })
 })

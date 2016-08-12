@@ -13,9 +13,9 @@ var NewTemplate = React.createClass({
       template: '',
       hasCallback: 'true',
       email: '',
-      approved: false,
-      checkForType: '',
-      checkFor: ''
+      checkForType: 'function',
+      checkFor: '',
+      usesOurCallback: 'false'
     };
   },
 
@@ -45,25 +45,32 @@ var NewTemplate = React.createClass({
 
   onSubmit: function() {
     var data = {};
-    data.fields = []
-    this.state.fields.map(function(field, i){
-      data.fields.push({})
-      data.fields[i]['tokenName'] = field.tokenName;
-      data.fields[i]['tokenDescription'] = field.tokenDescription;
-      var token = field.tokenName.replace(/ /g, '_');
-      data.fields[i]['token'] = token;
-    })
+    // data.fields = []
+    data.fields = JSON.stringify(this.state.fields.map(function(field, i){
+      var f = {}
+      f['tokenName'] = field.tokenName;
+      f['tokenDescription'] = field.tokenDescription;
+      f['token'] = field.tokenName.replace(/ /g, '_');
+      return f;
+    }));
+    console.log('here are the fields', data.fields)
     data.type = this.state.type;
     data.email = this.state.email;
     data.description = this.state.description;
     data.displayName = this.state.displayName;
-    data.hasCallback = this.state.hasCallback;
+    console.log('callback', this.state.usesOurCallback)
+    if (this.state.usesOurCallback === 'true') {
+      data.hasCallback = 'true';
+    } else {
+      data.hasCallback = this.state.hasCallback;
+    }
+    data.usesOurCallback = this.state.usesOurCallback;
     data.template = this.state.template;
-    data.approved = this.state.approved;
     data.checkForType = this.state.checkForType;
     data.checkFor = this.state.checkFor;
 
     console.log('this is the full data', data)
+
     return $.ajax({
       url: '/template' + window.location.search,
       type: 'POST',
@@ -98,7 +105,7 @@ var NewTemplate = React.createClass({
   //change the language later
 	render: function () {
 		return (
-      <form method='post'>
+      <div className="form-group">
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter a name for snippet (please do not include spaces):</div>
          <input type="text" className="text-input width--200 text-input-styled" name='type' onChange={this.onChange}/>
@@ -145,27 +152,30 @@ var NewTemplate = React.createClass({
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Does your snippet take any callback?</div>
          <select className="form-control" name='hasCallback' onChange={this.onChange}>
-           <option value={true}>Yes</option>
-           <option value={false}>No</option>
+           <option value='true'>Yes</option>
+           <option value='false'>No</option>
          </select>
          <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
        </div>
-       <div className="form-group">
-         <div className="flex--1 sd-headsmall">Would you like us to make your code callbackable?</div>
-         <select className="form-control" name='hasCallback' onChange={this.onChange}>
-           <option value={true}>Yes</option>
-           <option value={false}>No</option>
-         </select>
-         <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
-       </div>
+
+       <div>{(this.state.hasCallback === 'false') ?
+          (<div className="form-group">
+           <div className="flex--1 sd-headsmall">Would you like us to make your code callbackable?</div>
+           <select className="form-control" name='usesOurCallback' onChange={this.onChange}>
+             <option value='true'>Yes</option>
+             <option value='false'>No</option>
+           </select>
+         </div>) : null
+      }</div>
+
        <div class="form-group">
-         <label className="flex--1 sd-headsmall">What is the name of your tag when should be checking for:</label>
+         <div className="flex--1 sd-headsmall">What is the name of your tag when should be checking for:</div>
          <input type="text" className="text-input width--200 text-input-styled" name='checkFor' value={this.state.checkFor} onChange={this.onChange} />
        </div>
        <label className="flex--1 sd-headsmall">What type is your tag when it's ready?</label>
        <select class="form-control" name='checkForType' onChange={this.onChange}>
-         <option value='function'>function</option>
-         <option value='object'>object</option>
+         <option value={'function'}>function</option>
+         <option value={'object'}>object</option>
        </select>
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter your code</div>
@@ -188,7 +198,7 @@ var NewTemplate = React.createClass({
          <input type="text" className="text-input width--200 text-input-styled" name='email' value={this.state.email} onChange={this.onChange}/>
        </div>
        <button type="submit" onClick={this.onSubmit} className="btn-uniform-add button button--highlight">Submit</button>
-      </form>
+      </div>
 		)
 	}
 });
