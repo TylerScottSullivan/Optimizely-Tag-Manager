@@ -38,22 +38,19 @@ tagSchema.methods.render = function(tags, masters) {
       return this.callbacks.includes(item.name)
     }.bind(this))
   }
-  console.log("THIS: ", this)
-  console.log("TAGS: ", tags)
-  console.log("MASTERS: ", masters)
-  console.log("FILTERED: ", filtered)
+  console.log("THIS", this)
+  console.log("FILTERED", filtered)
   var innerCallback = '';
   for (var i = 0; i < filtered.length; i++) {
     innerCallback += filtered[i].render(tags, masters);
   }
-  console.log("INNER CALLBACK: ", innerCallback)
+  console.log("INNERCALLBACK", innerCallback)
   innerCallback="function(){"+innerCallback+"}"
-  console.log("INNER CALLBACK2: ", innerCallback)
+  console.log("INNERCALLBACK2", innerCallback)
   var master = masters.filter(function(item) {
     return this.name === item.name
   }.bind(this))[0]
-
-  console.log("POST FILTERED MASTER: ", master)
+  console.log("MASTER", master)
   var handleBarsFields = {};
 
   for (var i = 0; i < this.fields.length; i++) {
@@ -62,15 +59,13 @@ tagSchema.methods.render = function(tags, masters) {
 
   handleBarsFields['callback'] = innerCallback;
 
-  console.log("HANDLEBARSFIELDS: ", handleBarsFields);
-  console.log("MASTERTEMPLATE: ", master.template);
+  console.log("HANDLEBARSFIELDS", handleBarsFields)
   if (this.name === 'custom') {
     var template = Handlebars.compile(this.template);
   } else {
     var template = Handlebars.compile(master.template);
   }
   return template(handleBarsFields);
-  //return snippets[this.name](this.fields, this.trackingTrigger, innerCallback);
 }
 
 var masterSchema = mongoose.Schema({
