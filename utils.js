@@ -69,7 +69,9 @@ module.exports = {
       if(tag.trackingTrigger !== "onDocumentReady" && tag.trackingTrigger !== "inHeader" && tag.trackingTrigger !== "onPageLoad" && tag.trackingTrigger !== "onEvent") {
         Tag.findOne({"name": tag.trackingTrigger})
            .then(function(trackerTag) {
+             console.log("TRACKERTAG", trackerTag)
               trackerTag.callbacks.push(tag.name)
+              console.log("TRACKERTAG CALLBACKS", trackerTag.callbacks)
               return trackerTag.save()
             }.bind(this))
            .then(()=>resolve(this.project.save()))
@@ -205,14 +207,14 @@ module.exports = {
     //get names of options
     this.tagNames = tags.map(function(item) {
       console.log("ITEM", item)
-      return item.displayName;
+      return item.name;
     });
 
     console.log('tagName', this.tagNames)
 
     //inHeader/onDocumentReady should intuitively come first
-    this.tagNames.unshift("In Header");
-    this.tagNames.unshift("On Document Ready");
+    this.tagNames.unshift("inHeader");
+    this.tagNames.unshift("onDocumentReady");
 
     //save current tags
     this.tags = tags;

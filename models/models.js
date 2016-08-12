@@ -45,8 +45,10 @@ tagSchema.methods.render = function(tags, masters) {
     innerCallback += filtered[i].render(tags, masters);
   }
   console.log("INNERCALLBACK", innerCallback)
-  innerCallback="function(){"+innerCallback+"}"
+  innerCallback="function callback" + Math.floor(Math.random()*1000) + " (){"+innerCallback+"}"
   console.log("INNERCALLBACK2", innerCallback)
+  console.log("MASTERS", masters)
+  console.log("THIS.NAME", this.name, typeof this.name)
   var master = masters.filter(function(item) {
     return this.name === item.name
   }.bind(this))[0]
