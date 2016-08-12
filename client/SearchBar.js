@@ -66,7 +66,7 @@ var SearchBar = React.createClass({
 	        }
 	      });
 	    this.setState({
-            	modalIsOpen: false,
+            modalIsOpen: false,
         		name: 'custom',
         		displayName: '',
         		tagDescription: '',
@@ -86,15 +86,14 @@ var SearchBar = React.createClass({
       console.log("resetting tracking trigger after custom tag posted")
       var triggerOptions;
       this.setState({
-      	modalIsOpen: false,
-		name: 'custom',
-		displayName: '',
-		tagDescription: '',
-		template: '',
-		trackingTrigger: 'inHeader',
-		active: false,
-		errors: {},
-		triggerOptions: []
+    		name: 'custom',
+    		displayName: '',
+    		tagDescription: '',
+    		template: '',
+    		trackingTrigger: 'inHeader',
+    		active: false,
+    		errors: {},
+    		triggerOptions: []
       });
       data.name = this.state.name;
       data.fields = [];
@@ -129,7 +128,10 @@ var SearchBar = React.createClass({
 			        type: 'GET',
 			        success: function(triggers) {
 			          console.log('get options successful');
-			          this.setState({triggerOptions: triggers})
+			          this.setState({
+                  triggerOptions: triggers,
+                  modalIsOpen: false
+                })
 			        }.bind(this),
 			        error: function(err) {
 			          console.error("Err posting", err.toString());
@@ -142,7 +144,12 @@ var SearchBar = React.createClass({
         });
       } else {
         this.setState({
-          errors: errors
+          errors: errors,
+          displayName: this.state.displayName,
+          tagDescription: this.state.tagDescription,
+          template: this.state.template,
+          trackingTrigger: this.state.trackingTrigger,
+          active: this.state.active
         });
       }
     },
@@ -211,8 +218,8 @@ var SearchBar = React.createClass({
   							    height="120px"
   							    width="620px"
   							    editorProps={{$blockScrolling: true}}
-					            value={this.state.template}
-					            onChange={this.onChangeSnippet}
+					          value={this.state.template}
+					          onChange={this.onChangeSnippet}
 					        />
                   			{(errorCustom) ? <div className='warning'>{this.state.errors['template']}</div> : null }
 						  </div>

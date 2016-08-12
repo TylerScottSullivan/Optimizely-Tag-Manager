@@ -7,6 +7,14 @@ a {
   color: #00B7FF;
 }
 
+.welcome {
+  margin-top: 5%;
+  font-size: 20px;
+  width: 100%;
+  color: #c0c0c0;
+  margin-left: 20%
+}
+
 .newTemplate {
   margin-top: 20px;
   margin-left: 50px;
@@ -17,10 +25,6 @@ a {
   margin-left: 400px;
 }
 
-/*.submitButton {
-  margin-botton: 50px;
-  padding-bottom: 50px;
-}*/
 
 .header1 {
 	padding: 15px 0px 5px 10px;

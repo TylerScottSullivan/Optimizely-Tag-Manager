@@ -41,6 +41,8 @@ var MySidePanel = React.createClass({
       tagId: this.props.info._id,
       errors: {},
       triggerOptions: null,
+      changes: '',
+      template: ''
     };
   },
 
@@ -62,7 +64,8 @@ var MySidePanel = React.createClass({
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
-        fields: nextProps.info.fields
+        fields: nextProps.info.fields,
+        changes: nextProps.info.template
       })
     }
   },
@@ -83,7 +86,9 @@ var MySidePanel = React.createClass({
     console.log('here are the new fields', data)
     data.active = this.state.info.active;
     data.trackingTrigger = this.state.trackingTrigger;
+    data.template = this.state.template;
     console.log(data, "data sent")
+    console.log(this.props.info._id, 'tagid')
     if (Object.keys(errors).length === 0) {
       return $.ajax({
         url: '/updatetag/' + this.props.info._id + window.location.search,
@@ -149,6 +154,19 @@ var MySidePanel = React.createClass({
     }
   },
 
+  onChangeSnippet: function(newVal) {
+      this.setState({
+        changes: newVal
+      });
+  },
+
+  updateCustom: function() {
+    this.setState({
+      template: this.state.changes,
+      modalIsOpen: false
+    })
+  },
+
 	render: function() {
     // console.log(this.props, "props for MySidePanel --- shouldn't have the info it's displaying????")
     if (this.props.info.fields) {
@@ -164,8 +182,8 @@ var MySidePanel = React.createClass({
         // console.log("hello why aren'y ou going through my loop")
         // console.log('iterating')
         for (var i = 0; i < this.props.info.tokens.length; i++) {
-          console.log(this.props.info.tokens[i].tokenName, "tokenName");
-          console.log(this.props.info.fields[j].name, 'fieldName')
+          // console.log(this.props.info.tokens[i].tokenName, "tokenName");
+          // console.log(this.props.info.fields[j].name, 'fieldName')
           if (this.props.info.tokens[i].tokenName === this.props.info.fields[j].name) {
             newObj = $.extend({}, this.props.info.fields[j], this.props.info.tokens[i])
             newTokenField.push(newObj);
@@ -184,7 +202,7 @@ var MySidePanel = React.createClass({
 				<div data-toggle='validator' className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
 			      	<div className="flex">
-              {this.state.info.logo ? 
+              {this.state.info.logo ?
                   <div> <img className='sidepanel-logo' src={this.state.info.logo}/> </div>
                 :
                   <div> <img className='sidepanel-logo' src="images/custom.png"/> </div>
@@ -219,13 +237,13 @@ var MySidePanel = React.createClass({
                             height="120px"
                             width="620px"
                             editorProps={{$blockScrolling: true}}
-                            value={this.props.info.template}
+                            value={this.state.changes}
                             onChange={this.onChangeSnippet}
                           />
                         </div>
                       </div>
                       <div className='flex space-between'>
-                        <button className="button button--highlight"> Update Custom Tag-Not Functional </button>
+                        <button className="button button--highlight" onClick={this.updateCustom}> Update Custom Tag </button>
                         <button className="button button--highlight" onClick={this.closeModal}> Cancel </button>
                       </div>
                     </Modal>
