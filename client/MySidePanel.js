@@ -188,7 +188,7 @@ var MySidePanel = React.createClass({
 
   // if(!this.props.deleted) {
   //  console.log('passing non-deleted state');
-  //   return (<div> Eat this shit 
+  //   return (<div> Eat this shit
   //       <button className="btn-uniform-del button button--highlight" onClick={this.onDelete}>Delete</button>
   //     </div>)
   // }
@@ -278,7 +278,7 @@ console.log(this.props.info.trackingTrigger, "tracking trigger props")
                           <div data-toggle='validator' className="sidepanel background--faint">
                               <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
                                 <div className="flex">
-                                {this.state.info.logo ? 
+                                {this.state.info.logo ?
                                     <div> <img className='sidepanel-logo' src={this.state.info.logo}/> </div>
                                   :
                                     <div> <img className='sidepanel-logo' src="images/custom.png"/> </div>
@@ -320,7 +320,7 @@ console.log(this.props.info.trackingTrigger, "tracking trigger props")
                                           </div>
                                         </div>
                                         <div className='flex space-between'>
-                                          <button className="button button--highlight"> Update Custom Tag-Not Functional </button>
+                                          <button className="button button--highlight" onClick={this.updateCustom}> Update Custom Tag </button>
                                           <button className="button button--highlight" onClick={this.closeModal}> Cancel </button>
                                         </div>
                                       </Modal>
@@ -363,7 +363,7 @@ console.log(this.props.info.trackingTrigger, "tracking trigger props")
                               <div>
                                 <button className="btn-uniform-del button button--highlight" onClick={this.onDelete}>Delete</button>
                               </div>
-                          {this.state.clickUpdate ? 
+                          {this.state.clickUpdate ?
                             <div className="yellowbox">
                               This tag has now been updated. This change may take a couple of minutes before it is updated within your Optimizely tag.
                             </div>

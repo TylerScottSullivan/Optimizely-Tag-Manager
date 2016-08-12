@@ -69,7 +69,9 @@ module.exports = {
       if(tag.trackingTrigger !== "onDocumentReady" && tag.trackingTrigger !== "inHeader" && tag.trackingTrigger !== "onPageLoad" && tag.trackingTrigger !== "onEvent") {
         Tag.findOne({"name": tag.trackingTrigger})
            .then(function(trackerTag) {
+             console.log("TRACKERTAG", trackerTag)
               trackerTag.callbacks.push(tag.name)
+              console.log("TRACKERTAG CALLBACKS", trackerTag.callbacks)
               return trackerTag.save()
             }.bind(this))
            .then(()=>resolve(this.project.save()))
@@ -107,7 +109,7 @@ module.exports = {
     var onEvents = tags.filter(function(item) {
                                   return item.trackingTrigger === "onEvent"
                                 })
-
+    console.log("onEvents", onEvents)
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
@@ -133,14 +135,18 @@ module.exports = {
       marker = true;
       onEventsObject[onEvents[i].eventName] = onEvents[i].render(tags, this.masters);
     }
-
+    console.log("onEventsObject", onEventsObject);
     onEventsObjectString = JSON.stringify(onEventsObject);
     onEventsObjectString = "var onEventsObjectFunction = function() {return " + onEventsObjectString + ";};"
+    console.log("onEventsObjectString", onEventsObjectString);
 
     var onSpecificEventJavascript = '';
     if (marker) {
       onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');eval(onEventsObjectFunction()[data.id]);}});"
     }
+
+    console.log("onSpecificEventJavascript", onSpecificEventJavascript)
+    console.log("marker", marker)
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
 
@@ -205,14 +211,14 @@ module.exports = {
     //get names of options
     this.tagNames = tags.map(function(item) {
       console.log("ITEM", item)
-      return item.displayName;
+      return item.name;
     });
 
     console.log('tagName', this.tagNames)
 
     //inHeader/onDocumentReady should intuitively come first
-    this.tagNames.unshift("In Header");
-    this.tagNames.unshift("On Document Ready");
+    this.tagNames.unshift("inHeader");
+    this.tagNames.unshift("onDocumentReady");
 
     //save current tags
     this.tags = tags;
@@ -268,7 +274,7 @@ module.exports = {
     }
     tag.fields = fields;
     tag.approved = this.body.approved;
-    tag.trackingTrigger = this.body.trackingTrigger;
+    // tag.trackingTrigger = this.body.trackingTrigger;
     tag.template = this.body.template;
     tag.projectId = this.body.projectId;
     tag.active = this.body.active;
