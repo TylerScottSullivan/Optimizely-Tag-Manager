@@ -178,7 +178,7 @@ router.post('/template', function(req, res, next) {
   var template = req.body.template;
   // console.log(req.body.hasCallback)
   if (req.body.usesOurCallback) {
-    template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === '+req.body.checkForType+') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
+    template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === \''+req.body.checkForType+'\') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
   }
   console.log('template', template)
 
