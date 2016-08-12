@@ -18,34 +18,33 @@ const customStyles = {
 
 var SearchBar = React.createClass({
 	  getInitialState: function() {
-      var triggerOptions;
-      $.ajax({
-        url: '/options' + window.location.search,
-        type: 'GET',
-        success: function(data) {
-          console.log('get options successful');
-          this.setState({triggerOptions: data})
-        }.bind(this),
-        error: function(err) {
-          console.error("Err posting", err.toString());
-        }
-      });
-	    return {
-        modalIsOpen: false,
-        name: 'custom',
-        displayName: null,
-        tagDescription: '',
-        fields: '',
-        template: '',
-        trackingTrigger: 'inHeader',
-        active: false,
-        errors: {},
-        triggerOptions: []
-      };
+	      var triggerOptions;
+	      $.ajax({
+	        url: '/options' + window.location.search,
+	        type: 'GET',
+	        success: function(triggers) {
+	          console.log('get options successful');
+	          this.setState({triggerOptions: triggers})
+	        }.bind(this),
+	        error: function(err) {
+	          console.error("Err posting", err.toString());
+	        }
+	      });
+		  return {
+	        modalIsOpen: false,
+	        name: 'custom',
+	        displayName: '',
+	        tagDescription: '',
+	        template: '',
+	        trackingTrigger: 'inHeader',
+	        active: false,
+	        errors: {},
+	        triggerOptions: []
+	      };
 	  },
 
 	  openModal: function() {
-	    this.setState({modalIsOpen: true});
+	      this.setState({modalIsOpen: true});
 	  },
 
 	  afterOpenModal: function() {
@@ -54,7 +53,28 @@ var SearchBar = React.createClass({
 	  },
 
 	  closeModal: function() {
-	    this.setState({modalIsOpen: false});
+	  	  var triggerOptions;
+	      $.ajax({
+	        url: '/options' + window.location.search,
+	        type: 'GET',
+	        success: function(triggers) {
+	          console.log('get options successful');
+	          this.setState({triggerOptions: triggers})
+	        }.bind(this),
+	        error: function(err) {
+	          console.error("Err posting", err.toString());
+	        }
+	      });
+	    this.setState({
+            	modalIsOpen: false,
+        		name: 'custom',
+        		displayName: '',
+        		tagDescription: '',
+       			template: '',
+        		trackingTrigger: 'inHeader',
+        		active: false,
+        		errors: {}
+            });
 	  },
 
     addCustomTag: function() {
@@ -63,8 +83,19 @@ var SearchBar = React.createClass({
 
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
-      this.setState({modalIsOpen: false});
+      this.setState({
+      	modalIsOpen: false,
+		name: 'custom',
+		displayName: '',
+		tagDescription: '',
+		template: '',
+		trackingTrigger: 'inHeader',
+		active: false,
+		errors: {},
+		triggerOptions: []
+      });
       data.name = this.state.name;
+      data.fields = [];
 
       if (! this.state.displayName) {
         errors['displayName'] = 'name is required';
@@ -90,8 +121,8 @@ var SearchBar = React.createClass({
           data: data,
           success: function(response) {
           	this.props.onDownload(this.props.downloadedProject.concat(data))
-            console.log('Add custom tag successful')
-          },
+            console.log('Add custom tag successful');
+          }.bind(this),
           error: function(err) {
             console.error("Err posting", err.toString());
           }

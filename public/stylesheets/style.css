@@ -16,7 +16,7 @@ a {
 .sidepanel {
 	width: 400px;
 	position: relative;
-	height: 900px;
+	height: 800px;
 	padding: 0 20px;
 }
 
@@ -159,6 +159,11 @@ textarea {
 	border-color: #FFD40C;
 }
 
+
+.scroll {
+	height: 800px;
+	overflow-y: auto;
+}
 
 /*pace*/
 

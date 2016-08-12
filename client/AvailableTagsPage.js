@@ -69,7 +69,7 @@ var AvailableTagsPage = React.createClass({
 
     return (
       <div className="flex height--1-1">
-        <AvailableTableContent splicedArray={splicedArray} onSelect={this.onSelect}/>
+        <AvailableTableContent splicedArray={splicedArray} onSelect={this.onSelect} {...this.props}/>
         <AvailableSidePanel info={currentInfo} {...this.props} />
       </div>
     )
