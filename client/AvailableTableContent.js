@@ -22,8 +22,8 @@ var AvailableTableContent = React.createClass({
 //this.props.children is referring to the three tags
   render: function() {
     return (
-      <div className="flex--1 soft-double--sides">
-      <SearchBar/>
+      <div className="flex--1 soft-double--sides scroll">
+      <SearchBar {...this.props}/>
         <h1 className='header1'> Available Tags </h1>
         <table className="table table--rule table--hover myTable" ref='AvTable'>
           <thead>

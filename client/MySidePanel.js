@@ -70,26 +70,32 @@ var MySidePanel = React.createClass({
   onUpdate: function() {
     var data = {};
     var errors = {}
+    data.fields = [];
 
     this.state.fields.map(function(field){
-      if (!field.value) {
+      if (! field.value) {
         errors[field.name] = `${field.name} is required`;
       } else {
-    	data[field.name] = field.value;
-      // errors.splice(i, 1)
+    	   data[field.name] = field.value;
+         data.fields.push({"name": field.name, "value": field.value})
       }
     })
     console.log('here are the new fields', data)
     data.active = this.state.info.active;
     data.trackingTrigger = this.state.trackingTrigger;
-
+    console.log(data, "data sent")
     if (Object.keys(errors).length === 0) {
       return $.ajax({
         url: '/updatetag/' + this.props.info._id + window.location.search,
         type: 'POST',
         data: data,
-        success: function(data) {
-          console.log('Update tag successful')},
+        success: function(response) {
+          console.log('Update tag successful');
+          console.log(this.props.downloaded.slice(0, this.props.index).concat(
+              Object.assign({}, this.props.downloaded[this.props.index], data), this.props.downloaded.slice(this.props.index + 1)), "what we are passing in")
+          this.props.onDownload(this.props.downloaded.slice(0, this.props.index).concat(
+              Object.assign({}, this.props.downloaded[this.props.index], data), this.props.downloaded.slice(this.props.index + 1)))
+        }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
         }
@@ -178,7 +184,11 @@ var MySidePanel = React.createClass({
 				<div data-toggle='validator' className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
 			      	<div className="flex">
-				    	<div> <img className='sidepanel-logo' src={this.state.info.logo}/> </div>
+              {this.state.info.logo ? 
+                  <div> <img className='sidepanel-logo' src={this.state.info.logo}/> </div>
+                :
+                  <div> <img className='sidepanel-logo' src="images/custom.png"/> </div>
+              }
 				    	<div className='flex flex-v-center'>
 				      		<div className = 'sidepanel-displayname'> {this.state.info.displayName} </div>
 				     	</div>
@@ -232,9 +242,9 @@ var MySidePanel = React.createClass({
 		            </div>
 				    <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
                   {this.state.triggerOptions.map((trigger) => {
-                    // if (trigger === this.state.info.trackingTrigger) {
-                    //   return <option value={trigger} selected> {trigger} </option>
-                    // }
+                    if (trigger === this.state.info.trackingTrigger) {
+                      return <option value={trigger} selected> {trigger} </option>
+                    }
                     return <option value={trigger} >{trigger}</option>
                     })
                   }

@@ -19,8 +19,8 @@ var MyTableContent = React.createClass({
   render: function() {
     // console.log('my table content splicedArray', this.props.splicedArray)
     return (
-     	<div className="flex--1 soft-double--sides">
-     	<SearchBar value={this.props.splicedArray}/>
+     	<div className="flex--1 soft-double--sides scroll">
+     	<SearchBar value={this.props.splicedArray} {...this.props}/>
         <h1 className='header1'> My Tags </h1>
         <table className="table table--rule table--hover myTable" ref='myTable'>
           <thead>

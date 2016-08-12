@@ -42,6 +42,8 @@ var App = React.createClass({
     this.setState({
       downloadedProject: projects
     })
+    console.log("now setting downloaded projects to projects");
+    console.log(projects, "udpated projects")
   },
 
   onMaster: function(master) {

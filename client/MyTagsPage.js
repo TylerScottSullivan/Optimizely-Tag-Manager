@@ -32,8 +32,14 @@ var MyTagsPage = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     this.setState({
       downloadedProject: nextProps.downloadedProject,
-      master: nextProps.masters
+      master: nextProps.masters,
     })
+
+    if(typeof this.state.sidePanelIndex !== "undefined") {
+      this.setState({
+         sidePanel: nextProps.downloadedProject[this.state.sidePanelIndex]
+       })
+    }
 
   },
 
@@ -53,8 +59,11 @@ var MyTagsPage = React.createClass({
       var newObj = {};
       for (var i = 0; i < this.state.downloadedProject.length; i++) {
         //this is to render the custom tags
+        console.log(this.state.downloadedProject[i].displayName, "Display Name DP")
         for (var j = 0; j < this.state.master.length; j++) {
+          console.log(this.state.master[j].name, "looping through")
           if (this.state.downloadedProject[i].name === this.state.master[j].name) {
+            console.log("pushing and combining")
             newObj = $.extend({}, this.state.master[j], this.state.downloadedProject[i])
             newArray.push(newObj);
           }
@@ -65,7 +74,7 @@ var MyTagsPage = React.createClass({
 
     return (
       <div className="flex height--1-1">
-        <MyTableContent splicedArray={splicedArray} onSelect={this.onSelect}/>
+        <MyTableContent splicedArray={splicedArray} onSelect={this.onSelect} {...this.props} />
         <MySidePanel info={currentInfo} index={currentIndex} downloaded={this.state.downloadedProject} {...this.props}/>
       </div>
     )
