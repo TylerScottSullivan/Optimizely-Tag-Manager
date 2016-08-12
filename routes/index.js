@@ -174,7 +174,7 @@ router.post('/template', function(req, res, next) {
   console.log('tokens', tokens)
   var template = req.body.template;
   // console.log(req.body.hasCallback)
-  if (req.body.usesOurCallback) {
+  if (req.body.usesOurCallback === 'true') {
     template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === '+req.body.checkForType+') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
   }
   console.log('template', template)
