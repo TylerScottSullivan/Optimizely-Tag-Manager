@@ -40,10 +40,11 @@ module.exports = {
           'description': master.tokens[i]['description'],
           'value': this.body[master.tokens[i]['tokenName']]
         })
-      }
+      };
+      displayName = this.body.displayName || master.displayName;
       t = new Tag({
         name: master.name,
-        displayName: this.body.displayName,
+        displayName: displayName,
         fields: fields,
         tagDescription: this.body.tagDescription,
         trackingTrigger: this.body.trackingTrigger,
@@ -203,14 +204,15 @@ module.exports = {
     }
     //get names of options
     this.tagNames = tags.map(function(item) {
-      return item.name;
+      console.log("ITEM", item)
+      return item.displayName;
     });
 
     console.log('tagName', this.tagNames)
 
     //inHeader/onDocumentReady should intuitively come first
-    this.tagNames.unshift("inHeader");
-    this.tagNames.unshift("onDocumentReady");
+    this.tagNames.unshift("In Header");
+    this.tagNames.unshift("On Document Ready");
 
     //save current tags
     this.tags = tags;

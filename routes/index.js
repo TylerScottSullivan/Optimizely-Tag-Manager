@@ -146,7 +146,10 @@ router.get('/options', function(req, res, next) {
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
-  Project.findOne({'projectId': req.optimizely.current_project})
+  Project.findOrCreate({'projectId': req.optimizely.current_project},
+                       {'accountId': req.optimizely.current_account,
+                       'tags': [],
+                       'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
@@ -174,8 +177,9 @@ router.post('/template', function(req, res, next) {
   console.log('tokens', tokens)
   var template = req.body.template;
   // console.log(req.body.hasCallback)
-  if (req.body.usesOurCallback === 'true') {
-    template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === '+req.body.checkForType+') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
+  console.log('this is callback', req.body.callback)
+  if (req.body.usesOurCallback) {
+    template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === \''+req.body.checkForType+'\') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
   }
   console.log('template', template)
 

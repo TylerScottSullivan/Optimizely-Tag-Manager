@@ -11,11 +11,11 @@ var NewTemplate = React.createClass({
       discription: '',
       fields: [],
       template: '',
-      hasCallback: 'true',
+      hasCallback: true,
       email: '',
       checkForType: 'function',
       checkFor: '',
-      usesOurCallback: 'false'
+      usesOurCallback: false
     };
   },
 
@@ -59,8 +59,8 @@ var NewTemplate = React.createClass({
     data.description = this.state.description;
     data.displayName = this.state.displayName;
     console.log('callback', this.state.usesOurCallback)
-    if (this.state.usesOurCallback === 'true') {
-      data.hasCallback = 'true';
+    if (this.state.usesOurCallback === true) {
+      data.hasCallback = true;
     } else {
       data.hasCallback = this.state.hasCallback;
     }
@@ -152,8 +152,8 @@ var NewTemplate = React.createClass({
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Does your snippet take any callback?</div>
          <select className="form-control" name='hasCallback' onChange={this.onChange}>
-           <option value='true'>Yes</option>
-           <option value='false'>No</option>
+           <option value={true}>Yes</option>
+           <option value={false}>No</option>
          </select>
          <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
        </div>
@@ -162,8 +162,8 @@ var NewTemplate = React.createClass({
           (<div className="form-group">
            <div className="flex--1 sd-headsmall">Would you like us to make your code callbackable?</div>
            <select className="form-control" name='usesOurCallback' onChange={this.onChange}>
-             <option value='true'>Yes</option>
-             <option value='false'>No</option>
+             <option value={true}>Yes</option>
+             <option value={false}>No</option>
            </select>
          </div>) : null
       }</div>
