@@ -146,7 +146,10 @@ router.get('/options', function(req, res, next) {
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
-  Project.findOne({'projectId': req.optimizely.current_project})
+  Project.findOrCreate({'projectId': req.optimizely.current_project},
+                       {'accountId': req.optimizely.current_account,
+                       'tags': [],
+                       'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
