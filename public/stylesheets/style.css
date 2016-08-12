@@ -7,6 +7,20 @@ a {
   color: #00B7FF;
 }
 
+.newTemplate {
+  margin-top: 20px;
+  margin-left: 50px;
+  margin-bottom: 50px
+}
+
+#addField {
+  margin-left: 400px;
+}
+
+/*.submitButton {
+  margin-botton: 50px;
+  padding-bottom: 50px;
+}*/
 
 .header1 {
 	padding: 15px 0px 5px 10px;
