@@ -60,7 +60,7 @@ var NewTemplate = React.createClass({
     data.displayName = this.state.displayName;
     console.log('callback', this.state.usesOurCallback)
     if (this.state.usesOurCallback === 'true') {
-      data.hasCallback = 'true';
+      data.hasCallback = true;
     } else {
       data.hasCallback = this.state.hasCallback;
     }
@@ -105,7 +105,7 @@ var NewTemplate = React.createClass({
   //change the language later
 	render: function () {
 		return (
-      <div className="form-group">
+      <div className="form-group newTemplate">
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter a name for snippet (please do not include spaces):</div>
          <input type="text" className="text-input width--200 text-input-styled" name='type' onChange={this.onChange}/>
@@ -118,7 +118,7 @@ var NewTemplate = React.createClass({
          <div className="flex--1 sd-headsmall">Enter description for snippet:</div>
          <input type="text" className="text-input width--200 text-input-styled" name='description' onChange={this.onChange}/>
        </div>
-       <button onClick={this.onAddField} className="btn-uniform-add button button--highlight">Add field</button>
+       <button onClick={this.onAddField} className="btn-uniform-add button button--highlight" id='addField'>Add field</button>
 
        <div>
          {
@@ -152,31 +152,37 @@ var NewTemplate = React.createClass({
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Does your snippet take any callback?</div>
          <select className="form-control" name='hasCallback' onChange={this.onChange}>
-           <option value='true'>Yes</option>
-           <option value='false'>No</option>
+          <option value={true}>Yes</option>
+            <option value={false}>No</option>
+
+
          </select>
          <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
        </div>
 
-       <div>{(this.state.hasCallback === 'false') ?
+       {(this.state.hasCallback === 'false') ?
           (<div className="form-group">
            <div className="flex--1 sd-headsmall">Would you like us to make your code callbackable?</div>
            <select className="form-control" name='usesOurCallback' onChange={this.onChange}>
-             <option value='true'>Yes</option>
-             <option value='false'>No</option>
+            <option value={false}>No</option>
+              <option value={true}>Yes</option>
+
            </select>
          </div>) : null
-      }</div>
+      }
 
        <div class="form-group">
          <div className="flex--1 sd-headsmall">What is the name of your tag when should be checking for:</div>
-         <input type="text" className="text-input width--200 text-input-styled" name='checkFor' value={this.state.checkFor} onChange={this.onChange} />
+         <input type="text" className="text-input width--200 text-input-styled" name='checkFor' onChange={this.onChange} />
        </div>
-       <label className="flex--1 sd-headsmall">What type is your tag when it's ready?</label>
-       <select class="form-control" name='checkForType' onChange={this.onChange}>
-         <option value={'function'}>function</option>
-         <option value={'object'}>object</option>
-       </select>
+
+      <div class="form-group">
+         <div className="flex--1 sd-headsmall">What type is your tag when it's ready?</div>
+         <select class="form-control" name='checkForType' onChange={this.onChange}>
+           <option value={'function'}>function</option>
+           <option value={'object'}>object</option>
+         </select>
+      </div>
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter your code</div>
          <div className="editor">
@@ -197,7 +203,7 @@ var NewTemplate = React.createClass({
          <div className="flex--1 sd-headsmall">Enter your email:</div>
          <input type="text" className="text-input width--200 text-input-styled" name='email' value={this.state.email} onChange={this.onChange}/>
        </div>
-       <button type="submit" onClick={this.onSubmit} className="btn-uniform-add button button--highlight">Submit</button>
+       <button type="submit" onClick={this.onSubmit} className=" submitButton btn-uniform-add button button--highlight">Submit</button>
       </div>
 		)
 	}

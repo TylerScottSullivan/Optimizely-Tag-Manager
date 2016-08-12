@@ -7,6 +7,20 @@ a {
   color: #00B7FF;
 }
 
+.newTemplate {
+  margin-top: 20px;
+  margin-left: 50px;
+  margin-bottom: 50px
+}
+
+#addField {
+  margin-left: 400px;
+}
+
+/*.submitButton {
+  margin-botton: 50px;
+  padding-bottom: 50px;
+}*/
 
 .header1 {
 	padding: 15px 0px 5px 10px;
@@ -244,7 +258,3 @@ textarea {
   100% { transform: rotate(360deg); transform: rotate(360deg); }
 }
 
-
-/*              <div className="yellowbox">
-                This tag has now been updated. This change may take up to 10 minutes before it is updated within your Optimizely tag.
-              </div>*/

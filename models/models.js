@@ -76,7 +76,8 @@ var masterSchema = mongoose.Schema({
   hasCallback: Boolean,
   approved: Boolean,
   callbackCode: String,
-  template: String
+  template: String,
+  usesOurCallback: Boolean
 })
 
 
