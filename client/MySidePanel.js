@@ -429,7 +429,6 @@ console.log(this.props.info.trackingTrigger, "tracking trigger props")
                                   }
                                 {splicedTokenField.map(function(field, item) {
                                   var err = this.state.errors[field.name];
-<<<<<<< HEAD
                                   return <MyInputFields key={item} error={err || false} field={field} value={this.state.fields[item].value} onChange={this.onChangeTokens.bind(this, item)}/>
                                 }.bind(this))}
                                   <div className="flex">
