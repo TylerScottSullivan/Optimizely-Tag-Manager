@@ -275,7 +275,6 @@ console.log(this.props.info.trackingTrigger, "tracking trigger props")
               		if ((this.props.info && Object.keys(this.props.info).length !== 0) || this.props.deleted) {
                         console.log(this.props.deleted, "deleted state and NOT EMPTY TAG DETAILS");
               			return (
-<<<<<<< HEAD
                           <div data-toggle='validator' className="sidepanel background--faint">
                               <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
                                 <div className="flex">
