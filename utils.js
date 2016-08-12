@@ -109,7 +109,7 @@ module.exports = {
     var onEvents = tags.filter(function(item) {
                                   return item.trackingTrigger === "onEvent"
                                 })
-
+    console.log("onEvents", onEvents)
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
@@ -135,14 +135,18 @@ module.exports = {
       marker = true;
       onEventsObject[onEvents[i].eventName] = onEvents[i].render(tags, this.masters);
     }
-
+    console.log("onEventsObject", onEventsObject);
     onEventsObjectString = JSON.stringify(onEventsObject);
     onEventsObjectString = "var onEventsObjectFunction = function() {return " + onEventsObjectString + ";};"
+    console.log("onEventsObjectString", onEventsObjectString);
 
     var onSpecificEventJavascript = '';
     if (marker) {
       onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');eval(onEventsObjectFunction()[data.id]);}});"
     }
+
+    console.log("onSpecificEventJavascript", onSpecificEventJavascript)
+    console.log("marker", marker)
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
 
@@ -270,7 +274,7 @@ module.exports = {
     }
     tag.fields = fields;
     tag.approved = this.body.approved;
-    tag.trackingTrigger = this.body.trackingTrigger;
+    // tag.trackingTrigger = this.body.trackingTrigger;
     tag.template = this.body.template;
     tag.projectId = this.body.projectId;
     tag.active = this.body.active;
