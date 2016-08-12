@@ -181,7 +181,6 @@ var MySidePanel = React.createClass({
 	render: function() {
     // if (Object.keys(this.state.info).length === 0) return null;
     // console.log(this.props, "props for MySidePanel --- shouldn't have the info it's displaying????")
-<<<<<<< HEAD
     if (this.props.info.fields) {
       // console.log(this.props.info.fields, 'fields');
       // console.log(this.props.info.fields[0], 'fields 0');
