@@ -83,6 +83,8 @@ var SearchBar = React.createClass({
 
       data.active = this.state.active;
       data.trackingTrigger = this.state.trackingTrigger;
+      console.log("resetting tracking trigger after custom tag posted")
+      var triggerOptions;
       this.setState({
       	modalIsOpen: false,
 		name: 'custom',
@@ -122,7 +124,18 @@ var SearchBar = React.createClass({
           success: function(response) {
           	this.props.onDownload(this.props.downloadedProject.concat(data))
             console.log('Add custom tag successful');
-          }.bind(this),
+                  $.ajax({
+			        url: '/options' + window.location.search,
+			        type: 'GET',
+			        success: function(triggers) {
+			          console.log('get options successful');
+			          this.setState({triggerOptions: triggers})
+			        }.bind(this),
+			        error: function(err) {
+			          console.error("Err posting", err.toString());
+			        }
+			      });
+			}.bind(this),
           error: function(err) {
             console.error("Err posting", err.toString());
           }

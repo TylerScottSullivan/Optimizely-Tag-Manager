@@ -184,7 +184,11 @@ var MySidePanel = React.createClass({
 				<div data-toggle='validator' className="sidepanel background--faint">
 			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
 			      	<div className="flex">
-				    	<div> <img className='sidepanel-logo' src={this.state.info.logo}/> </div>
+              {this.state.info.logo ? 
+                  <div> <img className='sidepanel-logo' src={this.state.info.logo}/> </div>
+                :
+                  <div> <img className='sidepanel-logo' src="images/custom.png"/> </div>
+              }
 				    	<div className='flex flex-v-center'>
 				      		<div className = 'sidepanel-displayname'> {this.state.info.displayName} </div>
 				     	</div>
