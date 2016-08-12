@@ -130,7 +130,7 @@ var AvailableSidePanel = React.createClass({
 	            	</label>
 			        {this.state.tokens.map((token, item) => {
                 var err = this.state.errors[token.tokenDisplayName];
-                console.log('this is the tolken', token)
+                console.log('this is the token', token)
                 console.log('this is item', item)
 			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)}/>
 			        })}

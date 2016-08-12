@@ -15,15 +15,19 @@ var NewTemplate = React.createClass({
       email: '',
       checkForType: 'function',
       checkFor: '',
-      usesOurCallback: 'false'
+      usesOurCallback: 'false',
+      errors: {}
     };
   },
 
   onChangeFields: function(index, e) {
     var fields = this.state.fields;
+    var errors = this.state.errors;
+    errors[e.target.name] = false;
     fields[index][e.target.name] = e.target.value;
     this.setState({
-      fields: fields
+      fields: fields,
+      errors: errors
     });
     console.log('on change fields', this.state.fields)
   },
@@ -45,20 +49,37 @@ var NewTemplate = React.createClass({
 
   onSubmit: function() {
     var data = {};
-    // data.fields = []
+    var errors = {}
     data.fields = JSON.stringify(this.state.fields.map(function(field, i){
-      var f = {}
-      f['tokenName'] = field.tokenName;
-      f['tokenDescription'] = field.tokenDescription;
-      f['token'] = field.tokenName.replace(/ /g, '_');
-      return f;
+      // var err = [];
+      if (!field.tokenName.length) {
+        errors[i] = {};
+        errors[i]['tokenName'] = `Token name is required`;
+      }
+      if (!field.tokenDescription.length) {
+        errors[i] = errors[i] || {};
+        errors[i]['tokenDescription'] = `Token description is required`;
+      }
+      console.log('err is herereerere', errors)
+      // if (err.length) {
+      //   errors.fields.push(err)
+      // } else {
+        var f = {};
+        f['tokenName'] = field.tokenName;
+        f['tokenDescription'] = field.tokenDescription;
+        f['token'] = field.tokenName.replace(/ /g, '_');
+        return f;
+      // }
     }));
+    console.log('err222 is herereerere', errors)
+
     console.log('here are the fields', data.fields)
     data.type = this.state.type;
     data.email = this.state.email;
     data.description = this.state.description;
     data.displayName = this.state.displayName;
     console.log('callback', this.state.usesOurCallback)
+
     if (this.state.usesOurCallback === 'true') {
       data.hasCallback = true;
     } else {
@@ -70,18 +91,24 @@ var NewTemplate = React.createClass({
     data.checkFor = this.state.checkFor;
 
     console.log('this is the full data', data)
-
-    return $.ajax({
-      url: '/template' + window.location.search,
-      type: 'POST',
-      data: data,
-      success: function(data) {
-        console.log('Add new template successful');
-      },
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    })
+    if (Object.keys(errors).length === 0) {
+      return $.ajax({
+        url: '/template' + window.location.search,
+        type: 'POST',
+        data: data,
+        success: function(data) {
+          console.log('Add new template successful');
+        },
+        error: function(err) {
+          console.error("Err posting", err.toString());
+        }
+      })
+    } else {
+      console.log('there is an error omg');
+      this.setState({
+        errors: errors
+      });
+    }
   },
 
   onAddField: function() {
@@ -131,17 +158,24 @@ var NewTemplate = React.createClass({
              } else {
                tokenHere = null;
              }
+             if (this.state.errors[index]) {
+               var errName = this.state.errors[index]['tokenName'] || null;
+               var errDescription = this.state.errors[index]['tokenDescription'] || null;
+             }
+
              return (
                <div>
                  <div className="form-group">
                    <div className="flex--1 sd-headsmall">Enter a field name:</div>
-                   <input type="text" value={item.tokenName} onChange={this.onChangeFields.bind(this, index)} className="text-input width--200 text-input-styled" name='tokenName'/>
+                   <input type="text" value={item.tokenName} onChange={this.onChangeFields.bind(this, index)} className={`text-input width--200 text-input-styled`} name='tokenName'/>
+                  {(errName) ? <div className='warning'>{errName}</div> : null }
                  </div>
                  {tokenHere}
                  <div className="form-group">
                    <div className="flex--1 sd-headsmall">Enter a field display description:</div>
-                   <input  type="text" value={item.tokenDescription} onChange={this.onChangeFields.bind(this, index)} className="text-input width--200 text-input-styled" name='tokenDescription' />
-                 </div>
+                   <input type="text" value={item.tokenDescription} onChange={this.onChangeFields.bind(this, index)} className="text-input width--200 text-input-styled" name='tokenDescription' />
+                  {(errDescription) ? <div className='warning'>{errDescription}</div> : null }
+               </div>
                  <button onClick={this.onDeleteField.bind(this, index)} className="btn-uniform-add button button--highlight">Delete</button>
                </div>
             )
@@ -150,7 +184,7 @@ var NewTemplate = React.createClass({
        </div>
 
        <div className="form-group">
-         <div className="flex--1 sd-headsmall">Does your snippet take any callback?</div>
+         <div className="flex--1 sd-headsmall">Does your snippet natively take any callbacks?</div>
          <select className="form-control" name='hasCallback' onChange={this.onChange}>
           <option value={true}>Yes</option>
             <option value={false}>No</option>
@@ -171,18 +205,21 @@ var NewTemplate = React.createClass({
          </div>) : null
       }
 
-       <div class="form-group">
-         <div className="flex--1 sd-headsmall">What is the name of your tag when should be checking for:</div>
+      {(this.state.usesOurCallback === 'true') ?
+      (<div>
+        <div className="form-group">
+         <div className="flex--1 sd-headsmall">What is the name of your tag we should be checking for:</div>
          <input type="text" className="text-input width--200 text-input-styled" name='checkFor' onChange={this.onChange} />
        </div>
-
-      <div class="form-group">
+      <div className="form-group">
          <div className="flex--1 sd-headsmall">What type is your tag when it's ready?</div>
-         <select class="form-control" name='checkForType' onChange={this.onChange}>
+         <select className="form-control" name='checkForType' onChange={this.onChange}>
            <option value={'function'}>function</option>
            <option value={'object'}>object</option>
-         </select>
-      </div>
+         </select></div>
+      </div>) : null
+      }
+
        <div className="form-group">
          <div className="flex--1 sd-headsmall">Enter your code</div>
          <div className="editor">
@@ -203,7 +240,7 @@ var NewTemplate = React.createClass({
          <div className="flex--1 sd-headsmall">Enter your email:</div>
          <input type="text" className="text-input width--200 text-input-styled" name='email' value={this.state.email} onChange={this.onChange}/>
        </div>
-       <button type="submit" onClick={this.onSubmit} className=" submitButton btn-uniform-add button button--highlight">Submit</button>
+       <button type="submit" onClick={this.onSubmit} className="submitButton btn-uniform-add button button--highlight">Submit</button>
       </div>
 		)
 	}
