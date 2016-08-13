@@ -162,7 +162,6 @@ var NewTemplate = React.createClass({
                var errName = this.state.errors[index]['tokenName'] || null;
                var errDescription = this.state.errors[index]['tokenDescription'] || null;
              }
-
              return (
                <div>
                  <div className="form-group">
@@ -212,7 +211,7 @@ var NewTemplate = React.createClass({
          <input type="text" className="text-input width--200 text-input-styled" name='checkFor' onChange={this.onChange} />
        </div>
       <div className="form-group">
-         <div className="flex--1 sd-headsmall">What type is your tag when it's ready?</div>
+         <div className="flex--1 sd-headsmall">What type is your tag when it is ready?</div>
          <select className="form-control" name='checkForType' onChange={this.onChange}>
            <option value={'function'}>function</option>
            <option value={'object'}>object</option>
@@ -241,6 +240,7 @@ var NewTemplate = React.createClass({
          <input type="text" className="text-input width--200 text-input-styled" name='email' value={this.state.email} onChange={this.onChange}/>
        </div>
        <button type="submit" onClick={this.onSubmit} className="submitButton btn-uniform-add button button--highlight">Submit</button>
+             <input type="text" className="text-input text-input--search width--200"/>
       </div>
 		)
 	}

@@ -258,9 +258,9 @@ var SearchBar = React.createClass({
 			        		}
 			    		  </div>
 			    		</div>
-					    <div className='flex space-between'>
+					    <div className='flex pushed-right'>
+					      <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
 						  <button className="button button--highlight" onClick={this.addCustomTag}> Add Custom Tag </button>
-					      <button className="button button--highlight" onClick={this.closeModal}> Close </button>
 				        </div>
 				    </Modal>
 	          </li>

@@ -98,6 +98,7 @@ var MySidePanel = React.createClass({
         type: 'POST',
         data: data,
         success: function(response) {
+          console.log(data, "data being passed into backend on update")
           console.log('Update tag successful');
           console.log(this.props.splicedArray.slice(0, this.props.index).concat(
               Object.assign({}, this.props.splicedArray[this.props.index], data), this.props.splicedArray.slice(this.props.index + 1)), "what we are passing in")
@@ -319,9 +320,9 @@ console.log(this.props.info.trackingTrigger, "tracking trigger props")
                                             />
                                           </div>
                                         </div>
-                                        <div className='flex space-between'>
+                                        <div className='flex pushed-right'>
+                                          <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
                                           <button className="button button--highlight" onClick={this.updateCustom}> Update Custom Tag </button>
-                                          <button className="button button--highlight" onClick={this.closeModal}> Cancel </button>
                                         </div>
                                       </Modal>
                                     </div>

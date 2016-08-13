@@ -20,6 +20,7 @@ var SearchBar = require('./SearchBar');
 var MyTagsPage = require('./MyTagsPage');
 var AvailableTagsPage = require('./AvailableTagsPage');
 var NewTemplate = require('./NewTemplate');
+var SubmitNew = require('./SubmitNew');
 
 var Table = Reactable.Table,
     Thead = Reactable.Thead,
@@ -85,6 +86,7 @@ ReactDOM.render((
       <Route path="/myTags" component={MyTagsPage}/>
       <Route path="/availableTags" component={AvailableTagsPage}/>
       <Route path="/submitNewTemplate" component={NewTemplate}/>
+      <Route path="/SubmitNew" component={SubmitNew}/>
     </Route>
   </Router>
 ), document.getElementById('root'))
