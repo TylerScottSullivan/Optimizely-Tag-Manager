@@ -4,6 +4,7 @@ import AceEditor from 'react-ace';
 var react = require('react-ace');
 var Modal = require('react-modal');
 
+// styles for modal
 const customStyles = {
   content : {
     top                   : '50%',
@@ -20,7 +21,9 @@ const customStyles = {
 var MySidePanel = React.createClass({
 
   getInitialState: function() {
+    // gets trigger options with ajax call when component is first rendered
     var triggerOptions;
+
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
@@ -31,7 +34,7 @@ var MySidePanel = React.createClass({
         console.error("Err posting", err.toString());
       }
     });
-    // console.log('this is the info fields that i want', this.props.info)
+
     return {
       modalIsOpen: false,
       info: this.props.info,
@@ -46,24 +49,25 @@ var MySidePanel = React.createClass({
     };
   },
 
+  // opens modal
   openModal: function() {
-    // console.log('opened modal')
     this.setState({modalIsOpen: true});
   },
 
+  // not used?
   afterOpenModal: function() {
     // references are now sync'd and can be accessed.
     this.refs.subtitle.style.color = '#0081BA';
   },
 
+  // closes modal
   closeModal: function() {
     this.setState({modalIsOpen: false});
   },
 
   componentWillReceiveProps: function(nextProps) {
-    console.log(nextProps, "next props")
+    // resets information on sidepanel when new row is clicked
     if (nextProps.info) {
-      console.log(nextProps.info, "nextProps info")
       this.setState({
         info: nextProps.info,
         fields: nextProps.info.fields,
@@ -73,11 +77,14 @@ var MySidePanel = React.createClass({
     }
   },
 
+  // sends updated tag info to backend and re-renders row and sidepanel properly
   onUpdate: function() {
+
     var data = {};
     var errors = {}
     data.fields = [];
 
+    //sets tokens correctly to be handled on backend
     this.state.fields.map(function(field){
       if (! field.value) {
         errors[field.name] = `${field.name} is required`;
@@ -86,24 +93,24 @@ var MySidePanel = React.createClass({
          data.fields.push({"name": field.name, "value": field.value})
       }
     })
-    console.log('here are the new fields', data)
+
+    //sets up all other info correctly to be handled on backend
     data.active = this.state.info.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.template = this.state.template;
-    console.log(data, "data sent")
-    console.log(this.props.info._id, 'tagid')
+
+    //ajax call to update tag on backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
         url: '/updatetag/' + this.props.info._id + window.location.search,
         type: 'POST',
         data: data,
         success: function(response) {
-          console.log(data, "data being passed into backend on update")
-          console.log('Update tag successful');
-          console.log(this.props.splicedArray.slice(0, this.props.index).concat(
-              Object.assign({}, this.props.splicedArray[this.props.index], data), this.props.splicedArray.slice(this.props.index + 1)), "what we are passing in")
+          //updates front end row and sidepanel with newly updated tag
           this.props.onDownload(this.props.splicedArray.slice(0, this.props.index).concat(
               Object.assign({}, this.props.splicedArray[this.props.index], data), this.props.splicedArray.slice(this.props.index + 1)))
+
+          //sets condition to show updated message
           this.setState({
             clickUpdate: true
           })
@@ -119,19 +126,17 @@ var MySidePanel = React.createClass({
     }
   },
 
+  // sends delete call to backend for a tag and re-renders rows and sidepanel properly
   onDelete: function() {
+
     return $.ajax({
       url: '/deletetag/' + this.props.info._id + window.location.search,
       type: 'POST',
-      // data: {},
       success: function(data) {
-        // var hallo = Object.assign({}, this.state.info, {deleted: true});
-        console.log('delete tag successful');
+        //  sets deleted state up to MyTagsPage to re-render sidepanel properly
         this.props.onDelete();
+        //  re-renders rows
         this.props.onDownload(this.props.downloaded.slice(0, this.props.index).concat(this.props.downloaded.slice(this.props.index + 1)));
-        // this.setState({
-        //   info: hallo
-        // })
       }.bind(this),
 
       error: function(err) {
@@ -141,37 +146,37 @@ var MySidePanel = React.createClass({
   },
 
   onChangeTokens: function(field, e) {
+    //error handling and changing state for token input values
     var newState = Object.assign({}, this.state);
     newState.errors[e.target.name] = false;
     newState.fields[field].value = e.target.value;
     this.setState(newState);
   },
 
-  //this change the enable and triggers
+  //error handling and changes state for enable/disable and triggers
   onChange: function(e) {
+    //prevents enable/disable buttons from screwing shit up
     e.preventDefault();
-    // console.log(e.target, "e")
-    // console.log(this.state.active, 'state of active')
-    // console.log(this.props.info.active, 'props of info of active')
-    // console.log(this.state.info.active, "state of info of active")
+
+    // changes enabled/disabled state
     if (e.target.name === "active") {
-      // console.log("is this getting called")
-      // console.log(e.target.name, "target name")
-      // console.log(e.target.value, "target value")
       this.setState({info: Object.assign({}, this.state.info, {active: !this.state.info.active})})
     } else {
+      //changes trigger value
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
       this.setState(newState);
     }
   },
 
+  // changes code editor code (i think) // Mojia?
   onChangeSnippet: function(newVal) {
       this.setState({
         changes: newVal
       });
   },
 
+  // changes code editor code in modal once set (i think) // Mojia?
   updateCustom: function() {
     this.setState({
       template: this.state.changes,
@@ -180,38 +185,12 @@ var MySidePanel = React.createClass({
   },
 
 	render: function() {
-    // if (Object.keys(this.state.info).length === 0) return null;
-    // console.log(this.props, "props for MySidePanel --- shouldn't have the info it's displaying????")
-  // if(this.props.deleted) {
-  //   console.log('passing deleted state');
-  //   return (<div> Fuck this shit </div>)
-  // }
-
-  // if(!this.props.deleted) {
-  //  console.log('passing non-deleted state');
-  //   return (<div> Eat this shit
-  //       <button className="btn-uniform-del button button--highlight" onClick={this.onDelete}>Delete</button>
-  //     </div>)
-  // }
-console.log(this.state.triggerOptions, "trigger options");
-console.log(this.state.trackingTrigger, "tracking trigger current")
-console.log(this.state.info.trackingTrigger, "tracking trigger info")
-console.log(this.props.info.trackingTrigger, "tracking trigger props")
     if (this.props.info.fields) {
-      // console.log(this.props.info.fields, 'fields');
-      // console.log(this.props.info.fields[0], 'fields 0');
-      // console.log(this.props.info.tokens, 'tokens');
-      // console.log(this.props.info.tokens[0], 'tokens 0');
 
       var newTokenField = [];
       var newObj = {};
-      // console.log("hello here")
       for (var j = 0; j < this.props.info.fields.length; j++) {
-        // console.log("hello why aren'y ou going through my loop")
-        // console.log('iterating')
         for (var i = 0; i < this.props.info.tokens.length; i++) {
-          // console.log(this.props.info.tokens[i].tokenName, "tokenName");
-          // console.log(this.props.info.fields[j].name, 'fieldName')
           if (this.props.info.tokens[i].tokenName === this.props.info.fields[j].name) {
             newObj = $.extend({}, this.props.info.fields[j], this.props.info.tokens[i])
             newTokenField.push(newObj);

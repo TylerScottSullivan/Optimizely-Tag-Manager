@@ -1,20 +1,33 @@
 var React = require('react');
 var ReactDOM = require('react-dom');
 var Modal = require('react-modal');
-// var moment = require('moment');
+
+// code editor
 var react = require('react-ace');
+
+// react table that has not been implemented for sorting and filtering
 var Reactable = require('reactable');
 import { render } from 'react-dom';
+
+//code editor imports
 import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
 import 'brace/theme/github';
 import 'brace/theme/tomorrow';
+
+// i don't think we use this either
 import Toggle from 'react-toggle';
 
 var _ = require('underscore');
+
+// we don't use oui react components but here it is
 import { Attention } from 'optimizely-oui';
+
+// react router obviously
 import { Router, Route, IndexRoute, IndexRedirect, Link, IndexLink, hashHistory } from 'react-router'
+
+// tab routing with react router
 var Tab = require('./Tab');
 var SearchBar = require('./SearchBar');
 var MyTagsPage = require('./MyTagsPage');
@@ -22,6 +35,7 @@ var AvailableTagsPage = require('./AvailableTagsPage');
 var NewTemplate = require('./NewTemplate');
 var SubmitNew = require('./SubmitNew');
 
+// react table stuff we don't use
 var Table = Reactable.Table,
     Thead = Reactable.Thead,
     Th = Reactable.Th,
@@ -34,19 +48,18 @@ var App = React.createClass({
   getInitialState: function() {
     return {
     	masters: [],
-    	downloadedProject: [],
-    	// currentProject: "6919181723", //this needs to be fetched
+    	downloadedProject: []
     }
   },
 
+  // function to refresh/update state when called in other components
   onDownload: function(projects) {
     this.setState({
       downloadedProject: projects
     })
-    console.log("now setting downloaded projects to projects");
-    console.log(projects, "udpated projects")
   },
 
+  // function to refresh/update state when called in other components but never called i think
   onMaster: function(master) {
     this.setState({
       masters: master
@@ -58,12 +71,14 @@ var App = React.createClass({
     return (
     	<div>
         <Tab/>
+        {/* passes functions into tabs as props*/}
         {React.cloneElement(this.props.children, Object.assign({}, this.state, {onDownload: this.onDownload, onMaster: this.onMaster}), null)}
       </div>
     );
   }
 });
 
+// styles for modal 
 const customStyles = {
   content : {
     top                   : '50%',
@@ -78,7 +93,7 @@ const customStyles = {
 };
 
 
-
+// react router
 ReactDOM.render((
   <Router history={hashHistory}>
     <Route path="/" component={App}>
