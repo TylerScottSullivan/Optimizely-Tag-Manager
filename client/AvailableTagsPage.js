@@ -13,7 +13,7 @@ var AvailableTagsPage = React.createClass({
     }
   },
 
-  //re-renders with new information
+  // re-renders with new information
   componentWillReceiveProps: function(nextProps) {
     this.setState({
       downloadedProject: nextProps.downloadedProject,

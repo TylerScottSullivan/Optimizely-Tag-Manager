@@ -4,7 +4,7 @@ var AvailableTableRow = React.createClass({
 
   render: function() {
     return (
-     <tr onClick={this.props.onSelect}>
+      <tr onClick={this.props.onSelect}>
         <td id="row-centered"> <img src={this.props.rowinfo.logo}/></td>
         <td id="row-centered">{this.props.rowinfo.displayName}</td>
         <td id="row-centered">{this.props.rowinfo.category} </td>
@@ -15,7 +15,7 @@ var AvailableTableRow = React.createClass({
         :
           <td id="row-centered"> Unadded </td>
         }
-     </tr>
+      </tr>
     )
   }
   
