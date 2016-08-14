@@ -26,6 +26,9 @@ var AvailableSidePanel = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    nextProps.info.tokens = nextProps.info.tokens.map((token) => {
+      return Object.assign({}, token, {value: ''})
+    })
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
@@ -138,6 +141,13 @@ var AvailableSidePanel = React.createClass({
                 <div className="flex">
                    <div className="flex--1 sd-headsmall"> Called On: </div>
                 </div>
+
+
+
+
+
+
+
             <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
               {this.state.triggerOptions.map((trigger) => {
                 return <option value={trigger}>{trigger}</option>

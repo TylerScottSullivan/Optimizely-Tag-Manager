@@ -87,7 +87,7 @@ var MySidePanel = React.createClass({
       }
     })
     console.log('here are the new fields', data)
-    data.active = this.state.info.active;
+    data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.template = this.state.template;
     console.log(data, "data sent")

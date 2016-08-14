@@ -189,7 +189,6 @@ var NewTemplate = React.createClass({
           <option value={true}>Yes</option>
             <option value={false}>No</option>
 
-
          </select>
          <div>{(this.state.hasCallback === 'true') ? <div>Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
        </div>
