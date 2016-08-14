@@ -2,19 +2,22 @@ var React = require('react');
 var AvailableInputFields = require('./AvailableInputFields');
 
 var AvailableSidePanel = React.createClass({
+
   getInitialState: function() {
+    // gets trigger options with ajax call when component is first rendered
     var triggerOptions;
+
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful', data);
         this.setState({triggerOptions: data})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
       }
     });
+
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
@@ -23,12 +26,14 @@ var AvailableSidePanel = React.createClass({
       errors: {},
       triggerOptions: []
     };
+
   },
 
   componentWillReceiveProps: function(nextProps) {
     nextProps.info.tokens = nextProps.info.tokens.map((token) => {
       return Object.assign({}, token, {value: ''})
     })
+    // resets information on sidepanel when new row is clicked
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
@@ -37,18 +42,24 @@ var AvailableSidePanel = React.createClass({
     }
   },
 
+  //adds new tag, rendering on front end and sending ajax call to backend
   onAddTag: function(e) {
+    // prevents Add button from screwing shit up
     e.preventDefault();
+
     var data = {};
     var errors = {}
 
+    //sets tokens correctly to be handled on backend
     this.state.tokens.map((token) => {
+      // Input validation
       if (!token.value) {
-        // Input validation
         errors[token.tokenDisplayName] = `${token.tokenDisplayName} is required`;
       }
       data[token.tokenName] = token.value;
     })
+
+    //sets up all other info correctly to be handled on backend
     data.active = this.state.active;
     data.trackingTrigger = this.state.trackingTrigger;
     data.name = this.props.info.name;
@@ -57,15 +68,14 @@ var AvailableSidePanel = React.createClass({
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
 
+    //ajax call to add tag to backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
         url: '/' + window.location.search,
         type: 'POST',
         data: data,
         success: function(response) {
-          console.log('Add tag successful');
-          console.log(data, "data");
-          console.log(this.props.downloadedProject.concat(data), "concated downloadedProject")
+          // this function rerenders table and sidepanel with newly added tag, separate from ajax call but using the ajax data sent over
           this.props.onDownload(this.props.downloadedProject.concat(data))
         }.bind(this),
         error: function(err) {
@@ -73,6 +83,7 @@ var AvailableSidePanel = React.createClass({
         }
       });
     } else {
+      // error handling
       console.log('there is an error omg');
       this.setState({
         errors: errors
@@ -81,10 +92,10 @@ var AvailableSidePanel = React.createClass({
   },
 
   onChangeTokens: function(index, e) {
+    //error handling and changing state for token input values
     var tokens = this.state.tokens;
     var errors = this.state.errors;
     errors[e.target.name] = false;
-    console.log('this is e', e.target)
     console.log('errorsss', errors)
     tokens[index].value = e.target.value;
     this.setState({
@@ -94,10 +105,12 @@ var AvailableSidePanel = React.createClass({
     console.log('this is the new state errorsss', this.state.errors)
   },
 
-//this change the enable and triggers
+  //error handling and changes state for enable/disable and triggers
   onChange: function(e) {
+    //prevents enable/disable buttons from screwing shit up
     e.preventDefault();
-    console.log(e, "e")
+
+    // verbose way of changing enabled/disabled state
     if (e.target.name === "active") {
       if (this.state.active === false) {
         this.setState({
@@ -109,83 +122,91 @@ var AvailableSidePanel = React.createClass({
         })
       }
     } else {
+      //changes trigger value
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
       this.setState(newState);
     }
-    console.log(this.state, "state of available panels page")
   },
 
 	render: function() {
+    // if row has been selected, displays sidepanel information
 		if (Object.keys(this.props.info).length !== 0) {
+
 			return (
 				<div className="sidepanel background--faint">
-			     	<h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
-			      	<div className="flex">
-				    	  <div> <img className='sidepanel-logo' src={this.props.info.logo}/> </div>
-  				    	<div className='flex flex-v-center'>
-  				      		<div className = 'sidepanel-displayname'> {this.props.info.displayName} </div>
-  				     	</div>
-		        	</div>
-		        	<div className='sd-headsmall deschead'> DESCRIPTION </div>
-	            	<div className='tagdesc'>{this.props.info.tagDescription}</div>
-	            	<label className="label label--rule">
-	            	</label>
-			        {this.state.tokens.map((token, item) => {
-                var err = this.state.errors[token.tokenDisplayName];
-                console.log('this is the token', token)
-                console.log('this is item', item)
-			        	return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)}/>
-			        })}
-              <div className="help-block with-errors"></div>
-                <div className="flex">
-                   <div className="flex--1 sd-headsmall"> Called On: </div>
-                </div>
-
-
-
-
-
-
-
-            <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
-              {this.state.triggerOptions.map((trigger) => {
-                return <option value={trigger}>{trigger}</option>
-                })
-              }
-            </select>
-            <div className="flex togglebutton">
-              {this.state.active === true ?
-                  <div>
-                    <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
-                    <button className="button" name='active' onClick={this.onChange}>Disabled</button>
-                  </div>
-               :
-                  <div>
-                    <button className="button" name='active' onClick={this.onChange}>Enabled</button>
-                    <button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
-                  </div>
-                }
+          <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
+		      <div className="flex">
+			    	<div>
+              <img className='sidepanel-logo' src={this.props.info.logo}/>
             </div>
-            {this.props.info.added === true ?
-                  <div>
-                    <div>
-                      <button className="btn-uniform-add button button--highlight" disabled>Add Tag</button>
-                    </div>
-                    <div className="greenbox">
-                      <p> This tag has now been added to 'My Tags.' This change may take a couple of minutes to update. </p>
+				    <div className='flex flex-v-center'>
+				      	<div className = 'sidepanel-displayname'> {this.props.info.displayName} </div>
+				    </div>
+	        </div>
 
-                      <p> Go to 'My Tags' to Update, Delete, or Disable this tag. </p>
-                    </div>
-                  </div>
-              :
-                  <div>
-                    <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
-                  </div>
+	        <div className='sd-headsmall deschead'> DESCRIPTION </div>
+          <div className='tagdesc'>{this.props.info.tagDescription}</div>
+        	<label className="label label--rule"> </label>
+
+          {/* Renders each token input field */}
+          {this.state.tokens.map((token, item) => {
+            var err = this.state.errors[token.tokenDisplayName];
+        	  return <AvailableInputFields key={item} error={err || false} token={token} onChange={this.onChangeTokens.bind(this, item)}/>
+            }
+          )}
+
+          <div className="help-block with-errors"></div>
+
+          <div className="flex">
+            <div className="flex--1 sd-headsmall"> Called On: </div>
+          </div>
+
+          {/* Renders each trigger option */}
+          <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
+            {this.state.triggerOptions.map((trigger) => {
+              return <option value={trigger}>{trigger}</option>
+              }
+            )}
+          </select>
+
+          {/* togglels between enabled and disabled buttons */}
+          <div className="flex togglebutton">
+            {this.state.active === true ?
+              <div>
+                <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
+                <button className="button" name='active' onClick={this.onChange}>Disabled</button>
+              </div>
+            :
+              <div>
+                <button className="button" name='active' onClick={this.onChange}>Enabled</button>
+                <button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
+              </div>
             }
           </div>
+
+          {/* displays message and disables add button if added, enabled button if not added yet*/}
+          {this.props.info.added === true ?
+            <div>
+              <div>
+                <button className="btn-uniform-add button button--highlight" disabled>Add Tag</button>
+              </div>
+              <div className="greenbox">
+                <p> This tag has now been added to 'My Tags.' This change may take a couple of minutes to update. </p>
+                <p> Go to 'My Tags' to Update, Delete, or Disable this tag. </p>
+              </div>
+            </div>
+          :
+            <div>
+              <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
+            </div>
+          }
+
+        </div>
       )
+
     } else {
+      // if no row has been selected, shows default information
       return (
         <div>
           <div className="sidepanel background--faint">
@@ -194,8 +215,13 @@ var AvailableSidePanel = React.createClass({
           </div>
         </div>
       )
+    // below brace closes else statement
     }
+  // below brace closes render function
   }
+
+
+
 })
 
 module.exports = AvailableSidePanel;
