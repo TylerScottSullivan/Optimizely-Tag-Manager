@@ -324,8 +324,8 @@ module.exports = {
   removeCallbacks: function(tags) {
     this.tags = tags;
     var myTag = tags.filter(function(item) {
-      console.log('[item._id.toString()]', typeof item._id.toString(), '[this.tagid]', typeof this.tagid, item._id.toString() === this.tagid);
-      return item._id.toString() === this.tagid;
+      console.log('[item._id.toString()]', typeof item._id.toString(), '[this.tagid]', typeof this.tagid.toString(), item._id.toString() === this.tagid.toString());
+      return item._id.toString() === this.tagid.toString();
     }.bind(this))[0];
 
     console.log("[myTag]", myTag);
@@ -339,6 +339,8 @@ module.exports = {
       console.log("[stage myTag && tagWithCallback]");
       var index = tagWithCallback.callbacks.indexOf(myTag.name);
       console.log('[index]', index)
+
+      //deleting 1 item at the index
       tagWithCallback.callbacks.splice(index, 1);
       console.log('[stage tagWithCallback after splice]', tagWithCallback)
       return tagWithCallback.save();
@@ -349,11 +351,11 @@ module.exports = {
     }
   },
   addCallbacks: function() {
-    var myTag = tags.filter(function(item) {
-      return item._id.toString() === this.tagid;
+    var myTag = this.tags.filter(function(item) {
+      return item._id.toString() === this.tagid.toString();
     }.bind(this))[0];
 
-    var parentTag = tags.filter(function(item) {
+    var parentTag = this.tags.filter(function(item) {
       return item.name === myTag.trackingTrigger;
     })[0];
 
