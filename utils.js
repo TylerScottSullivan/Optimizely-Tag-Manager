@@ -13,7 +13,7 @@ module.exports = {
   body: null,
   project: null,
   tagid: null,
-  addCallbacks: false,
+  addCallbacksBool: false,
   oldCallback: null,
   findMaster: function(project) {
     console.log("[stage] findMaster");
@@ -249,6 +249,7 @@ module.exports = {
     return this.tagNames.concat(eventNames);
   },
   getProject: function(projectId, tagid) {
+    console.log("[getProject]: projectId-", projectId, " tagid-", tagid);
     if (tagid) {
       this.tagid = tagid;
     }
@@ -277,10 +278,10 @@ module.exports = {
     }
     trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
     trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
-
-    if (trackingTriggerType === onTrigger) {
+    console.log("******************************************** TrackingTriggerType", trackingTriggerType)
+    if (trackingTriggerType === 'onTrigger') {
       this.tagid = tag._id;
-      this.addCallbacks = true;
+      this.addCallbacksBool = true;
       this.oldCallback = tag.trackingTrigger;
     }
 
@@ -298,33 +299,52 @@ module.exports = {
     //callbacks of their current parent (if snippet), change the callbacks of their future
     //parent
       return new Promise(function(resolve, reject) {
-        if(this.addCallbacks) {
+        if(this.addCallbacksBool) {
+          console.log("I chose the first path")
           Tag.find({"projectId": tag.projectId})
              .then(this.removeCallbacks.bind(this))
              .then(this.addCallbacks.bind(this))
-             .then(()=>resolve(this.getProject.bind(this)))
+             .then(this.getProject.bind(this))
+             .then((response)=>resolve(response))
              .catch(err=>reject(err))
         }
         else {
-          resolve(this.getProject.bind(this, tag))
-          }
-        }.bind(this))
+          console.log("I chose a callbackpath")
+          console.log("TAG", tag)
+          project = this.getProject.bind(this, tag)()
+          project.exec(function(err, p) {
+            console.log("[project]", p);
+            if (err) reject(err);
+            resolve(p);
+          })
+          // resolve(project);
+        }
+      }.bind(this))
   },
   removeCallbacks: function(tags) {
     this.tags = tags;
     var myTag = tags.filter(function(item) {
+      console.log('[item._id.toString()]', typeof item._id.toString(), '[this.tagid]', typeof this.tagid, item._id.toString() === this.tagid);
       return item._id.toString() === this.tagid;
     }.bind(this))[0];
+
+    console.log("[myTag]", myTag);
+    console.log('[tags]', tags)
     var tagWithCallback = tags.filter(function(item) {
       return item.callbacks.includes(myTag.name)
     })[0];
+    console.log("[tagWithCallback]", tagWithCallback);
 
     if (myTag && tagWithCallback) {
+      console.log("[stage myTag && tagWithCallback]");
       var index = tagWithCallback.callbacks.indexOf(myTag.name);
+      console.log('[index]', index)
       tagWithCallback.callbacks.splice(index, 1);
+      console.log('[stage tagWithCallback after splice]', tagWithCallback)
       return tagWithCallback.save();
     }
     else {
+      console.log('[stage else clause]')
       return;
     }
   },

@@ -160,7 +160,6 @@ router.get('/options', function(req, res, next) {
          .then(utils.getOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
          .then(function(response) {
-            console.log("THIS IS THE EVENTS RESPONSE", response)
             res.setHeader('Content-Type', 'application/json');
             res.send(JSON.stringify(response)); //send an array of options
          })
