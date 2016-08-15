@@ -16,9 +16,6 @@ var Tab = React.createClass({
           <Link to="/submitNewTemplate" activeClassName="is-active" className="tabs-nav__item">
             <li className="tabs-nav__item" data-oui-tabs-nav-item>Submit New Template</li>
           </Link>
-          <Link to="/SubmitNew" activeClassName="is-active" className="tabs-nav__item">
-            <li className="tabs-nav__item" data-oui-tabs-nav-item>Submit Custom Template</li>
-          </Link>
         </ul>
       </div>
     )

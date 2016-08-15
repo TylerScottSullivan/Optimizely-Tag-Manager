@@ -78,7 +78,7 @@ var App = React.createClass({
   }
 });
 
-// styles for modal 
+// styles for modal
 const customStyles = {
   content : {
     top                   : '50%',
@@ -101,7 +101,6 @@ ReactDOM.render((
       <Route path="/myTags" component={MyTagsPage}/>
       <Route path="/availableTags" component={AvailableTagsPage}/>
       <Route path="/submitNewTemplate" component={NewTemplate}/>
-      <Route path="/SubmitNew" component={SubmitNew}/>
     </Route>
   </Router>
 ), document.getElementById('root'))
