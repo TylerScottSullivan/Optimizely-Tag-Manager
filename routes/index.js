@@ -71,8 +71,11 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/deletetag/:tagid', function(req, res, next) {
-  var utils = require('../utils')
-  Tag.remove({"_id": req.params.tagid})
+  var utils = require('../utils');
+  utils.tagid = req.params.tagid;
+  Tag.find({"projectId": req.optimizely.current_project})
+     .then(utils.removeCallbacks.bind(utils))
+     .then(utils.removeTag.bind(utils))
      .then(utils.getProject.bind(utils, req.optimizely.current_project, req.params.tagid))
      .then(utils.removeTagFromProject.bind(utils))
      .then(utils.populateProject.bind(utils))
@@ -104,8 +107,11 @@ router.get('/master', (req, res, next) => {
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/download', (req, res, next) => {
+  console.log("I AM DOWNLOADING")
   var utils = require('../utils')
+  console.log("Past that shit")
   Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
+    console.log("AND HERE ARE TEH TAGS I FOUND", tags)
     if (err) {
       console.log('err finding tags in download/:projectid', err)
     } else {
@@ -127,7 +133,7 @@ router.post('/updatetag/:tagid', (req, res, next) => {
          .then(utils.findMaster.bind(utils))
          .then(utils.setMaster.bind(utils))
          .then(utils.updateTag.bind(utils))
-         .then(utils.getProject.bind(utils))
+         .then(utils.chooseCallbackPath.bind(utils))
          .then(utils.populateProject.bind(utils))
          .then(utils.getJavascript.bind(utils))
          .then(utils.buildJavascript.bind(utils))

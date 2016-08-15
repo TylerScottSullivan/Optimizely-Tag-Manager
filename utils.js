@@ -13,6 +13,8 @@ module.exports = {
   body: null,
   project: null,
   tagid: null,
+  addCallbacks: false,
+  oldCallback: null,
   findMaster: function(project) {
     console.log("[stage] findMaster");
     this.project = project;
@@ -41,13 +43,20 @@ module.exports = {
           'value': this.body[master.tokens[i]['tokenName']]
         })
       };
+      trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
+      trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
       displayName = this.body.displayName || master.displayName;
+      console.log("BODY IN TAG", this.body);
+      console.log("TRACKINGTRIGGER", trackingTrigger)
+      console.log("DISPLAYNAME", displayName)
+      console.log("FIELDS", fields)
       t = new Tag({
         name: master.name,
         displayName: displayName,
         fields: fields,
         tagDescription: this.body.tagDescription,
-        trackingTrigger: this.body.trackingTrigger,
+        trackingTrigger: trackingTrigger,
+        trackingTriggerType: trackingTriggerType,
         template: this.body.template,
         projectId: this.project.projectId,
         active: this.body.active,
@@ -66,7 +75,7 @@ module.exports = {
     console.log("[stage] updateProject");
     this.project.tags.push(tag._id);
     return new Promise(function(resolve, reject) {
-      if(tag.trackingTrigger !== "onDocumentReady" && tag.trackingTrigger !== "inHeader" && tag.trackingTrigger !== "onPageLoad" && tag.trackingTrigger !== "onEvent") {
+      if(tag.trackingTriggerType !== "onDocumentReady" && tag.trackingTriggerType !== "inHeader" && tag.trackingTriggerType !== "onPageLoad" && tag.trackingTriggerType !== "onEvent") {
         Tag.findOne({"name": tag.trackingTrigger})
            .then(function(trackerTag) {
              console.log("TRACKERTAG", trackerTag)
@@ -98,18 +107,18 @@ module.exports = {
 
     //wrap page type things
     var inHeaders = tags.filter(function(item){
-                    return item.trackingTrigger === "inHeader";
+                    return item.trackingTriggerType === "inHeader";
                   })
     var onDocumentReadys = tags.filter(function(item){
-                              return item.trackingTrigger === "onDocumentReady";
+                              return item.trackingTriggerType === "onDocumentReady";
                             })
     var onPageLoads = tags.filter(function(item) {
-                                  return item.trackingTrigger === "onPageLoad"
+                                  return item.trackingTriggerType === "onPageLoad"
                               })
     var onEvents = tags.filter(function(item) {
-                                  return item.trackingTrigger === "onEvent"
+                                  return item.trackingTriggerType === "onEvent"
                                 })
-
+    console.log('onEvents', onEvents)
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
@@ -133,15 +142,16 @@ module.exports = {
     var marker = false;
     for(var i = 0; i < onEvents.length; i++) {
       marker = true;
-      onEventsObject[onEvents[i].eventName] = onEvents[i].render(tags, this.masters);
+      onEventsObject[onEvents[i].trackingTrigger] = onEvents[i].render(tags, this.masters);
     }
-
+    console.log("onEventsObject", onEventsObject)
     onEventsObjectString = JSON.stringify(onEventsObject);
     onEventsObjectString = "var onEventsObjectFunction = function() {return " + onEventsObjectString + ";};"
 
     var onSpecificEventJavascript = '';
     if (marker) {
-      onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');eval(onEventsObjectFunction()[data.id]);}});"
+      onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');eval(onEventsObjectFunction()[data.data.apiName]);}});"
+      onSpecificEventJavascript = '$(document).ready(function(){' +onSpecificEventJavascript+ '});'
     }
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
@@ -200,21 +210,18 @@ module.exports = {
     return Tag.find({'hasCallback': true, 'projectId': this.project.projectId, "active": true});
   },
   getOptions: function(tags) {
-    console.log("++++++++++++++++++++++++++++++++++++++++++++++I GOT INTO THE GET OPTIONS ++++++++++++++++++++++++++++++++++++++++++++++")
     if (tags.length === 0) {
-      this.tagNames = ['inHeader', 'onDocumentReady'];
+      this.tagNames = ['onTrigger,inHeader', 'onTrigger,onDocumentReady'];
     }
     //get names of options
     this.tagNames = tags.map(function(item) {
-      console.log("ITEM", item)
-      return item.name;
+      return "onTrigger," + item.name;
     });
 
-    console.log('tagName', this.tagNames)
 
     //inHeader/onDocumentReady should intuitively come first
-    this.tagNames.unshift("inHeader");
-    this.tagNames.unshift("onDocumentReady");
+    this.tagNames.unshift("inHeader,inHeader");
+    this.tagNames.unshift("onDocumentReady,onDocumentReady");
 
     //save current tags
     this.tags = tags;
@@ -237,7 +244,7 @@ module.exports = {
       data = "[]"
     }
     var eventNames = JSON.parse(data).map(function(item) {
-      return item.api_name;
+      return "onEvent," + item.api_name;
     })
     return this.tagNames.concat(eventNames);
   },
@@ -268,12 +275,73 @@ module.exports = {
     for(var i = 0; i < master.tokens.length; i++) {
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
     }
+    trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
+    trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
+
+    if (trackingTriggerType === onTrigger) {
+      this.tagid = tag._id;
+      this.addCallbacks = true;
+      this.oldCallback = tag.trackingTrigger;
+    }
+
     tag.fields = fields;
     tag.approved = this.body.approved;
-    tag.trackingTrigger = this.body.trackingTrigger;
+    tag.trackingTrigger = trackingTrigger;
+    tag.trackingTriggerType = trackingTriggerType;
     tag.template = this.body.template;
     tag.projectId = this.body.projectId;
     tag.active = this.body.active;
     return tag.save();
+  },
+  chooseCallbackPath: function(tag) {
+    //if they changed the trigger to be another snippet-- change the
+    //callbacks of their current parent (if snippet), change the callbacks of their future
+    //parent
+      return new Promise(function(resolve, reject) {
+        if(this.addCallbacks) {
+          Tag.find({"projectId": tag.projectId})
+             .then(this.removeCallbacks.bind(this))
+             .then(this.addCallbacks.bind(this))
+             .then(()=>resolve(this.getProject.bind(this)))
+             .catch(err=>reject(err))
+        }
+        else {
+          resolve(this.getProject.bind(this, tag))
+          }
+        }.bind(this))
+  },
+  removeCallbacks: function(tags) {
+    this.tags = tags;
+    var myTag = tags.filter(function(item) {
+      return item._id.toString() === this.tagid;
+    }.bind(this))[0];
+    var tagWithCallback = tags.filter(function(item) {
+      return item.callbacks.includes(myTag.name)
+    })[0];
+
+    if (myTag && tagWithCallback) {
+      var index = tagWithCallback.callbacks.indexOf(myTag.name);
+      tagWithCallback.callbacks.splice(index, 1);
+      return tagWithCallback.save();
+    }
+    else {
+      return;
+    }
+  },
+  addCallbacks: function() {
+    var myTag = tags.filter(function(item) {
+      return item._id.toString() === this.tagid;
+    }.bind(this))[0];
+
+    var parentTag = tags.filter(function(item) {
+      return item.name === myTag.trackingTrigger;
+    })[0];
+
+    parentTag.callbacks.push(myTag.name);
+
+    return parentTag.save();
+  },
+  removeTag: function(tag) {
+    return Tag.remove({"_id": this.tagid});
   }
 }

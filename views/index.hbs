@@ -3,7 +3,7 @@
 
 <!-- ----this is the old code below------ -->
 
-{{!-- <form method='POST' action="/updatetag/579bc28191068c0519fcdf61">
+<!-- <form method='POST' action="/updatetag/579bc28191068c0519fcdf61">
   <button type="submit" id="updateButton" class="btn btn-default">Submit</button>
 </form>
 
@@ -15,6 +15,7 @@
       <option value='CUSTOM'>Custom Snippet</option>
       <option value='ADOBE'>ADOBE</option>
       <option value='segment'>SEGMENT</option>
+      <option value='facebook'>FACEBOOK</option>
     </select>
   </div>
   <div class="form-group">
@@ -34,6 +35,10 @@
     <input type="text" class="form-control" name='WRITE_TOKEN'>
   </div>
   <div class="form-group">
+    <label>What's your pixel code?</label>
+    <input type="text" class="form-control" name='PIXEL_CODE'>
+  </div>
+  <div class="form-group">
     <label>What's your page name?</label>
     <input type="text" class="form-control" name='pageName'>
   </div>
@@ -43,13 +48,13 @@
   </div>
   <div>
     <select class="form-control" name='trackingTrigger'>
-      <option value='inHeader'>In header</option>
-      <option value='onPageLoad'>On page load</option>
-      <option value = 'GA'>GA</option>
-      <option value = 'ADOBE'>ADOBE</option>
-      <option value = 'onPageLoad'>On Page Load</option>
-      <option value = 'onEvent'>On Event</option>
-      <option value = 'amplitude'>Amplitude</option>
+      <option value='onTrigger,inHeader'>In header</option>
+      <option value='onTrigger,onPageLoad'>On page load</option>
+      <option value = 'onTrigger,GA'>GA</option>
+      <option value = 'onTrigger,ADOBE'>ADOBE</option>
+      <option value = 'onTrigger,onPageLoad'>On Page Load</option>
+      <option value = 'onEvent,shopping_cart'>On Event</option>
+      <option value = 'onTrigger,amplitude'>Amplitude</option>
     </select>
   </div>
   <div>
@@ -63,5 +68,4 @@
   <textarea name="custom" class="form-control" rows="5" id="comment"></textarea>
   </div>
   <button type="submit" class="btn btn-default">Submit</button>
-</form>
- --}}
+</form> -->
