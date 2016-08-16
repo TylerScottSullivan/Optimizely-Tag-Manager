@@ -47,7 +47,7 @@ var NewTemplate = React.createClass({
       console.log('onchangeSnippet', this.state.template)
   },
 
-  onSubmit: function() {
+  onSubmit: function(e) {
     e.preventDefault()
     var data = {};
     var errors = {}
@@ -247,12 +247,17 @@ var NewTemplate = React.createClass({
 							        		<table className="table table--add-row width--1-1">
 							          			<tbody>
 							          				<tr>
-                                    {
+                                    {(!this.state.fields.length) ?
+                                      (<button className="button push--right" onClick={this.onAddField} >
+                                          <div className="icon pixels">
+                                            <img src="/images/add.png"/>
+                                          </div>
+                                      </button>) :
                                      this.state.fields.map((item, index) => {
                                         var tokenHere;
                                         var token = '{{' + item.tokenName.replace(/ /g, '_') + '}}';
                                         if (item.tokenName) {
-                                          tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>Your field token name is <code>{token}</code></div>
+                                          tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>Your token name is <code>{token}</code></div>
                                         } else {
                                           tokenHere = null;
                                         }
@@ -306,6 +311,7 @@ var NewTemplate = React.createClass({
                                      })
                                     }
 							          				</tr>
+                                <tr></tr>
 							        			</tbody>
 						        			</table>
 							      		</li>
