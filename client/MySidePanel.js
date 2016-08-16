@@ -32,11 +32,12 @@ var MySidePanel = React.createClass({
       }
     });
     // console.log('this is the info fields that i want', this.props.info)
+    var trackingTrigger = this.props.info.trackingTrigger + "," + this.props.info.trackingTriggerType;
     return {
       modalIsOpen: false,
       info: this.props.info,
       fields: this.props.info.fields,
-      trackingTrigger: this.props.info.trackingTrigger,
+      trackingTrigger: trackingTrigger,
       active: this.props.info.active,
       tagId: this.props.info._id,
       errors: {},
@@ -337,10 +338,10 @@ console.log(this.props.info.trackingTrigger, "tracking trigger props")
                                   </div>
                             <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
                                   {this.state.triggerOptions.map((trigger) => {
-                                    if (trigger === this.state.info.trackingTrigger) {
-                                      return <option value={trigger} selected> {trigger} </option>
+                                    if (trigger.split(',')[1] === this.state.info.trackingTrigger) {
+                                      return <option value={trigger} selected> {trigger.split(',')[1]} </option>
                                     }
-                                    return <option value={trigger} >{trigger}</option>
+                                    return <option value={trigger} >{trigger.split(',')[1]}</option>
                                     })
                                   }
                               </select>
