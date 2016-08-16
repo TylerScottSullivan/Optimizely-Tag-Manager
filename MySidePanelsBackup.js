@@ -28,44 +28,38 @@ var MySidePanel = React.createClass({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
-        for (var i = 0; i < data.length; i ++) {
-          var d = data[i].split(',');
-          if (d[0] === 'inHeader') {
-            options['inHeader'].push(d[1])
-          } else if (d[0] === 'onDocumentReady') {
-            options['onDocumentReady'].push(d[1])
-          } else if (d[0] === 'onTrigger') {
-            options['onTrigger'].push(d[1])
-          } else if (d[0] === 'onEvent') {
-            options['onEvent'].push(d[1])
-          } else if (d[0] === 'OnPageLoad') {
-            options['onPageLoad'].push(d[1])
+        var options = {'inHeader': null, 'onDucumentReady': null, 'onCallback': null, 'onEventTrigger': null};
+        for (var i; i < data.length; i ++) {
+          var data = data[i].split();
+          if (data[0] === 'inHeader') {
+            options[0].push(data[1])
+          } else if (data[0] === 'onDocumetReady') {
+            options[0].push(data[1])\
+          } else if (data[0] === 'onCallback') {
+            options[0].push(data[1])\
+          } else if (data[0] === 'onEventTrigger') {
+            options[0].push(data[1])
           }
         }
-        console.log('optionssss', options)
-        this.setState({triggerOptions: options, trackingTrigger: data[0], specificTrigger: options[data[0].split(',')[0]]})
-        console.log('this is the specific trigger', options[data[0].split(',')[0]]);
+        data.split()
+        this.setState({triggerOptions: data})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
       }
     });
-    // console.log('this is the info fields that i want', this.props.info)
-    var trackingTrigger = this.props.info.trackingTrigger + "," + this.props.info.trackingTriggerType;
 
     return {
       modalIsOpen: false,
       info: this.props.info,
       fields: this.props.info.fields,
-      trackingTrigger: trackingTrigger,
+      trackingTrigger: this.props.info.trackingTrigger,
       active: this.props.info.active,
       tagId: this.props.info._id,
       errors: {},
       triggerOptions: null,
       changes: '',
-      template: '',
-      specificTrigger: null
+      template: ''
     };
   },
 
@@ -113,17 +107,12 @@ var MySidePanel = React.createClass({
          data.fields.push({"name": field.name, "value": field.value})
       }
     })
-    console.log('here are the new fields', data)
 
-    var trigger;
-    if (this.state.trackingTrigger === 'onDocumentReady'||this.state.trackingTrigger === 'inHeader') {
-      trigger = this.state.trackingTrigger + ',' + this.state.trackingTrigger;
-    } else if (this.state.trackingTrigger === 'onPageLoad' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onTrigger') {
-      trigger = this.state.trackingTrigger + ',' + this.state.specificTrigger;
-    }
-    data.trackingTrigger = trigger;
+    console.log('here are the new fields', data)
     // sets up all other info correctly to be handled on backend
     data.active = this.state.info.active;
+
+    data.trackingTrigger = this.state.trackingTrigger;
     data.template = this.state.template;
 
     // ajax call to update tag on backend
@@ -247,7 +236,6 @@ var MySidePanel = React.createClass({
     // assuming tag is not deleted, displays regular information
     if(!this.props.deleted) {
 
-
       // if a tag has been selected, will display the proper information
   		if (this.props.info && Object.keys(this.props.info).length !== 0 || this.props.deleted) {
   			return (
@@ -330,30 +318,28 @@ var MySidePanel = React.createClass({
             <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
               <option value='inHeader' selected> In Header </option>
               <option value='onDocumentReady'> On Document Ready</option>
-              <option value='onTrigger'> On Trigger </option>
-              <option value='onEvent'> On Event </option>
-              <option value='onPageLoad'> On Page Load </option>
+              <option value='onCallback'> On Callback </option>
+              <option value='onEventTrigger'> On Event Trigger </option>
             </select>
 
-
-
-            {/* Renders each trigger option */}
             {
-              (this.state.trackingTrigger === 'onTrigger' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onPageLoad') ? (
-                <div>
-                <div className="flex">
-                  <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
-                </div>
-                <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-                  <option value="onDocumentReady" selected disabled>Select a trigger</option>
-                {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
-                  return <option value={trigger}>{trigger}</option>
-                  })
+              this.state.triggerOptions.map((trigger) => {
+                if (trigger === this.state.info.trackingTrigger) {
+                  return <option value={trigger} selected> {trigger} </option>
                 }
-              </select>
-              </div>
-              ) : null
-            }
+                return <option value={trigger}>{trigger}</option>
+                })
+              }
+            <select className="form-control" name='specificTrigger' onChange={this.onChange}>
+              {this.state.triggerOptions.map((trigger) => {
+                if (trigger === this.state.info.trackingTrigger) {
+                  return <option value={trigger} selected> {trigger} </option>
+                }
+                return <option value={trigger}>{trigger}</option>
+                })
+              }
+            </select>
+          }
 
             {/* togglels between enabled and disabled buttons */}
             <div className="flex togglebutton">
@@ -367,7 +353,6 @@ var MySidePanel = React.createClass({
                     <button className="button" name='active' onClick={this.onChange}>Enabled</button>
                     <button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
                   </div>
-
                 }
             </div>
 

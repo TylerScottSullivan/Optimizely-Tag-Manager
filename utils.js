@@ -108,6 +108,7 @@ module.exports = {
                                   return item.trackingTriggerType === "onEvent"
                                 })
     //BUILDING IN HEADER JAVASCRIPT
+    console.log('onEvents', onEvents)
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
@@ -129,8 +130,12 @@ module.exports = {
       onEventsObject[onEvents[i].trackingTrigger] = onEvents[i].render(tags, this.masters);
       console.log('[onEventsObject]', onEventsObject);
     }
+
+
+    console.log("onEventsObject", onEventsObject)
     onEventsObjectString = JSON.stringify(onEventsObject);
     onEventsObjectString = "var onEventsObjectFunction = function() {return " + onEventsObjectString + ";};"
+    console.log("onEventsObjectString", onEventsObjectString);
 
     //BUILDING ON PAGE OBJECT
     var onPageLoadObject = {};
@@ -149,6 +154,9 @@ module.exports = {
       onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');if(data.data.type === 'pageview'){console.log('apiName',data.data.apiName);eval(onPageLoadsObjectFunction()[data.data.apiName]);}else{eval(onEventsObjectFunction()[data.data.apiName]);};}});"
       onSpecificEventJavascript = '$(document).ready(function(){' +onSpecificEventJavascript+ '});'
     }
+
+    console.log("onSpecificEventJavascript", onSpecificEventJavascript)
+    // console.log("marker", marker)
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
 
