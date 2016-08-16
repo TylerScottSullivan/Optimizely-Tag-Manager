@@ -156,7 +156,7 @@ module.exports = {
     }
 
     console.log("onSpecificEventJavascript", onSpecificEventJavascript)
-    console.log("marker", marker)
+    // console.log("marker", marker)
     //wrap onDocumentReadyJavascript in an on document ready
     onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
 

@@ -48,6 +48,7 @@ var NewTemplate = React.createClass({
   },
 
   onSubmit: function() {
+    e.preventDefault()
     var data = {};
     var errors = {}
     data.fields = JSON.stringify(this.state.fields.map(function(field, i){

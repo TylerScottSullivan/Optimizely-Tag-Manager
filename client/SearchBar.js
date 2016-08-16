@@ -26,8 +26,24 @@ var SearchBar = React.createClass({
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
-      success: function(triggers) {
-        this.setState({triggerOptions: triggers})
+      success: function(data) {
+        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
+        for (var i = 0; i < data.length; i ++) {
+          var d = data[i].split(',');
+          if (d[0] === 'inHeader') {
+            options['inHeader'].push(d[1])
+          } else if (d[0] === 'onDocumentReady') {
+            options['onDocumentReady'].push(d[1])
+          } else if (d[0] === 'onTrigger') {
+            options['onTrigger'].push(d[1])
+          } else if (d[0] === 'onEvent') {
+            options['onEvent'].push(d[1])
+          } else if (d[0] === 'OnPageLoad') {
+            options['onPageLoad'].push(d[1])
+          }
+        }
+        console.log('optionssss', options)
+        this.setState({triggerOptions: options, trackingTrigger: data[0], specificTrigger: options[data[0].split(',')[0]]})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
@@ -43,7 +59,8 @@ var SearchBar = React.createClass({
       trackingTrigger: 'inHeader',
       active: false,
       errors: {},
-      triggerOptions: []
+      triggerOptions: [],
+      specificTrigger: null
     };
   },
 
@@ -93,9 +110,6 @@ var SearchBar = React.createClass({
 
     //sets up info correctly to be handled on backend
     data.active = this.state.active;
-    data.trackingTrigger = this.state.trackingTrigger;
-
-    var triggerOptions;
 
     this.setState({
   		name: 'custom',
@@ -130,6 +144,13 @@ var SearchBar = React.createClass({
     } else {
       data.template = this.state.template;
     }
+    var trigger;
+    if (this.state.trackingTrigger === 'onDocumentReady'||this.state.trackingTrigger === 'inHeader') {
+      trigger = this.state.trackingTrigger + ',' + this.state.trackingTrigger;
+    } else if (this.state.trackingTrigger === 'onPageLoad' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onTrigger') {
+      trigger = this.state.trackingTrigger + ',' + this.state.specificTrigger;
+    }
+    data.trackingTrigger = trigger;
 
     //ajax call to add tag to backend
     if (Object.keys(errors).length === 0) {
@@ -228,7 +249,7 @@ var SearchBar = React.createClass({
   			      isOpen={this.state.modalIsOpen}
   			      onAfterOpen={this.afterOpenModal}
   			      onRequestClose={this.closeModal}
-  			      style={customStyles} 
+  			      style={customStyles}
               >
 
   			      <h2 ref="subtitle">Create Custom Tag</h2>
@@ -254,26 +275,26 @@ var SearchBar = React.createClass({
           		  </div>
          			  <div className="flex--1"> Please add the name of your snippet. </div>
           		  <input name='displayName' className={`${errorName}`} value={this.state.displayName} onChange={this.onChange}/>
-          		  {(errorName) ? 
+          		  {(errorName) ?
                   <div className='warning'>
                     {this.state.errors['displayName']}
-                  </div> 
-                : 
-                  null 
+                  </div>
+                :
+                  null
                 }
 
           		  <div className="flex">
   		             <div className="flex--1 sd-headsmall"> Description</div>
   		          </div>
-  		          <div className="flex--1"> 
-                  Please add the description of your tag below. 
+  		          <div className="flex--1">
+                  Please add the description of your tag below.
                 </div>
   		          <input name='tagDescription' className={`$(errorTagDescription)`} value={this.state.tagDescription} onChange={this.onChange}/>
-          		  {(errorTagDescription) ? 
+          		  {(errorTagDescription) ?
                   <div className='warning'>
                     {this.state.errors['tagDescription']}
-                  </div> 
-                : 
+                  </div>
+                :
                   null
                 }
               	<div className="flex">
@@ -281,12 +302,33 @@ var SearchBar = React.createClass({
   		          </div>
 
                 {/*this renders the possible trigger options*/}
-          		  <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
-            			{this.state.triggerOptions.map((trigger) => {
-              			return <option value={trigger}>{trigger}</option>
-              			})
-            			}
-  				      </select>
+                <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
+                  <option value='inHeader' selected> In Header </option>
+                  <option value='onDocumentReady'> On Document Ready</option>
+                  <option value='onTrigger'> On Trigger </option>
+                  <option value='onEvent'> On Event </option>
+                  <option value='onPageLoad'> On Page Load </option>
+                </select>
+
+
+
+                {/* Renders each trigger option */}
+                {
+                  (this.state.trackingTrigger === 'onTrigger' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onPageLoad') ? (
+                    <div>
+                    <div className="flex">
+                      <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
+                    </div>
+                    <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
+                      <option value="onDocumentReady" selected disabled>Select a trigger</option>
+                    {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
+                      return <option value={trigger}>{trigger}</option>
+                      })
+                    }
+                  </select>
+                  </div>
+                  ) : null
+                }
 
                 {/* togglels between enabled and disabled buttons */}
   	    		    <div className="flex togglebutton">

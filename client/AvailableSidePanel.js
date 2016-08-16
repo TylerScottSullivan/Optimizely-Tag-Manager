@@ -5,14 +5,28 @@ var AvailableSidePanel = React.createClass({
 
   getInitialState: function() {
     // gets trigger options with ajax call when component is first rendered
-    var triggerOptions;
-
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
         console.log('get options successful', data);
-        this.setState({triggerOptions: data, trackingTrigger: data[0]})
+        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
+        for (var i = 0; i < data.length; i ++) {
+          var d = data[i].split(',');
+          if (d[0] === 'inHeader') {
+            options['inHeader'].push(d[1])
+          } else if (d[0] === 'onDocumentReady') {
+            options['onDocumentReady'].push(d[1])
+          } else if (d[0] === 'onTrigger') {
+            options['onTrigger'].push(d[1])
+          } else if (d[0] === 'onEvent') {
+            options['onEvent'].push(d[1])
+          } else if (d[0] === 'OnPageLoad') {
+            options['onPageLoad'].push(d[1])
+          }
+        }
+        console.log('optionssss', options)
+        this.setState({triggerOptions: options, trackingTrigger: data[0], specificTrigger: options[data[0].split(',')[0]]})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
@@ -25,7 +39,8 @@ var AvailableSidePanel = React.createClass({
       trackingTrigger: "default",
       active: true,
       errors: {},
-      triggerOptions: []
+      triggerOptions: [],
+      specificTrigger: null
     };
 
   },
@@ -46,8 +61,6 @@ var AvailableSidePanel = React.createClass({
   //adds new tag, rendering on front end and sending ajax call to backend
   onAddTag: function(e) {
     // prevents Add button from screwing shit up
-    e.preventDefault();
-
     var data = {};
     var errors = {}
 
@@ -61,14 +74,20 @@ var AvailableSidePanel = React.createClass({
     })
 
     //sets up all other info correctly to be handled on backend
+    var trigger;
+    if (this.state.trackingTrigger === 'onDocumentReady'||this.state.trackingTrigger === 'inHeader') {
+      trigger = this.state.trackingTrigger + ',' + this.state.trackingTrigger;
+    } else if (this.state.trackingTrigger === 'onPageLoad' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onTrigger') {
+      trigger = this.state.trackingTrigger + ',' + this.state.specificTrigger;
+    }
     data.active = this.state.active;
-    data.trackingTrigger = this.state.trackingTrigger;
+    data.trackingTrigger = trigger;
     data.name = this.props.info.name;
     data.tagDescription = this.props.info.tagDescription;
     data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-
+    console.log('here is what i am sending', data)
     //ajax call to add tag to backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -109,8 +128,6 @@ var AvailableSidePanel = React.createClass({
   //error handling and changes state for enable/disable and triggers
   onChange: function(e) {
     //prevents enable/disable buttons from screwing shit up
-    e.preventDefault();
-
     // verbose way of changing enabled/disabled state
     if (e.target.name === "active") {
       if (this.state.active === false) {
@@ -164,13 +181,33 @@ var AvailableSidePanel = React.createClass({
             <div className="flex--1 sd-headsmall"> Called On: </div>
           </div>
 
-          {/* Renders each trigger option */}
-          <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
-            {this.state.triggerOptions.map((trigger) => {
-              return <option value={trigger}>{trigger}</option>
-              }
-            )}
+          <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
+            <option value='inHeader' selected> In Header </option>
+            <option value='onDocumentReady'> On Document Ready</option>
+            <option value='onTrigger'> On Trigger </option>
+            <option value='onEvent'> On Event </option>
+            <option value='onPageLoad'> On Page Load </option>
           </select>
+
+
+
+          {/* Renders each trigger option */}
+          {
+            (this.state.trackingTrigger === 'onTrigger' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onPageLoad') ? (
+              <div>
+              <div className="flex">
+                <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
+              </div>
+              <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
+                <option value="onDocumentReady" selected disabled>Select a trigger</option>
+              {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
+                return <option value={trigger}>{trigger}</option>
+                })
+              }
+            </select>
+            </div>
+            ) : null
+          }
 
           {/* togglels between enabled and disabled buttons */}
           <div className="flex togglebutton">
