@@ -34,9 +34,9 @@ var MySidePanel = React.createClass({
         //   if (data[0] === 'inHeader') {
         //     options[0].push(data[1])
         //   } else if (data[0] === 'onDocumetReady') {
-        //     options[0].push(data[1])\
+        //     options[0].push(data[1])
         //   } else if (data[0] === 'onCallback') {
-        //     options[0].push(data[1])\
+        //     options[0].push(data[1])
         //   } else if (data[0] === 'onEventTrigger') {
         //     options[0].push(data[1])
         //   }
