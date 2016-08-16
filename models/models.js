@@ -17,6 +17,7 @@ var tagSchema = mongoose.Schema({
   tagDescription: String,
   fields: Array,
   trackingTrigger: String,
+  trackingTriggerType: String,
   custom: String,
   rank: Number,
   projectId: String,
@@ -38,30 +39,28 @@ tagSchema.methods.render = function(tags, masters) {
       return this.callbacks.includes(item.name)
     }.bind(this))
   }
-  console.log("THIS", this)
-  console.log("FILTERED", filtered)
   var innerCallback = '';
   for (var i = 0; i < filtered.length; i++) {
     innerCallback += filtered[i].render(tags, masters);
   }
-  console.log("INNERCALLBACK", innerCallback)
-  innerCallback="function callback" + Math.floor(Math.random()*1000) + " (){"+innerCallback+"}"
-  console.log("INNERCALLBACK2", innerCallback)
-  console.log("MASTERS", masters)
-  console.log("THIS.NAME", this.name, typeof this.name)
+  var index = Math.floor(Math.random()*1000);
+  innerCallback="function callback" + index + " (){"+innerCallback+"}"
   var master = masters.filter(function(item) {
     return this.name === item.name
   }.bind(this))[0]
-  console.log("MASTER", master)
   var handleBarsFields = {};
 
   for (var i = 0; i < this.fields.length; i++) {
     handleBarsFields[this.fields[i].name] = this.fields[i].value;
   }
 
+  if (this.name === 'GA') {
+    innerCallback += 'callback' + index + '();'
+    var template = Handlebars.compile(master.template);
+  }
+
   handleBarsFields['callback'] = innerCallback;
 
-  console.log("HANDLEBARSFIELDS", handleBarsFields)
   if (this.name === 'custom') {
     var template = Handlebars.compile(this.template);
   } else {
@@ -69,6 +68,7 @@ tagSchema.methods.render = function(tags, masters) {
   }
   return template(handleBarsFields);
 }
+
 
 var masterSchema = mongoose.Schema({
   name: String,

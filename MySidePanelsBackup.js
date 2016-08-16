@@ -28,20 +28,20 @@ var MySidePanel = React.createClass({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        // var options = {'inHeader': null, 'onDucumentReady': null, 'onCallback': null, 'onEventTrigger': null};
-        // for (var i; i < data.length; i ++) {
-        //   var data = data[i].split();
-        //   if (data[0] === 'inHeader') {
-        //     options[0].push(data[1])
-        //   } else if (data[0] === 'onDocumetReady') {
-        //     options[0].push(data[1])\
-        //   } else if (data[0] === 'onCallback') {
-        //     options[0].push(data[1])\
-        //   } else if (data[0] === 'onEventTrigger') {
-        //     options[0].push(data[1])
-        //   }
-        // }
-        // data.split()
+        var options = {'inHeader': null, 'onDucumentReady': null, 'onCallback': null, 'onEventTrigger': null};
+        for (var i; i < data.length; i ++) {
+          var data = data[i].split();
+          if (data[0] === 'inHeader') {
+            options[0].push(data[1])
+          } else if (data[0] === 'onDocumetReady') {
+            options[0].push(data[1])\
+          } else if (data[0] === 'onCallback') {
+            options[0].push(data[1])\
+          } else if (data[0] === 'onEventTrigger') {
+            options[0].push(data[1])
+          }
+        }
+        data.split()
         this.setState({triggerOptions: data})
       }.bind(this),
       error: function(err) {
