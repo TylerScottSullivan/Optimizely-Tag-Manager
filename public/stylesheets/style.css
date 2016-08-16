@@ -113,10 +113,19 @@ td {
 	justify-content: space-between;
 }
 
+.pushed-right {
+	margin: 20px 0 0 0;
+	justify-content: flex-end;
+}
+
 .modaltextarea {
 	height: 100px;
 	width: 620px;
 	margin: 5px 0;
+}
+
+.right-margin {
+	margin-right: 15px;
 }
 
 textarea {
@@ -183,6 +192,21 @@ textarea {
 	overflow-y: auto;
 }
 
+.width-600 {
+	width: 600px;
+}
+
+.justified {
+	text-align: justify;
+}
+
+.white-font {
+	color: white;
+}
+
+.pixels {
+	margin-top: 8px;
+}
 /*pace*/
 
 .pace {
