@@ -34,32 +34,45 @@ var tagSchema = mongoose.Schema({
 tagSchema.methods.render = function(tags, masters) {
   //data structured {tags:, masters:, innerCallback:, template:}
   var filtered = [];
+  console.log("[stage inside render this:]", this)
+  console.log("[tags]", tags)
+  console.log('[masters]', masters)
   if (tags) {
      filtered = tags.filter(function(item) {
       return this.callbacks.includes(item.name)
     }.bind(this))
   }
+  console.log('[filtered]', filtered)
   var innerCallback = '';
   for (var i = 0; i < filtered.length; i++) {
     innerCallback += filtered[i].render(tags, masters);
   }
+  console.log('innerCallback1', innerCallback)
   var index = Math.floor(Math.random()*1000);
   innerCallback="function callback" + index + " (){"+innerCallback+"}"
+  console.log('innerCallback2', innerCallback)
+
   var master = masters.filter(function(item) {
     return this.name === item.name
   }.bind(this))[0]
+  console.log('myMaster', master)
+
   var handleBarsFields = {};
 
   for (var i = 0; i < this.fields.length; i++) {
     handleBarsFields[this.fields[i].name] = this.fields[i].value;
   }
 
+  console.log('[handlebarsFields]',handleBarsFields)
   if (this.name === 'GA') {
+    console.log('[stage got inside GA tag]')
     innerCallback += 'callback' + index + '();'
+    console.log('[innerCallback after GA insertion]', innerCallback)
     var template = Handlebars.compile(master.template);
   }
 
   handleBarsFields['callback'] = innerCallback;
+  console.log('[handleBarsFields after callback addition]', handleBarsFields)
 
   if (this.name === 'custom') {
     var template = Handlebars.compile(this.template);

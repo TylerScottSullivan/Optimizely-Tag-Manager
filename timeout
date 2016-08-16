@@ -313,4 +313,35 @@ console.log("HAYYYYY I'm OUTSIDE THIS");
   analytics.load("YOUR_WRITE_KEY");
   analytics.page()
   }}();
-  
+
+
+
+
+  'var gc_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof _gaq) === 'object') {gc_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
+
+//assuming startingTag is an onTrigger type, otherwise there'd be no point...
+var nonTriggers = tags.filter(function(item){
+  return item.trackingTriggerType !== 'onTrigger'
+})
+
+var nonTriggerNames = tags.map(function(item){
+  return item.trackingTriggerType
+})
+var noGos = getChildren(tags, startingTag, list);
+availableTagTriggers = tags.filter(function(item) {
+  return !(noGos.includes(item.name)) && item.active;
+});
+
+var getChildren = function(tags, startingTag, list) {
+  list.push(startingTag.name);
+
+  var children = tags.filter(function(item) {
+    startingTag.callbacks.includes(item.name)
+  })
+
+  for(var i = 0; i < children.length; i++) {
+    list.push(getChildren(tags, children[i], list));
+  }
+
+  return startingTag.name;
+}

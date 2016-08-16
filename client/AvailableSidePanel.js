@@ -9,7 +9,7 @@ var AvailableSidePanel = React.createClass({
       type: 'GET',
       success: function(data) {
         console.log('get options successful', data);
-        this.setState({triggerOptions: data})
+        this.setState({triggerOptions: data, trackingTrigger: data[0]})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
@@ -18,7 +18,7 @@ var AvailableSidePanel = React.createClass({
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      trackingTrigger: 'inHeader',
+      trackingTrigger: "default",
       active: true,
       errors: {},
       triggerOptions: []
@@ -139,8 +139,9 @@ var AvailableSidePanel = React.createClass({
                    <div className="flex--1 sd-headsmall"> Called On: </div>
                 </div>
             <select className="form-control" name='trackingTrigger' value={this.state.trackingTrigger} onChange={this.onChange}>
-              {this.state.triggerOptions.map((trigger) => {
-                return <option value={trigger}>{trigger}</option>
+              {this.state.triggerOptions.map((trigger, i) => {
+                return i === 0 ? <option value={trigger} selected>{trigger.split(',')[1]}</option>
+                  : <option value={trigger}>{trigger.split(',')[1]}</option>
                 })
               }
             </select>

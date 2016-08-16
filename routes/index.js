@@ -46,6 +46,7 @@ router.post('/request', function(req, res, next) {
   })
 })
 
+//add
 router.post('/', function(req, res, next) {
   //either find or create a new project object, to which we will append a new tag w/appropriate fields
   var utils = require('../utils')
@@ -107,15 +108,11 @@ router.get('/master', (req, res, next) => {
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/download', (req, res, next) => {
-  console.log("I AM DOWNLOADING")
   var utils = require('../utils')
-  console.log("Past that shit")
   Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
-    console.log("AND HERE ARE TEH TAGS I FOUND", tags)
     if (err) {
       console.log('err finding tags in download/:projectid', err)
     } else {
-      console.log("++++++++++++++++++++++++++++++++++++++++DOWNLOAD TAGS ++++++++++++++++++++", tags)
       res.setHeader('Content-Type', 'application/json');
       res.send(JSON.stringify(tags)); //send an array of masters
     }
@@ -147,8 +144,6 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 
 router.get('/options', function(req, res, next) {
   var utils = require('../utils')
-  console.log('I am inside options');
-
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
@@ -158,6 +153,7 @@ router.get('/options', function(req, res, next) {
                        'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
+         .then(utils.getPageOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))
          .then(function(response) {
             res.setHeader('Content-Type', 'application/json');
@@ -210,26 +206,18 @@ router.post('/template', function(req, res, next) {
   })
 })
 
-// router.get('/approve', function(req, res, next) {
-//   Master.find({"approved": false}, function(err, masters) {
-//     res.render('templateApproval', {masters: masters})
-//   })
-// })
-//
-// router.post('/approve', function(req, res, next) {
-//   var utils = require('../utils')
-//   //TODO this needs to be changed to incorporate master from form
-//   //find the master to UPDATE
-//   //change it's template to handlebars compiled code
-//   //change approved to true
-//   Master.findOne({'name': 'segment'})
-//         .then(utils.approve.bind(utils))
-//         .then(function(response) {
-//           res.status(200).send('I am guccigucci')
-//         })
-//         .catch(function(err) {
-//           console.log("Error at the end of /options", err)
-//         })
-// })
+router.get('/restrictedOptions/:tagid', function(req, res, next) {
+  var utils = require('../utils')
+  utils.tagid = req.params.tagid;
+  Tag.find({'projectId': req.optimizely.current_project})
+     .then(utils.restrictOptions.bind(utils))
+     .then(function(response) {
+        res.setHeader('Content-Type', 'application/json');
+        res.send(JSON.stringify(response)); //send an array of options
+     })
+     .catch(function(err) {
+       console.log("Error at the end of /options", err)
+     })
+})
 
 module.exports = router;
