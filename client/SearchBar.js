@@ -60,7 +60,8 @@ var SearchBar = React.createClass({
       active: true,
       errors: {},
       triggerOptions: [],
-      specificTrigger: null
+      specificTrigger: null,
+      customId: null
     };
   },
 
@@ -99,7 +100,8 @@ var SearchBar = React.createClass({
  			template: '',
   		trackingTrigger: 'inHeader',
   		active: true,
-  		errors: {}
+  		errors: {},
+      customId: null
     });
   },
 
@@ -110,7 +112,7 @@ var SearchBar = React.createClass({
 
     //sets up info correctly to be handled on backend
     data.active = this.state.active;
-    var index = Math.floor(Math.random()*1000);
+    var index = Math.floor(Math.random()*10000000000);
     this.setState({
   		name: 'custom',
   		displayName: '',
@@ -121,9 +123,9 @@ var SearchBar = React.createClass({
   		errors: {},
   		triggerOptions: []
     });
-
     data.name = this.state.name;
-
+    data.customId = index;
+    console.log('data.name', data.customId)
     data.fields = [];
 
     // form validation handling
@@ -151,7 +153,7 @@ var SearchBar = React.createClass({
       trigger = this.state.trackingTrigger + ',' + this.state.specificTrigger;
     }
     data.trackingTrigger = trigger;
-
+    console.log('here is the full data', data)
     //ajax call to add tag to backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
