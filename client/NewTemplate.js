@@ -197,7 +197,7 @@ var NewTemplate = React.createClass({
                           ) : null
                         }
 
-                      {(this.state.usesOurCallback === 'true') ?
+                      {(this.state.usesOurCallback === true) ?
                         (
                           <div>
                           <li className="form-field__item">
