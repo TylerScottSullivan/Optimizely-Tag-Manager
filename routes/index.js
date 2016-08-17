@@ -77,6 +77,8 @@ router.post('/deletetag/:tagid', function(req, res, next) {
   Tag.find({"projectId": req.optimizely.current_project})
      .then(utils.removeCallbacks.bind(utils))
      .then(utils.removeTag.bind(utils))
+     .then(utils.findAllMasters.bind(utils))
+     .then(utils.setAllMasters.bind(utils))
      .then(utils.getProject.bind(utils, req.optimizely.current_project, req.params.tagid))
      .then(utils.removeTagFromProject.bind(utils))
      .then(utils.populateProject.bind(utils))

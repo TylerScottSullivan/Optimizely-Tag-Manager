@@ -64,7 +64,8 @@ module.exports = {
         active: this.body.active,
         hasCallback: master.hasCallback,
         pageName: this.body.pageName,
-        eventName: this.body.eventName
+        eventName: this.body.eventName,
+        customId: this.body.customId
       })
       return t.save()
     }
@@ -128,7 +129,6 @@ module.exports = {
       //TODO: wrap this in onDocumentReady here, not in function
       onDocumentReadyJavascript += onDocumentReadys[i].render(tags, this.masters);
     }
-    var pagesToIds = {'select_dropdown_1': "6824293401", "shopping_cart": "6824330423"}
 
     //BUILDING ON EVENT OBJECT
     var onEventsObject = {};
@@ -395,6 +395,13 @@ module.exports = {
   removeTag: function(tag) {
     return Tag.remove({"_id": this.tagid});
   },
+  findAllMasters: function() {
+    return Master.find('approved': true)
+  },
+  setAllMasters: function(masters) {
+    this.masters = masters;
+    return;
+  }
   // restrictOptions: function(tags) {
 
   // },
