@@ -16,7 +16,8 @@ var NewTemplate = React.createClass({
       checkForType: 'function',
       checkFor: '',
       usesOurCallback: 'false',
-      errors: {}
+      errors: {},
+      logo: null
     };
   },
 
@@ -74,10 +75,7 @@ var NewTemplate = React.createClass({
         return f;
       // }
     }));
-    console.log('err222 is herereerere', errors)
-
-    console.log('here are the fields', data.fields)
-    data.type = this.state.type;
+    data.type = this.state.type.split(' ').join('');
     data.email = this.state.email;
     data.description = this.state.description;
     data.displayName = this.state.displayName;
@@ -92,6 +90,7 @@ var NewTemplate = React.createClass({
     data.template = this.state.template;
     data.checkForType = this.state.checkForType;
     data.checkFor = this.state.checkFor;
+    data.logo = "/images/Optimizely-logo.png"
 
     console.log('this is the full data', data)
     if (Object.keys(errors).length === 0) {
@@ -190,14 +189,15 @@ var NewTemplate = React.createClass({
      							          			Would you like us to make your code callback-able?
      							        		</label>
      							        		<select className="lego-select" name='usesOurCallback' onChange={this.onChange}>
-     							          			<option value={true}>Yes</option>
-     							          			<option value={false}>No</option>
+                                <option value={false}>No</option>
+     							          		<option value={true}>Yes</option>
      							        		</select>
      							      		</li>
                           ) : null
                         }
 
-                      {(this.state.usesOurCallback === true) ?
+                      {
+                        (this.state.usesOurCallback === 'true') ?
                         (
                           <div>
                           <li className="form-field__item">
@@ -218,7 +218,8 @@ var NewTemplate = React.createClass({
                         </div>
                         ) : null
                       }
-							      		<li className="form-field__item">
+
+                        <li className="form-field__item">
 				        					<label className="label">
 							          			Please enter your code here:
 							        		</label>

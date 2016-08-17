@@ -4,6 +4,25 @@ var AvailableInputFields = require('./AvailableInputFields');
 var AvailableSidePanel = React.createClass({
 
   getInitialState: function() {
+
+    return {
+      info: this.props.info,
+      tokens: this.props.info.tokens,
+      trackingTrigger: "inHeader",
+      active: true,
+      errors: {},
+      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
+      specificTrigger: null
+    };
+
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({trackingTrigger: 'inHeader'})
+    console.log('receiving props', nextProps)
+    // nextProps.info.tokens = nextProps.info.tokens.map((token) => {
+    //   return Object.assign({}, token, {value: ''})
+    // })
     // gets trigger options with ajax call when component is first rendered
     $.ajax({
       url: '/options' + window.location.search,
@@ -13,41 +32,20 @@ var AvailableSidePanel = React.createClass({
         var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
         for (var i = 0; i < data.length; i ++) {
           var d = data[i].split(',');
-
-          // THIS CODE IS COPIED IN
-          if (d[0] === 'inHeader') {
-            options['inHeader'].push(d[1])
-          } else if (d[0] === 'onDocumentReady') {
-            options['onDocumentReady'].push(d[1])
-          } else if (d[0] === 'onTrigger') {
-            options['onTrigger'].push(d[1])
-          } else if (d[0] === 'onEvent') {
-            options['onEvent'].push(d[1])
-          } else if (d[0] === 'onPageLoad') {
-            options['onPageLoad'].push(d[1])
+          for (var option in options) {
+            if (d[0] === option) {
+              options[option].push(d[1]);
+            }
           }
         }
         console.log('optionssss', options)
-        this.setState({triggerOptions: options, trackingTrigger: 'inHeader', specificTrigger: options[data[0].split(',')[0]]})
+        this.setState({triggerOptions: options, specificTrigger: options[data[0].split(',')[0]]})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
       }
     });
 
-    return {
-      info: this.props.info,
-      tokens: this.props.info.tokens,
-      trackingTrigger: "inHeader",
-      active: true,
-      errors: {},
-      triggerOptions: [],
-      specificTrigger: null
-    };
-
-  },
-
-  componentWillReceiveProps: function(nextProps) {
     // resets information on sidepanel when new row is clicked
     if (Object.keys(nextProps.info).length > 0) {
       console.log("nextProps", nextProps)
@@ -185,14 +183,12 @@ var AvailableSidePanel = React.createClass({
           </div>
 
           <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
-            <option value='inHeader' selected> In Header </option>
-            <option value='onDocumentReady'> On Document Ready</option>
-            <option value='onTrigger'> On Trigger </option>
-            <option value='onEvent'> On Event </option>
-            <option value='onPageLoad'> On Page Load </option>
+            {Object.keys(this.state.triggerOptions).map((option) => {
+              return (this.state.trackingTrigger === option) ? <option value={option} selected> {option} </option>
+            : <option value={option}> {option} </option>
+            })
+            }
           </select>
-
-
 
           {/* Renders each trigger option */}
           {
