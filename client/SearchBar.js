@@ -21,34 +21,6 @@ var SearchBar = React.createClass({
 
   // gets trigger options with ajax call when component is first rendered
   getInitialState: function() {
-    var triggerOptions;
-
-    $.ajax({
-      url: '/options' + window.location.search,
-      type: 'GET',
-      success: function(data) {
-        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
-        for (var i = 0; i < data.length; i ++) {
-          var d = data[i].split(',');
-          if (d[0] === 'inHeader') {
-            options['inHeader'].push(d[1])
-          } else if (d[0] === 'onDocumentReady') {
-            options['onDocumentReady'].push(d[1])
-          } else if (d[0] === 'onTrigger') {
-            options['onTrigger'].push(d[1])
-          } else if (d[0] === 'onEvent') {
-            options['onEvent'].push(d[1])
-          } else if (d[0] === 'onPageLoad') {
-            options['onPageLoad'].push(d[1])
-          }
-        }
-        console.log('optionssss', options)
-        this.setState({triggerOptions: options, trackingTrigger: 'inHeader', specificTrigger: options[data[0].split(',')[0]]})
-      }.bind(this),
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
 
 	  return {
       modalIsOpen: false,
@@ -59,10 +31,36 @@ var SearchBar = React.createClass({
       trackingTrigger: 'inHeader',
       active: true,
       errors: {},
-      triggerOptions: [],
+      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
       specificTrigger: null,
       customId: null
     };
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({trackingTrigger: 'inHeader'})
+    // gets trigger options with ajax call when component is first rendered
+    $.ajax({
+      url: '/options' + window.location.search,
+      type: 'GET',
+      success: function(data) {
+        console.log('get options successful', data);
+        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
+        for (var i = 0; i < data.length; i ++) {
+          var d = data[i].split(',');
+          for (var option in options) {
+            if (d[0] === option) {
+              options[option].push(d[1]);
+            }
+          }
+        }
+        console.log('optionssss', options)
+        this.setState({triggerOptions: options, specificTrigger: options[data[0].split(',')[0]]})
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
   },
 
   // opens modal

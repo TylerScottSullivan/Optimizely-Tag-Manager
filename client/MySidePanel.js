@@ -22,43 +22,11 @@ var MySidePanel = React.createClass({
 
   getInitialState: function() {
     // gets trigger options with ajax call when component is first rendered
-    var triggerOptions;
-
-    $.ajax({
-      url: '/options' + window.location.search,
-      type: 'GET',
-      success: function(data) {
-        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
-        for (var i = 0; i < data.length; i ++) {
-
-          // options['inHeader'].push(d[1])
-          var d = data[i].split(',');
-          if (d[0] === 'inHeader') {
-            options['inHeader'].push(d[1])
-          } else if (d[0] === 'onDocumentReady') {
-            options['onDocumentReady'].push(d[1])
-          } else if (d[0] === 'onTrigger') {
-            options['onTrigger'].push(d[1])
-          } else if (d[0] === 'onEvent') {
-            options['onEvent'].push(d[1])
-          } else if (d[0] === 'onPageLoad') {
-            options['onPageLoad'].push(d[1])
-          }
-        }
-        this.setState({triggerOptions: options, trackingTrigger: data[0], specificTrigger: options[data[0].split(',')[0]]})
-      }.bind(this),
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
-    // console.log('this is the info fields that i want', this.props.info)
-    var trackingTrigger = this.props.info.trackingTrigger + "," + this.props.info.trackingTriggerType;
-
     return {
       modalIsOpen: false,
       info: this.props.info,
       fields: this.props.info.fields,
-      trackingTrigger: trackingTrigger,
+      trackingTrigger: null,
       active: this.props.info.active,
       tagId: this.props.info._id,
       errors: {},
@@ -87,7 +55,27 @@ var MySidePanel = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     // resets information on sidepanel when new row is clicked
-    console.log('this is the full info', nextProps.info)
+    $.ajax({
+      url: '/options' + window.location.search,
+      type: 'GET',
+      success: function(data) {
+        console.log('get options successful', data);
+        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
+        for (var i = 0; i < data.length; i ++) {
+          var d = data[i].split(',');
+          for (var option in options) {
+            if (d[0] === option) {
+              options[option].push(d[1]);
+            }
+          }
+        }
+        console.log('optionssss', options)
+        this.setState({triggerOptions: options})
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
