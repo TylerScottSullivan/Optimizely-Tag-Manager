@@ -93,7 +93,8 @@ module.exports = {
     tags = tags.filter(function(item) {
       return item.active === true;
     })
-
+    console.log("TAGS_______________________________", tags)
+    console.log('____________________________________');
     //wrap page type things
     var inHeaders = tags.filter(function(item){
                     return item.trackingTriggerType === "inHeader";
@@ -107,6 +108,7 @@ module.exports = {
     var onEvents = tags.filter(function(item) {
                                   return item.trackingTriggerType === "onEvent"
                                 })
+    console.log('[onPageLoads]',onPageLoads)
     //BUILDING IN HEADER JAVASCRIPT
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
@@ -314,8 +316,10 @@ module.exports = {
     //if they changed the trigger to be another snippet-- change the
     //callbacks of their current parent (if snippet), change the callbacks of their future
     //parent
+      console.log('[stage] chooseCallbackPath')
       return new Promise(function(resolve, reject) {
         if(this.addCallbacksBool) {
+          console.log('[stage] if clause')
           Tag.find({"projectId": tag.projectId})
              .then(this.removeCallbacks.bind(this))
              .then(this.addCallbacks.bind(this))
@@ -324,6 +328,7 @@ module.exports = {
              .catch(err=>reject(err))
         }
         else {
+          console.log('[stage] else clause')
           project = this.getProject.bind(this, tag)()
           project.exec(function(err, p) {
             if (err) reject(err);
@@ -334,23 +339,33 @@ module.exports = {
       }.bind(this))
   },
   removeCallbacks: function(tags) {
+    console.log("[stage] remove callbacks")
+    console.log("[tags]", tags)
     this.tags = tags;
+    console.log("[this.tags]", this.tags)
     var myTag = tags.filter(function(item) {
       return item._id.toString() === this.tagid.toString();
     }.bind(this))[0];
+    console.log('[myTag]', myTag)
 
     var tagWithCallback = tags.filter(function(item) {
+      console.log('[item]', item, myTag.name)
       return item.callbacks.includes(myTag.name)
     })[0];
 
-    if (myTag && tagWithCallback) {
-      var index = tagWithCallback.callbacks.indexOf(myTag.name);
+    console.log('[tagWithCallback]', tagWithCallback)
 
+    if (myTag && tagWithCallback) {
+      console.log('[stage] myTag && tagWithCallback')
+      var index = tagWithCallback.callbacks.indexOf(myTag.name);
+      console.log('[tagWithCallback pre slice]', tagWithCallback)
       //deleting 1 item at the index
       tagWithCallback.callbacks.splice(index, 1);
+      console.log('[tagWithCallback post slice]', tagWithCallback)
       return tagWithCallback.save();
     }
     else {
+      console.log('[stage] !myTag && tagWithCallback')
       return;
     }
   },

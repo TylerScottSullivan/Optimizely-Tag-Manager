@@ -39,7 +39,17 @@ tagSchema.methods.render = function(tags, masters) {
   console.log('[masters]', masters)
   if (tags) {
      filtered = tags.filter(function(item) {
-      return this.callbacks.includes(item.name)
+       if (item.name.includes('custom')) {
+         for(var i = 0; i < this.callbacks.length; i++) {
+           if (this.callbacks[i].includes('custom')) {
+             return true;
+           }
+         }
+         return false;
+       }
+       else {
+         return this.callbacks.includes(item.name)
+       }
     }.bind(this))
   }
   console.log('[filtered]', filtered)
@@ -53,7 +63,12 @@ tagSchema.methods.render = function(tags, masters) {
   console.log('innerCallback2', innerCallback)
 
   var master = masters.filter(function(item) {
-    return this.name === item.name
+    if (this.name.includes('custom')) {
+      return 'custom' === item.name;
+    }
+    else {
+      return this.name === item.name
+    }
   }.bind(this))[0]
   console.log('myMaster', master)
 
@@ -74,7 +89,7 @@ tagSchema.methods.render = function(tags, masters) {
   handleBarsFields['callback'] = innerCallback;
   console.log('[handleBarsFields after callback addition]', handleBarsFields)
 
-  if (this.name === 'custom') {
+  if (this.name.includes('custom')) {
     var template = Handlebars.compile(this.template);
   } else {
     var template = Handlebars.compile(master.template);
