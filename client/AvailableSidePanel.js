@@ -13,6 +13,8 @@ var AvailableSidePanel = React.createClass({
         var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
         for (var i = 0; i < data.length; i ++) {
           var d = data[i].split(',');
+
+          // THIS CODE IS COPIED IN
           if (d[0] === 'inHeader') {
             options['inHeader'].push(d[1])
           } else if (d[0] === 'onDocumentReady') {
@@ -21,12 +23,12 @@ var AvailableSidePanel = React.createClass({
             options['onTrigger'].push(d[1])
           } else if (d[0] === 'onEvent') {
             options['onEvent'].push(d[1])
-          } else if (d[0] === 'OnPageLoad') {
+          } else if (d[0] === 'onPageLoad') {
             options['onPageLoad'].push(d[1])
           }
         }
         console.log('optionssss', options)
-        this.setState({triggerOptions: options, trackingTrigger: data[0], specificTrigger: options[data[0].split(',')[0]]})
+        this.setState({triggerOptions: options, trackingTrigger: 'inHeader', specificTrigger: options[data[0].split(',')[0]]})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
@@ -36,7 +38,7 @@ var AvailableSidePanel = React.createClass({
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
-      trackingTrigger: "default",
+      trackingTrigger: "inHeader",
       active: true,
       errors: {},
       triggerOptions: [],

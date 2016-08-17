@@ -50,6 +50,7 @@ var MyTagsPage = React.createClass({
 
   // selects a row and passes that row information into the rendered sidepanel
   onSelect: function(item, rowinfo) {
+    console.log('this is what gets selected', rowinfo)
     this.setState({
       sidePanel: rowinfo, //this is an object
       sidePanelIndex: item,
@@ -68,7 +69,7 @@ var MyTagsPage = React.createClass({
 
     // loops through all tags (downloadedProject) and master templates
     // combines objects based off of matching name fields in order
-    // to fully display information correctly 
+    // to fully display information correctly
 
     var currentInfo = this.state.sidePanel;
     var currentIndex = this.state.sidePanelIndex;
@@ -83,6 +84,7 @@ var MyTagsPage = React.createClass({
         }
       }
     };
+    console.log('this is the full info i am passing to mysidePanel', currentInfo)
 
     var splicedArray = newArray;
 
@@ -92,13 +94,13 @@ var MyTagsPage = React.createClass({
         <MyTableContent splicedArray={splicedArray} onSelect={this.onSelect} {...this.props} />
         {/*passes updated tag information, deleted tag information, and all other info
          to be displayed correctly in sidepanel after various button presses*/}
-        <MySidePanel 
-          info={currentInfo} 
-          index={currentIndex} 
-          downloaded={this.state.downloadedProject} 
-          splicedArray={splicedArray} 
-          deleted={this.state.sidePanelDeleted} 
-          onDelete={this.onDelete} 
+        <MySidePanel
+          info={currentInfo}
+          index={currentIndex}
+          downloaded={this.state.downloadedProject}
+          splicedArray={splicedArray}
+          deleted={this.state.sidePanelDeleted}
+          onDelete={this.onDelete}
           {...this.props}
         />
       </div>

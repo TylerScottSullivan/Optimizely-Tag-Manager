@@ -114,7 +114,8 @@ var NewTemplate = React.createClass({
     }
   },
 
-  onAddField: function() {
+  onAddField: function(e) {
+    e.preventDefault()
     var fields = this.state.fields.concat({
       tokenName: '',
       tokenDescription: '',
@@ -125,7 +126,8 @@ var NewTemplate = React.createClass({
     })
   },
 
-  onDeleteField: function(i) {
+  onDeleteField: function(i, e) {
+    e.preventDefault()
     this.state.fields.splice(i, 1);
     this.setState({
       fields: this.state.fields

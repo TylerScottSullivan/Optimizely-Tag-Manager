@@ -38,12 +38,12 @@ var SearchBar = React.createClass({
             options['onTrigger'].push(d[1])
           } else if (d[0] === 'onEvent') {
             options['onEvent'].push(d[1])
-          } else if (d[0] === 'OnPageLoad') {
+          } else if (d[0] === 'onPageLoad') {
             options['onPageLoad'].push(d[1])
           }
         }
         console.log('optionssss', options)
-        this.setState({triggerOptions: options, trackingTrigger: data[0], specificTrigger: options[data[0].split(',')[0]]})
+        this.setState({triggerOptions: options, trackingTrigger: 'inHeader', specificTrigger: options[data[0].split(',')[0]]})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
@@ -57,7 +57,7 @@ var SearchBar = React.createClass({
       tagDescription: '',
       template: '',
       trackingTrigger: 'inHeader',
-      active: false,
+      active: true,
       errors: {},
       triggerOptions: [],
       specificTrigger: null
@@ -98,7 +98,7 @@ var SearchBar = React.createClass({
   		tagDescription: '',
  			template: '',
   		trackingTrigger: 'inHeader',
-  		active: false,
+  		active: true,
   		errors: {}
     });
   },
@@ -110,14 +110,14 @@ var SearchBar = React.createClass({
 
     //sets up info correctly to be handled on backend
     data.active = this.state.active;
-
+    var index = Math.floor(Math.random()*1000);
     this.setState({
   		name: 'custom',
   		displayName: '',
   		tagDescription: '',
   		template: '',
   		trackingTrigger: 'inHeader',
-  		active: false,
+  		active: true,
   		errors: {},
   		triggerOptions: []
     });
@@ -333,15 +333,15 @@ var SearchBar = React.createClass({
                 {/* togglels between enabled and disabled buttons */}
   	    		    <div className="flex togglebutton">
                   {this.state.active === true ?
-  	         			  <div>
-  	            			<button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
-  	            			<button className="button" name='active' onClick={this.onChange}>Disabled</button>
-  	          			</div>
+                    <div>
+                      <button className="button button--highlight" name='active' onClick={this.onChange}>Enabled</button>
+                      <button className="button" name='active' onClick={this.onChange}>Disabled</button>
+                    </div>
   	       				:
-  	          			<div>
-  	            			<button className="button" name='active' onClick={this.onChange}>Enabled</button>
-  	            			<button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
-  	          			</div>
+                  <div>
+                    <button className="button" name='active' onClick={this.onChange}>Enabled</button>
+                    <button className="button button--highlight" name='active' onClick={this.onChange}>Disabled</button>
+                  </div>
   	        		  }
   	    		    </div>
   	    		  </div>
