@@ -5,11 +5,13 @@ var Project = require('./models/models').Project;
 var Master = require('./models/models').Master;
 var Tag = require('./models/models').Tag;
 var rp = require('request-promise');
-var snippets = require('./snippets')
-var findOrCreate = require('mongoose-findorcreate')
-var Handlebars = require('handlebars')
+var snippets = require('./snippets');
+var findOrCreate = require('mongoose-findorcreate');
+var Handlebars = require('handlebars');
 
-module.exports = {
+
+
+var utils = {
   body: null,
   project: null,
   tagid: null,
@@ -17,41 +19,48 @@ module.exports = {
   oldCallback: null,
   findMaster: function(project) {
     this.project = project;
-    return Master.find()
+    return Master.find();
   },
   findTagSetMasters: function(masters) {
     this.masters = masters;
-    return Tag.findOne({"name": this.body.name, "projectId": this.project.projectId})
+    return Tag.findOne({"name": this.body.name, "projectId": this.project.projectId});
   },
   createTag: function(tag) {
     //storing all masters
     if (!tag || tag.name === "custom") {
       var fields = [];
       var master = this.masters.filter(function(item) {
-
-        return item.name === this.body.name
+        return item.name === this.body.name;
       }.bind(this))[0];
 
       for(var i = 0; i < master.tokens.length; i++) {
         fields.push({
-          'name': master.tokens[i]['tokenName'],
-          'description': master.tokens[i]['description'],
-          'value': this.body[master.tokens[i]['tokenName']]
-        })
-      };
+          'name': master.tokens[i].tokenName,
+          'description': master.tokens[i].description,
+          'value': this.body[master.tokens[i].tokenName]
+        });
+      }
+
       //CHECKS FOR PROPERLY FORMATTED DATA
       if (!this.body.trackingTrigger) {
-        throw "Improperly formatted data";
+        throw "Improperly formatted data: tracking triggers must be formatted trackingTriggerType,trackingTrigger";
       }
       if (this.body.trackingTrigger.indexOf(',') === -1) {
-        throw "Improperly formatted data";
+        throw "Improperly formatted data: tracking triggers must be formatted trackingTriggerType,trackingTrigger";
+      }
+      if (this.body.name.indexOf('*') !== -1) {
+        throw "Improperly formatted data: name cannot contain reserved chars";
+      }
+      if (this.body.name.indexOf(' ') !== -1) {
+        throw "Improperly formated data: name cannot include spaces";
       }
       //CHECKS FOR PROPERLY FORMATTED DATA
-      trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
-      trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
+
+      var trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
+      var trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','));
       displayName = this.body.displayName || master.displayName;
 
-      console.log("TRACKING TRIGGERS", trackingTrigger, trackingTriggerType);
+      // console.log("TRACKING TRIGGERS", trackingTrigger, trackingTriggerType);
       t = new Tag({
         name: master.name,
         displayName: displayName,
@@ -65,12 +74,12 @@ module.exports = {
         hasCallback: master.hasCallback,
         pageName: this.body.pageName,
         eventName: this.body.eventName,
-        customId: this.body.customId
-      })
-      return t.save()
+        customId: "*"+this.body.customId
+      });
+      return t.save();
     }
     else {
-      throw "Cannot create a tag twice"
+      throw "Cannot create a tag twice";
     }
   },
   updateProject: function(tag) {
@@ -79,45 +88,51 @@ module.exports = {
       if(tag.trackingTriggerType !== "onDocumentReady" && tag.trackingTriggerType !== "inHeader" && tag.trackingTriggerType !== "onPageLoad" && tag.trackingTriggerType !== "onEvent") {
         Tag.findOne({"name": tag.trackingTrigger})
            .then(function(trackerTag) {
-              trackerTag.callbacks.push(tag.name)
-              return trackerTag.save()
+              if (tag.name === "custom") {
+                trackerTag.callbacks.push(tag.customId);
+              }
+              else {
+                trackerTag.callbacks.push(tag.name);
+              }
+              return trackerTag.save();
             }.bind(this))
-           .then(()=>resolve(this.project.save()))
-           .catch(err=>reject(err))
+           .then(() => resolve(this.project.save()) )
+           .catch(err => reject(err) );
       }
       else {
-        resolve(this.project.save())
-        }
-      }.bind(this))
+        resolve(this.project.save());
+      }
+    }.bind(this));
   },
   populateProject: function(updatedProject) {
-    return updatedProject.populate({path: 'tags'}).execPopulate()
+    return updatedProject.populate({path: 'tags'}).execPopulate();
   },
   getJavascript: function(populatedProject) {
     this.project = populatedProject;
     var tags = this.project.tags;
 
-//do everything separately
-
     tags = tags.filter(function(item) {
       return item.active === true;
-    })
+    });
 
-    //wrap page type things
+    //separate by category-- will be wrapped differently once rendered
     var inHeaders = tags.filter(function(item){
-                    return item.trackingTriggerType === "inHeader";
-                  })
+      return item.trackingTriggerType === "inHeader";
+    });
+
     var onDocumentReadys = tags.filter(function(item){
-                              return item.trackingTriggerType === "onDocumentReady";
-                            })
+      return item.trackingTriggerType === "onDocumentReady";
+    });
+
     var onPageLoads = tags.filter(function(item) {
-                                  return item.trackingTriggerType === "onPageLoad"
-                              })
+      return item.trackingTriggerType === "onPageLoad";
+    });
     var onEvents = tags.filter(function(item) {
-                                  return item.trackingTriggerType === "onEvent"
-                                })
+      return item.trackingTriggerType === "onEvent";
+    });
+
     //BUILDING IN HEADER JAVASCRIPT
-    console.log('onEvents', onEvents)
+    // console.log('onEvents', onEvents);
     var inHeaderJavascript = '';
     for(var i = 0; i < inHeaders.length; i++) {
       //call render for each inHeader
@@ -136,14 +151,14 @@ module.exports = {
     for(var i = 0; i < onEvents.length; i++) {
       eventMarker = true;
       onEventsObject[onEvents[i].trackingTrigger] = onEvents[i].render(tags, this.masters);
-      console.log('[onEventsObject]', onEventsObject);
+      // console.log('[onEventsObject]', onEventsObject);
     }
 
 
-    console.log("onEventsObject", onEventsObject)
+    // console.log("onEventsObject", onEventsObject);
     onEventsObjectString = JSON.stringify(onEventsObject);
-    onEventsObjectString = "var onEventsObjectFunction = function() {return " + onEventsObjectString + ";};"
-    console.log("onEventsObjectString", onEventsObjectString);
+    onEventsObjectString = "var onEventsObjectFunction = function() {return " + onEventsObjectString + ";};";
+    // console.log("onEventsObjectString", onEventsObjectString);
 
     //BUILDING ON PAGE OBJECT
     var onPageLoadObject = {};
@@ -151,22 +166,22 @@ module.exports = {
     for(var i = 0; i < onPageLoads.length; i++) {
       pageMarker = true;
       onPageLoadObject[onPageLoads[i].trackingTrigger] = onPageLoads[i].render(tags, this.masters);
-      console.log('[onPageLoadsObject]', onPageLoadObject);
+      // console.log('[onPageLoadsObject]', onPageLoadObject);
     }
     onPageLoadsObjectString = JSON.stringify(onPageLoadObject);
-    onPageLoadsObjectString = "var onPageLoadsObjectFunction = function() {return " + onPageLoadsObjectString + ";};"
+    onPageLoadsObjectString = "var onPageLoadsObjectFunction = function() {return " + onPageLoadsObjectString + ";};";
 
 
     var onSpecificEventJavascript = '';
     if (eventMarker || pageMarker) {
-      onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');if(data.data.type === 'pageview'){console.log('apiName',data.data.apiName);eval(onPageLoadsObjectFunction()[data.data.apiName]);}else{eval(onEventsObjectFunction()[data.data.apiName]);};}});"
-      onSpecificEventJavascript = '$(document).ready(function(){' +onSpecificEventJavascript+ '});'
+      onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');if(data.data.type === 'pageview'){console.log('apiName',data.data.apiName);eval(onPageLoadsObjectFunction()[data.data.apiName]);}else{eval(onEventsObjectFunction()[data.data.apiName]);};}});";
+      onSpecificEventJavascript = '$(document).ready(function(){' +onSpecificEventJavascript+ '});';
     }
 
-    console.log("onSpecificEventJavascript", onSpecificEventJavascript)
+    // console.log("onSpecificEventJavascript", onSpecificEventJavascript);
     // console.log("marker", marker)
     //wrap onDocumentReadyJavascript in an on document ready
-    onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});'
+    onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});';
 
 
     //combine built javascript
@@ -175,13 +190,13 @@ module.exports = {
     //getting original Javascript sections
     var token = process.env.API_TOKEN;
     return rp({
-                     uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
-                     method: 'GET',
-                     headers: {
-                       "Token": token,
-                       "Content-Type": "application/json"
-                     }
-     })
+      uri: "https://www.optimizelyapis.com/experiment/v1/projects/" + this.project.projectId,
+      method: 'GET',
+      headers: {
+        "Token": token,
+        "Content-Type": "application/json"
+      }
+    });
   },
   buildJavascript: function(response) {
     var j = JSON.parse(response).project_javascript;
@@ -189,7 +204,7 @@ module.exports = {
 
     //get start section
     originalJavascriptStartSectionIndex = j.indexOf('//--------------------HorizonsJavascriptStart--------------------');
-    var originalJavascriptStartSection = ''
+    var originalJavascriptStartSection = '';
     if (originalJavascriptStartSectionIndex !== -1) {
       originalJavascriptStartSection = j.slice(0, originalJavascriptStartSectionIndex);
     }
@@ -198,7 +213,7 @@ module.exports = {
     originalJavascriptEndSectionIndex = j.indexOf('\n//--------------------HorizonsJavascriptEnd--------------------') + 64;
     var originalJavascriptEndSection = '';
     if (originalJavascriptEndSectionIndex !== -1) {
-      originalJavascriptEndSection = j.slice(originalJavascriptEndSectionIndex)
+      originalJavascriptEndSection = j.slice(originalJavascriptEndSectionIndex);
     }
 
     //add our javascript piece to the originalJavascriptStartSection
@@ -226,7 +241,12 @@ module.exports = {
     }
     //get names of options
     this.tagNames = tags.map(function(item) {
-      return "onTrigger," + item.name;
+      if (item.name === 'custom') {
+        return "onTrigger," + item.customId;
+      }
+      else {
+        return "onTrigger," + item.name;
+      }
     });
 
 
@@ -300,31 +320,39 @@ module.exports = {
     return Tag.findById(this.tagid)
   },
   updateTag: function(tag) {
-    console.log('[tag in updateTag]', tag)
-    console.log('[masters in updateTag]', this.masters)
+    console.log("tag.name", tag.name)
+    // console.log('[tag in updateTag]', tag)
+    // console.log('[masters in updateTag]', this.masters)
     var master = this.masters.filter(function(item) {
-      return item.name === tag.name
+      // console.log("ITEM>NAME", item, item.name, "TAG>NAME", tag, tag.name)
+      return item.name === tag.name;
     }.bind(this))[0];
     var fields = [];
     for(var i = 0; i < master.tokens.length; i++) {
       fields.push({'name': master.tokens[i]['tokenName'], 'description': master.tokens[i]['description'], 'value': this.body[master.tokens[i]['tokenName']]})
     }
-    trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
-    trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
-
+    var newTrackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
+    var newTrackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
+    // console.log("HELLOOOO LOOK", this.body.trackingTrigger)
+    // console.log("HELLLLOOO LOOK", newTrackingTrigger);
+    // console.log("HELLLLOOO LOOK", newTrackingTriggerType);
+    // console.log("MEEEEE", tag.trackingTriggerType);
     if (tag.trackingTriggerType === 'onTrigger') {
+      // console.log('i got in here', tag.trackingTriggerType)
       this.tagid = tag._id;
       this.addCallbacksBool = true;
       this.oldCallback = tag.trackingTrigger;
     }
+    // console.log('nope didnt get in', tag.trackingTriggerType, this.addCallbacksBool)
 
     tag.fields = fields;
     tag.approved = this.body.approved;
-    tag.trackingTrigger = trackingTrigger;
-    tag.trackingTriggerType = trackingTriggerType;
+    tag.trackingTrigger = newTrackingTrigger;
+    tag.trackingTriggerType = newTrackingTriggerType;
     tag.template = this.body.template;
     tag.projectId = this.body.projectId;
     tag.active = this.body.active;
+    console.log("tag.name", tag.name)
     return tag.save();
   },
   chooseCallbackPath: function(tag) {
@@ -344,11 +372,21 @@ module.exports = {
         }
         else {
           console.log('[stage] dont add')
-          project = this.getProject.bind(this, tag)()
-          project.exec(function(err, p) {
-            if (err) reject(err);
-            resolve(p);
-          })
+          Tag.find({"projectId": tag.projectId})
+             .then(this.addCallbacks.bind(this))
+             .then(this.getProject.bind(this))
+             .then((response)=>resolve(response))
+             .catch(err=>reject(err))
+          //
+          // this.addCallbacks()
+          //     .then(function() {
+          //       project = this.getProject.bind(this, tag)()
+          //       project.exec(function(err, p) {
+          //         if (err) reject(err);
+          //         resolve(p);
+          //       })
+          //     })
+
           // resolve(project);
         }
       }.bind(this))
@@ -357,15 +395,34 @@ module.exports = {
     console.log('[stage] removeCallbacks')
     this.tags = tags;
     var myTag = tags.filter(function(item) {
+      console.log("ME", item._id.toString(), this.tagid.toString());
       return item._id.toString() === this.tagid.toString();
     }.bind(this))[0];
 
     var tagWithCallback = tags.filter(function(item) {
-      return item.callbacks.includes(myTag.name)
+      if (myTag.name === "custom") {
+        return item.callbacks.map(function(el) {
+          return el.slice(0,1)
+        }).includes("*")
+      }
+      else {
+        return item.callbacks.includes(myTag.name)
+      }
+      // if (myTag.name === "custom") {
+      //   for (var i = 0; i<item.callbacks.length;i++) {
+      //     if (item.callbacks[i].slice(0,1) === "*") {
+      //       return true;
+      //     }
+      //   }
+      // }
     })[0];
 
+    var temp = myTag.name;
     if (myTag && tagWithCallback) {
-      var index = tagWithCallback.callbacks.indexOf(myTag.name);
+      if (myTag.name === 'custom') {
+        temp = myTag.customId;
+      }
+      var index = tagWithCallback.callbacks.indexOf(temp);
 
       //deleting 1 item at the index
       tagWithCallback.callbacks.splice(index, 1);
@@ -375,18 +432,35 @@ module.exports = {
       return;
     }
   },
-  addCallbacks: function() {
-    console.log('[stage] addCallbacks function')
+  addCallbacks: function(tags) {
+    //checking for if tags is an object or an array
+    if (tags && tags.hasOwnProperty('length')) {
+      this.tags = tags;
+    }
+    console.log('[stage] addCallbacks function');
     var myTag = this.tags.filter(function(item) {
       return item._id.toString() === this.tagid.toString();
     }.bind(this))[0];
+    console.log("MY TAG", myTag)
 
     var parentTag = this.tags.filter(function(item) {
-      return item.name === myTag.trackingTrigger;
+      if (item.name === "custom") {
+        return (item.customId === myTag.trackingTrigger);
+      }
+      else {
+        console.log("[items]", item.name, myTag.trackingTrigger);
+        return item.name === myTag.trackingTrigger;
+      }
     })[0];
+    console.log("[parentTag]", parentTag)
+
+    var temp = myTag.name;
+    if (myTag.name === 'custom') {
+      temp = myTag.customId;
+    }
 
     if(parentTag) {
-      parentTag.callbacks.push(myTag.name);
+      parentTag.callbacks.push(temp);
       return parentTag.save();
     } else {
       return myTag;
@@ -396,12 +470,13 @@ module.exports = {
     return Tag.remove({"_id": this.tagid});
   },
   findAllMasters: function() {
-    return Master.find('approved': true)
+    return Master.find({'approved': true});
   },
   setAllMasters: function(masters) {
     this.masters = masters;
     return;
   }
+  //TODO: if we do getParents -- we need to account for custom in .name
   // restrictOptions: function(tags) {
 
   // },
@@ -419,3 +494,9 @@ module.exports = {
   //   return list;
   // }
 }
+class Utils {
+  constructor() {
+    return utils;
+  }
+}
+module.exports = Utils;

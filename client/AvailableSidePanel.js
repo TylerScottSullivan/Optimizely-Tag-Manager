@@ -48,11 +48,12 @@ var AvailableSidePanel = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    nextProps.info.tokens = nextProps.info.tokens.map((token) => {
-      return Object.assign({}, token, {value: ''})
-    })
     // resets information on sidepanel when new row is clicked
-    if (nextProps.info) {
+    if (Object.keys(nextProps.info).length > 0) {
+      console.log("nextProps", nextProps)
+      nextProps.info.tokens = nextProps.info.tokens.map((token) => {
+        return Object.assign({}, token, {value: ''})
+      })
       this.setState({
         info: nextProps.info,
         tokens: nextProps.info.tokens
