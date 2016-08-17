@@ -39,6 +39,14 @@ module.exports = {
           'value': this.body[master.tokens[i]['tokenName']]
         })
       };
+      //CHECKS FOR PROPERLY FORMATTED DATA
+      if (!this.body.trackingTrigger) {
+        throw "Improperly formatted data";
+      }
+      if (this.body.trackingTrigger.indexOf(',') === -1) {
+        throw "Improperly formatted data";
+      }
+      //CHECKS FOR PROPERLY FORMATTED DATA
       trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
       trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
       displayName = this.body.displayName || master.displayName;
@@ -126,7 +134,7 @@ module.exports = {
     var onEventsObject = {};
     var eventMarker = false;
     for(var i = 0; i < onEvents.length; i++) {
-      marker = true;
+      eventMarker = true;
       onEventsObject[onEvents[i].trackingTrigger] = onEvents[i].render(tags, this.masters);
       console.log('[onEventsObject]', onEventsObject);
     }
@@ -303,7 +311,8 @@ module.exports = {
     }
     trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
     trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','))
-    if (trackingTriggerType === 'onTrigger') {
+
+    if (tag.trackingTriggerType === 'onTrigger') {
       this.tagid = tag._id;
       this.addCallbacksBool = true;
       this.oldCallback = tag.trackingTrigger;
@@ -322,8 +331,10 @@ module.exports = {
     //if they changed the trigger to be another snippet-- change the
     //callbacks of their current parent (if snippet), change the callbacks of their future
     //parent
+    console.log('[stage] inside chooseCallbackPath')
       return new Promise(function(resolve, reject) {
         if(this.addCallbacksBool) {
+          console.log('[stage] addCallbacks')
           Tag.find({"projectId": tag.projectId})
              .then(this.removeCallbacks.bind(this))
              .then(this.addCallbacks.bind(this))
@@ -332,6 +343,7 @@ module.exports = {
              .catch(err=>reject(err))
         }
         else {
+          console.log('[stage] dont add')
           project = this.getProject.bind(this, tag)()
           project.exec(function(err, p) {
             if (err) reject(err);
@@ -342,6 +354,7 @@ module.exports = {
       }.bind(this))
   },
   removeCallbacks: function(tags) {
+    console.log('[stage] removeCallbacks')
     this.tags = tags;
     var myTag = tags.filter(function(item) {
       return item._id.toString() === this.tagid.toString();
@@ -363,6 +376,7 @@ module.exports = {
     }
   },
   addCallbacks: function() {
+    console.log('[stage] addCallbacks function')
     var myTag = this.tags.filter(function(item) {
       return item._id.toString() === this.tagid.toString();
     }.bind(this))[0];
