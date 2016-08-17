@@ -30,6 +30,8 @@ var MySidePanel = React.createClass({
       success: function(data) {
         var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
         for (var i = 0; i < data.length; i ++) {
+
+          // options['inHeader'].push(d[1])
           var d = data[i].split(',');
           if (d[0] === 'inHeader') {
             options['inHeader'].push(d[1])
@@ -39,13 +41,11 @@ var MySidePanel = React.createClass({
             options['onTrigger'].push(d[1])
           } else if (d[0] === 'onEvent') {
             options['onEvent'].push(d[1])
-          } else if (d[0] === 'OnPageLoad') {
+          } else if (d[0] === 'onPageLoad') {
             options['onPageLoad'].push(d[1])
           }
         }
-        console.log('optionssss', options)
         this.setState({triggerOptions: options, trackingTrigger: data[0], specificTrigger: options[data[0].split(',')[0]]})
-        console.log('this is the specific trigger', options[data[0].split(',')[0]]);
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
@@ -87,12 +87,15 @@ var MySidePanel = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     // resets information on sidepanel when new row is clicked
+    console.log('this is the full info', nextProps.info)
     if (nextProps.info) {
       this.setState({
         info: nextProps.info,
         fields: nextProps.info.fields,
         changes: nextProps.info.template,
-        clickUpdate: false
+        clickUpdate: false,
+        trackingTrigger: nextProps.info.trackingTriggerType,
+        specificTrigger: nextProps.info.trackingTrigger
       })
     }
   },
@@ -328,11 +331,12 @@ var MySidePanel = React.createClass({
 
             {/*this renders trigger options, makes selected trigger the initial trigger option rendered*/}
             <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
-              <option value='inHeader' selected> In Header </option>
-              <option value='onDocumentReady'> On Document Ready</option>
-              <option value='onTrigger'> On Trigger </option>
-              <option value='onEvent'> On Event </option>
-              <option value='onPageLoad'> On Page Load </option>
+              {
+                ['inHeader', 'onDocumentReady', 'onTrigger', 'onEvent', 'onPageLoad'].map((item) => {
+                  var selected = (item === this.state.trackingTrigger);
+                  return <option value={item} selected={selected}> {item} </option>
+                })
+              }
             </select>
 
 
