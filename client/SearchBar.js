@@ -18,28 +18,7 @@ const customStyles = {
 };
 
 var SearchBar = React.createClass({
-
-  // gets trigger options with ajax call when component is first rendered
-  getInitialState: function() {
-
-	  return {
-      modalIsOpen: false,
-      name: 'custom',
-      displayName: '',
-      tagDescription: '',
-      template: '',
-      trackingTrigger: 'inHeader',
-      active: true,
-      errors: {},
-      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
-      specificTrigger: null,
-      customId: null
-    };
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    this.setState({trackingTrigger: 'inHeader'})
-    // gets trigger options with ajax call when component is first rendered
+  _reloadOptions: function() {
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
@@ -62,6 +41,29 @@ var SearchBar = React.createClass({
       }
     });
   },
+  // gets trigger options with ajax call when component is first rendered
+  getInitialState: function() {
+    this._reloadOptions();
+	  return {
+      modalIsOpen: false,
+      name: 'custom',
+      displayName: '',
+      tagDescription: '',
+      template: '',
+      trackingTrigger: 'inHeader',
+      active: true,
+      errors: {},
+      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
+      specificTrigger: null,
+      customId: null
+    };
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    this.setState({trackingTrigger: 'inHeader'})
+    // gets trigger options with ajax call when component is first rendered
+    this._reloadOptions();
+  },
 
   // opens modal
   openModal: function() {
@@ -79,16 +81,16 @@ var SearchBar = React.createClass({
   closeModal: function() {
 	  var triggerOptions;
 
-    $.ajax({
-      url: '/options' + window.location.search,
-      type: 'GET',
-      success: function(triggers) {
-        this.setState({triggerOptions: triggers})
-      }.bind(this),
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
+    // $.ajax({
+    //   url: '/options' + window.location.search,
+    //   type: 'GET',
+    //   success: function(triggers) {
+    //     this.setState({triggerOptions: triggers})
+    //   }.bind(this),
+    //   error: function(err) {
+    //     console.error("Err posting", err.toString());
+    //   }
+    // });
 
     this.setState({
       modalIsOpen: false,
