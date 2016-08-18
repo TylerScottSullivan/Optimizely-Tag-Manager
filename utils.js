@@ -320,7 +320,7 @@ var utils = {
     return Tag.findById(this.tagid)
   },
   updateTag: function(tag) {
-    console.log("tag.name", tag.name)
+    // console.log("tag.name", tag.name)
     // console.log('[tag in updateTag]', tag)
     // console.log('[masters in updateTag]', this.masters)
     var master = this.masters.filter(function(item) {
