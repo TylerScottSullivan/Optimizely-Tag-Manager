@@ -2,28 +2,7 @@ var React = require('react');
 var AvailableInputFields = require('./AvailableInputFields');
 
 var AvailableSidePanel = React.createClass({
-
-  getInitialState: function() {
-
-    return {
-      info: this.props.info,
-      tokens: this.props.info.tokens,
-      trackingTrigger: "inHeader",
-      active: true,
-      errors: {},
-      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
-      specificTrigger: null
-    };
-
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-    this.setState({trackingTrigger: 'inHeader'})
-    console.log('receiving props', nextProps)
-    // nextProps.info.tokens = nextProps.info.tokens.map((token) => {
-    //   return Object.assign({}, token, {value: ''})
-    // })
-    // gets trigger options with ajax call when component is first rendered
+  _reloadOptions: function() {
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
@@ -45,6 +24,30 @@ var AvailableSidePanel = React.createClass({
         console.error("Err posting", err.toString());
       }
     });
+  },
+  getInitialState: function() {
+    this._reloadOptions();
+    return {
+      info: this.props.info,
+      tokens: this.props.info.tokens,
+      trackingTrigger: "inHeader",
+      active: true,
+      errors: {},
+      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
+      specificTrigger: null
+    };
+
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+    this._reloadOptions();
+    this.setState({trackingTrigger: 'inHeader'})
+    console.log('receiving props', nextProps)
+    // nextProps.info.tokens = nextProps.info.tokens.map((token) => {
+    //   return Object.assign({}, token, {value: ''})
+    // })
+    // gets trigger options with ajax call when component is first rendered
+
 
     // resets information on sidepanel when new row is clicked
     if (Object.keys(nextProps.info).length > 0) {

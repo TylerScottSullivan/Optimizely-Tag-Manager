@@ -88,6 +88,7 @@ tagSchema.methods.render = function(tags, masters) {
 
   console.log("handleBarsFields", handleBarsFields)
   if (this.name === 'custom') {
+    console.log('custom', this.name, this.template)
     template = Handlebars.compile(this.template);
   } else {
     template = Handlebars.compile(master.template);
