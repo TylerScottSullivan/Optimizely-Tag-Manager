@@ -25,7 +25,7 @@ var SearchBar = React.createClass({
       success: function(data) {
         console.log('get options successful', data);
         var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
-        for (var i = 0; i < data.length; i ++) {
+        for (var i = 0; i < data.length; i++) {
           var d = data[i].split(',');
           for (var option in options) {
             if (d[0] === option) {
@@ -43,7 +43,7 @@ var SearchBar = React.createClass({
   },
   // gets trigger options with ajax call when component is first rendered
   getInitialState: function() {
-    this._reloadOptions();
+    // this._reloadOptions();
 	  return {
       modalIsOpen: false,
       name: 'custom',
