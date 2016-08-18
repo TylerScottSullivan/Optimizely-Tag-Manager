@@ -350,6 +350,7 @@ var utils = {
     tag.trackingTrigger = newTrackingTrigger;
     tag.trackingTriggerType = newTrackingTriggerType;
     if (this.body.template) {
+      console.log("**************HEY THERES A NEW TEMPLATE******************")
       tag.template = this.body.template;
     }
     tag.projectId = this.body.projectId;
@@ -396,6 +397,8 @@ var utils = {
   removeCallbacks: function(tags) {
     console.log('[stage] removeCallbacks')
     this.tags = tags;
+    console.log("________________THIS.TAG________________", tags)
+    console.log("________________THIS.tags________________", tags)
     var myTag = tags.filter(function(item) {
       console.log("ME", item._id.toString(), this.tagid.toString());
       return item._id.toString() === this.tagid.toString();
