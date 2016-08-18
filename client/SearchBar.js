@@ -43,7 +43,7 @@ var SearchBar = React.createClass({
   },
   // gets trigger options with ajax call when component is first rendered
   getInitialState: function() {
-    // this._reloadOptions();
+    this._reloadOptions();
 	  return {
       modalIsOpen: false,
       name: 'custom',

@@ -140,7 +140,7 @@ router.post('/updatetag/:tagid', (req, res, next) => {
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
 
-  console.log("I AM SETTING THE TAG ID HERE ________________________", req.params.tagid)
+  console.log("I AM SETTING THE TAG ID HERE in UPDATE________________________", req.params.tagid)
   Project.findOne({projectId: req.optimizely.current_project})
          .then(utils.findMaster.bind(utils))
          .then(utils.setMaster.bind(utils))
@@ -150,7 +150,7 @@ router.post('/updatetag/:tagid', (req, res, next) => {
          .then(utils.getJavascript.bind(utils))
          .then(utils.buildJavascript.bind(utils))
          .then(function(response) {
-            res.status(200).send("Tag has been updated.")
+            res.status(200).json(utils.tag)
          })
          .catch(function(err) {
            console.log("Error at the end of /update", err)
@@ -209,7 +209,9 @@ router.post('/template', function(req, res, next) {
     checkForType: req.body.checkForType
   })
   m.save(function(err, master) {
-    if (err) console.log(error, "HEyyyyyy got an error");
+    if (err) {
+      next(err);
+    }
     else {
       console.log('saving new template correct', master)
       // res.redirect('/')

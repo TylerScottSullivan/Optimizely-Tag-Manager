@@ -131,7 +131,8 @@ var AvailableSidePanel = React.createClass({
 
   //error handling and changes state for enable/disable and triggers
   onChange: function(e) {
-    //prevents enable/disable buttons from screwing shit up
+    const expandTriggers = ['onTrigger', 'onEvent', 'onPageLoad'];
+    const notExpandTriggers = ['inHeader', 'onDocumentReady'];
     // verbose way of changing enabled/disabled state
     if (e.target.name === "active") {
       if (this.state.active === false) {
@@ -148,6 +149,23 @@ var AvailableSidePanel = React.createClass({
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
       this.setState(newState);
+    }
+
+    var changingCalledOn = e.target.name === "trackingTrigger";
+    var movingToNotExpand = notExpandTriggers.indexOf(e.target.value) > -1;
+    var movingToExpand = expandTriggers.indexOf(e.target.value) > -1;
+
+    if (changingCalledOn) {
+      if (movingToNotExpand) {
+        this.setState({
+          specificTrigger: e.target.value
+        })
+      }
+      else if (movingToExpand) {
+        this.setState({
+          specificTrigger: "Select a trigger"
+        })
+      }
     }
   },
 
@@ -201,7 +219,7 @@ var AvailableSidePanel = React.createClass({
                 <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
               </div>
               <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-                <option value="onDocumentReady" selected disabled>Select a trigger</option>
+                <option selected >Select a trigger</option>
               {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
                 return <option value={trigger}>{trigger}</option>
                 })
@@ -238,10 +256,18 @@ var AvailableSidePanel = React.createClass({
               </div>
             </div>
           :
+            // <div>
+            //   <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
+            // </div>
             <div>
-              <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
+              {this.state.specificTrigger !== "Select a trigger" ?
+               <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button> :
+               <button className="btn-uniform-add button button--highlight" disabled onClick={this.onAddTag}>Add Tag</button>}
             </div>
           }
+
+
+
 
         </div>
       )

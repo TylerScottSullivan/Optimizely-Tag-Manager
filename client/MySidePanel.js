@@ -126,9 +126,10 @@ var MySidePanel = React.createClass({
         type: 'POST',
         data: data,
         success: function(response) {
+          console.log("response", response)
           // updates front end row and sidepanel with newly updated tag
           this.props.onDownload(this.props.splicedArray.slice(0, this.props.index).concat(
-              Object.assign({}, this.props.splicedArray[this.props.index], data), this.props.splicedArray.slice(this.props.index + 1)))
+              Object.assign({}, this.props.splicedArray[this.props.index], response), this.props.splicedArray.slice(this.props.index + 1)))
 
           // sets condition to show updated message
           this.setState({
@@ -178,6 +179,9 @@ var MySidePanel = React.createClass({
     // prevents enable/disable buttons from screwing shit up
     e.preventDefault();
 
+    const expandTriggers = ['onTrigger', 'onEvent', 'onPageLoad'];
+    const notExpandTriggers = ['inHeader', 'onDocumentReady'];
+
     // changes enabled/disabled state
     if (e.target.name === "active") {
       this.setState({info: Object.assign({}, this.state.info, {active: !this.state.info.active})})
@@ -187,6 +191,32 @@ var MySidePanel = React.createClass({
       newState[e.target.name] = e.target.value;
       this.setState(newState);
     }
+
+    var changingCalledOn = e.target.name === "trackingTrigger";
+    var movingToNotExpand = notExpandTriggers.indexOf(e.target.value) > -1;
+    var movingToExpand = expandTriggers.indexOf(e.target.value) > -1;
+
+    if (changingCalledOn) {
+      if (movingToNotExpand) {
+        this.setState({
+          specificTrigger: e.target.value
+        })
+      }
+      else if (movingToExpand) {
+        this.setState({
+          specificTrigger: "Select a trigger"
+        })
+      }
+    }
+
+    // if (e.target.name === "trackingTrigger" && expandTriggers.indexOf(e.target.value) > -1) {
+    //   if (notExpandTriggers.indexOf(this.state.specificTrigger) > -1) {
+    //     console.log('gh');
+    //     this.setState({
+    //       specificTrigger: "Select a trigger"
+    //     })
+    //   }
+    // }
   },
 
   // changes code editor code (i think) // Mojia?
@@ -209,6 +239,7 @@ var MySidePanel = React.createClass({
     // this function combines the tokens property (from masters with description information
     // with the fields property (which has the value) in order to properly display information
     // in the side panel
+    var splicedTokenField = [];
     if (this.props.info.fields && this.props.info.tokens) {
 
       var newTokenField = [];
@@ -221,7 +252,7 @@ var MySidePanel = React.createClass({
           }
         }
       };
-      var splicedTokenField = newTokenField;
+      splicedTokenField = newTokenField;
     }
 
     //if the tag gets deleted, renders this notification
@@ -340,7 +371,7 @@ var MySidePanel = React.createClass({
                 </div>
 
                 <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-                  <option selected disabled>Select a trigger</option>
+                  <option selected>Select a trigger</option>
                 {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
                   return (trigger === this.state.specificTrigger) ? <option selected value={trigger}>{trigger}</option> : <option value={trigger}>{trigger}</option>
                   })
@@ -367,7 +398,9 @@ var MySidePanel = React.createClass({
             </div>
 
             <div>
-              <button className="btn-uniform-add button button--highlight" onClick={this.onUpdate}>Update Tag</button>
+              {this.state.specificTrigger !== "Select a trigger" ?
+               <button className="btn-uniform-add button button--highlight" onClick={this.onUpdate}>Update Tag</button> :
+               <button className="btn-uniform-add button button--highlight" disabled onClick={this.onUpdate}>Update Tag</button>}
             </div>
             <div>
               <button className="btn-uniform-del button button--highlight" onClick={this.onDelete}>Delete</button>

@@ -27,7 +27,7 @@ var utils = {
     return Tag.findOne({"name": this.body.name, "projectId": this.project.projectId});
   },
   createTag: function(tag) {
-    //storing all masters
+    //only create if tag does not exist
     if (!tag || tag.name === "custom") {
       var fields = [];
       var master = this.masters.filter(function(item) {
@@ -58,6 +58,7 @@ var utils = {
       }
       //CHECKS FOR PROPERLY FORMATTED DATA
 
+      //req.body.trackingTrigger is recieved [trackingTrigger],[trackingTriggerType]
       var trackingTrigger = this.body.trackingTrigger.slice(this.body.trackingTrigger.indexOf(',') + 1);
       var trackingTriggerType = this.body.trackingTrigger.slice(0, this.body.trackingTrigger.indexOf(','));
       displayName = this.body.displayName || master.displayName;
@@ -88,7 +89,8 @@ var utils = {
     this.tag = tag;
     this.project.tags.push(tag._id);
     return new Promise(function(resolve, reject) {
-      if(tag.trackingTriggerType !== "onDocumentReady" && tag.trackingTriggerType !== "inHeader" && tag.trackingTriggerType !== "onPageLoad" && tag.trackingTriggerType !== "onEvent") {
+      //check if need to add callbacks to any tags
+      if(tag.trackingTriggerType === "onTrigger") {
         Tag.findOne({"name": tag.trackingTrigger})
            .then(function(trackerTag) {
               if (tag.name === "custom") {
@@ -118,7 +120,7 @@ var utils = {
       return item.active === true;
     });
 
-    //separate by category-- will be wrapped differently once rendered
+    //separate by category, as different tag types are wrapped differently post render
     var inHeaders = tags.filter(function(item){
       return item.trackingTriggerType === "inHeader";
     });
@@ -147,6 +149,8 @@ var utils = {
       //TODO: wrap this in onDocumentReady here, not in function
       onDocumentReadyJavascript += onDocumentReadys[i].render(tags, this.masters);
     }
+    //wrap in document.ready
+    onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});';
 
     //BUILDING ON EVENT OBJECT
     var onEventsObject = {};
@@ -174,17 +178,13 @@ var utils = {
     onPageLoadsObjectString = JSON.stringify(onPageLoadObject);
     onPageLoadsObjectString = "var onPageLoadsObjectFunction = function() {return " + onPageLoadsObjectString + ";};";
 
-
+    //BUILDING JAVASCRIPT FOR PAGES AND EVENTS
     var onSpecificEventJavascript = '';
     if (eventMarker || pageMarker) {
       onSpecificEventJavascript = "window.optimizely.push({type: 'addListener',filter: {type: 'analytics',name: 'trackEvent',},handler: function(data) {console.log('Page', data.name, 'was activated.');if(data.data.type === 'pageview'){console.log('apiName',data.data.apiName);eval(onPageLoadsObjectFunction()[data.data.apiName]);}else{eval(onEventsObjectFunction()[data.data.apiName]);};}});";
       onSpecificEventJavascript = '$(document).ready(function(){' +onSpecificEventJavascript+ '});';
     }
 
-    // console.log("onSpecificEventJavascript", onSpecificEventJavascript);
-    // console.log("marker", marker)
-    //wrap onDocumentReadyJavascript in an on document ready
-    onDocumentReadyJavascript = '$(document).ready(function(){' +onDocumentReadyJavascript+ '});';
 
 
     //combine built javascript
@@ -202,6 +202,9 @@ var utils = {
     });
   },
   buildJavascript: function(response) {
+    if (!response) {
+      response = "{project_javascript: ''}";
+    }
     var j = JSON.parse(response).project_javascript;
 
 
@@ -232,16 +235,17 @@ var utils = {
            "Token": token,
            "Content-Type": "application/json"
          }
-       })
+       });
   },
   getTagOptions: function(project) {
     this.project = project;
     return Tag.find({'hasCallback': true, 'projectId': this.project.projectId, "active": true});
   },
   getOptions: function(tags) {
-    if (tags.length === 0) {
-      this.tagNames = ['onTrigger,inHeader', 'onTrigger,onDocumentReady'];
-    }
+    //TODO: uncomment if error
+    // if (tags.length === 0) {
+    //   this.tagNames = ['inHeader,inHeader', 'onDocumentReady,onDocumentReady'];
+    // }
     //get names of options
     this.tagNames = tags.map(function(item) {
       if (item.name === 'custom') {
@@ -260,7 +264,7 @@ var utils = {
     //save current tags
     this.tags = tags;
 
-    //make call to optimizely for all pages associated with the id
+    //make call to optimizely for all events associated with the id
     var token = process.env.API_TOKEN;
     return rp({
          uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
@@ -276,7 +280,10 @@ var utils = {
     if (!events) {
       events = "[]";
     }
+    //saves events
     this.events = events;
+
+    //makes call for all pages associated with project
     var token = process.env.API_TOKEN;
     return rp({
          url: "https://www.optimizelyapis.com/v2/pages?project_id=" + this.body.projectId,
@@ -362,6 +369,9 @@ var utils = {
     return tag.save();
   },
   chooseCallbackPath: function(tag) {
+    //saving the tag to send back to client side at end of chain
+    this.tag = tag;
+
     //if they changed the trigger to be another snippet-- change the
     //callbacks of their current parent (if snippet), change the callbacks of their future
     //parent
@@ -377,31 +387,20 @@ var utils = {
              .catch(err=>reject(err))
         }
         else {
-          console.log('[stage] dont add')
+          console.log('[stage] dont add');
           Tag.find({"projectId": tag.projectId})
              .then(this.addCallbacks.bind(this))
              .then(this.getProject.bind(this))
              .then((response)=>resolve(response))
-             .catch(err=>reject(err))
-          //
-          // this.addCallbacks()
-          //     .then(function() {
-          //       project = this.getProject.bind(this, tag)()
-          //       project.exec(function(err, p) {
-          //         if (err) reject(err);
-          //         resolve(p);
-          //       })
-          //     })
-
-          // resolve(project);
+             .catch(err=>reject(err));
         }
-      }.bind(this))
+      }.bind(this));
   },
   removeCallbacks: function(tags) {
-    console.log('[stage] removeCallbacks')
+    console.log('[stage] removeCallbacks');
     this.tags = tags;
-    console.log("________________THIS.TAG________________", tags)
-    console.log("________________THIS.tags________________", tags)
+    console.log("________________THIS.TAG________________", tags);
+    console.log("________________THIS.tags________________", tags);
     var myTag = tags.filter(function(item) {
       console.log("ME", item._id.toString(), this.tagid.toString());
       return item._id.toString() === this.tagid.toString();
@@ -410,19 +409,12 @@ var utils = {
     var tagWithCallback = tags.filter(function(item) {
       if (myTag.name === "custom") {
         return item.callbacks.map(function(el) {
-          return el.slice(0,1)
-        }).includes("*")
+          return el.slice(0,1);
+        }).includes("*");
       }
       else {
-        return item.callbacks.includes(myTag.name)
+        return item.callbacks.includes(myTag.name);
       }
-      // if (myTag.name === "custom") {
-      //   for (var i = 0; i<item.callbacks.length;i++) {
-      //     if (item.callbacks[i].slice(0,1) === "*") {
-      //       return true;
-      //     }
-      //   }
-      // }
     })[0];
 
     var temp = myTag.name;
