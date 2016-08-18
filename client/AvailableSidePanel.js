@@ -20,9 +20,9 @@ var AvailableSidePanel = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     this.setState({trackingTrigger: 'inHeader'})
     console.log('receiving props', nextProps)
-    nextProps.info.tokens = nextProps.info.tokens.map((token) => {
-      return Object.assign({}, token, {value: ''})
-    })
+    // nextProps.info.tokens = nextProps.info.tokens.map((token) => {
+    //   return Object.assign({}, token, {value: ''})
+    // })
     // gets trigger options with ajax call when component is first rendered
     $.ajax({
       url: '/options' + window.location.search,
@@ -45,8 +45,13 @@ var AvailableSidePanel = React.createClass({
         console.error("Err posting", err.toString());
       }
     });
+
     // resets information on sidepanel when new row is clicked
-    if (nextProps.info) {
+    if (Object.keys(nextProps.info).length > 0) {
+      console.log("nextProps", nextProps)
+      nextProps.info.tokens = nextProps.info.tokens.map((token) => {
+        return Object.assign({}, token, {value: ''})
+      })
       this.setState({
         info: nextProps.info,
         tokens: nextProps.info.tokens

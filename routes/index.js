@@ -5,8 +5,9 @@ var Project = require('../models/models').Project;
 var Master = require('../models/models').Master;
 var Tag = require('../models/models').Tag;
 var request = require('request-promise');
-var snippets = require('../snippets')
-var findOrCreate = require('mongoose-findorcreate')
+var snippets = require('../snippets');
+var findOrCreate = require('mongoose-findorcreate');
+var Utils = require('../utils');
 
 router.use(function(req, res, next) {
   //getting the signedRequest from Optimizely
@@ -21,21 +22,31 @@ router.use(function(req, res, next) {
 });
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
+  Project.findOrCreate({'projectId': req.optimizely.current_project},
+                       {'accountId': req.optimizely.current_account,
+                       'tags': [],
+                       'projectId': req.optimizely.current_project})
+          .then(function(response) {
+            res.render('index');
+          })
+          .catch(function(err) {
+            console.log("err in line 33 of index.js", err);
+            next(err);
+          });
 });
 
 router.get('/request', function(req, res, next) {
-  res.render('request')
+  res.render('request');
 });
 
 router.post('/request', function(req, res, next) {
-  var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription}
+  var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription};
   var t = new Tag({
     name: req.body.type,
     tagDescription: req.body.tagDescription,
     fields: fields,
     custom: req.body.snippet
-  })
+  });
   t.save(function(err, tag) {
     if (err) {
       console.log("Error in index.js line 42 saving snippet tag", err)
@@ -49,12 +60,9 @@ router.post('/request', function(req, res, next) {
 //add
 router.post('/', function(req, res, next) {
   //either find or create a new project object, to which we will append a new tag w/appropriate fields
-  var utils = require('../utils')
+  var utils = new Utils();
   utils.body = req.body;
-  Project.findOrCreate({'projectId': req.optimizely.current_project},
-                       {'accountId': req.optimizely.current_account,
-                       'tags': [],
-                       'projectId': req.optimizely.current_project})
+  Project.findOne({'projectId': req.optimizely.current_project})
         .then(utils.findMaster.bind(utils))
         .then(utils.findTagSetMasters.bind(utils))
         .then(utils.createTag.bind(utils))
@@ -72,11 +80,14 @@ router.post('/', function(req, res, next) {
 });
 
 router.post('/deletetag/:tagid', function(req, res, next) {
-  var utils = require('../utils');
+  var utils = new Utils();
   utils.tagid = req.params.tagid;
+  console.log("WOOOOOOOW", utils.tagid);
   Tag.find({"projectId": req.optimizely.current_project})
      .then(utils.removeCallbacks.bind(utils))
      .then(utils.removeTag.bind(utils))
+     .then(utils.findAllMasters.bind(utils))
+     .then(utils.setAllMasters.bind(utils))
      .then(utils.getProject.bind(utils, req.optimizely.current_project, req.params.tagid))
      .then(utils.removeTagFromProject.bind(utils))
      .then(utils.populateProject.bind(utils))
@@ -108,8 +119,10 @@ router.get('/master', (req, res, next) => {
 // /download/:projectid
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/download', (req, res, next) => {
-  var utils = require('../utils')
+  console.log("[pre-require]");
+  var utils = new Utils();
   Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
+    console.log("[tag found]");
     if (err) {
       console.log('err finding tags in download/:projectid', err)
     } else {
@@ -122,10 +135,12 @@ router.get('/download', (req, res, next) => {
 // /updatetag/:projectid/:tagid
 // Post: updated information for tag
 router.post('/updatetag/:tagid', (req, res, next) => {
-  var utils = require('../utils')
+  var utils = new Utils();
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
+
+  console.log("I AM SETTING THE TAG ID HERE ________________________", req.params.tagid)
   Project.findOne({projectId: req.optimizely.current_project})
          .then(utils.findMaster.bind(utils))
          .then(utils.setMaster.bind(utils))
@@ -143,14 +158,11 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 })
 
 router.get('/options', function(req, res, next) {
-  var utils = require('../utils')
+  var utils = new Utils();
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
-  Project.findOrCreate({'projectId': req.optimizely.current_project},
-                       {'accountId': req.optimizely.current_account,
-                       'tags': [],
-                       'projectId': req.optimizely.current_project})
+  Project.findOne({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.getPageOptions.bind(utils))
@@ -207,7 +219,7 @@ router.post('/template', function(req, res, next) {
 })
 
 router.get('/restrictedOptions/:tagid', function(req, res, next) {
-  var utils = require('../utils')
+  var utils = new Utils();
   utils.tagid = req.params.tagid;
   Tag.find({'projectId': req.optimizely.current_project})
      .then(utils.restrictOptions.bind(utils))
