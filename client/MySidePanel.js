@@ -337,10 +337,9 @@ var MySidePanel = React.createClass({
                 <div className="flex">
                   <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
                 </div>
-                <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-                  <option value="onDocumentReady" selected disabled>Select a trigger</option>
+                <select className="form-control" name='specificTrigger' onChange={this.onChange}>
                 {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
-                  return <option value={trigger}>{trigger}</option>
+                  return (trigger === this.state.specificTrigger) ? <option selected value={trigger}>{trigger}</option> : <option value={trigger}>{trigger}</option>
                   })
                 }
               </select>

@@ -349,7 +349,9 @@ var utils = {
     tag.approved = this.body.approved;
     tag.trackingTrigger = newTrackingTrigger;
     tag.trackingTriggerType = newTrackingTriggerType;
-    tag.template = this.body.template;
+    if (this.body.template) {
+      tag.template = this.body.template;
+    }
     tag.projectId = this.body.projectId;
     tag.active = this.body.active;
     console.log("tag.name", tag.name)
