@@ -8,11 +8,11 @@ a {
 }
 
 .welcome {
-  margin-top: 5%;
-  font-size: 20px;
+  padding-top: 5%;
+  font-size: 15px;
   width: 100%;
   color: #c0c0c0;
-  margin-left: 20%
+  text-align: center;
 }
 
 .newTemplate {
@@ -285,4 +285,3 @@ textarea {
   0% { transform: rotate(0deg); transform: rotate(0deg); }
   100% { transform: rotate(360deg); transform: rotate(360deg); }
 }
-

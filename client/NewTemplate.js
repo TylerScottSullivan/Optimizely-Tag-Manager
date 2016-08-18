@@ -2,7 +2,6 @@ var React = require('react');
 import AceEditor from 'react-ace';
 var react = require('react-ace');
 
-
 var NewTemplate = React.createClass({
   getInitialState: function() {
     return {
@@ -53,7 +52,6 @@ var NewTemplate = React.createClass({
     var data = {};
     var errors = {}
     data.fields = JSON.stringify(this.state.fields.map(function(field, i){
-      // var err = [];
       if (!field.tokenName.length) {
         errors[i] = {};
         errors[i]['tokenName'] = `Token name is required`;
@@ -63,9 +61,7 @@ var NewTemplate = React.createClass({
         errors[i]['tokenDescription'] = `Token description is required`;
       }
       console.log('err is herereerere', errors)
-      // if (err.length) {
-      //   errors.fields.push(err)
-      // } else {
+
         var f = {};
         f['tokenName'] = field.tokenName;
         f['tokenDescription'] = field.tokenDescription;
@@ -75,11 +71,31 @@ var NewTemplate = React.createClass({
         return f;
       // }
     }));
-    data.type = this.state.type.split(' ').join('');
-    data.email = this.state.email;
-    data.description = this.state.description;
-    data.displayName = this.state.displayName;
-    console.log('callback', this.state.usesOurCallback)
+    if (!this.state.type.length) {
+      errors['type'] = `Database name is required`;
+    } else {
+      data.type = this.state.type.split(' ').join('');
+    }
+    if (!this.state.displayName.length) {
+      errors['displayName'] = `Display name is required`;
+    } else {
+      data.displayName = this.state.displayName;
+    }
+    if (!this.state.email.length) {
+      errors['email'] = `Email is required`;
+    } else {
+      data.email = this.state.email;
+    }
+    if (!this.state.description.length) {
+      errors['description'] = `Description is required`;
+    } else {
+      data.description = this.state.description;
+    }
+    if (!this.state.template.length) {
+      errors['template'] = `Template is required`;
+    } else {
+      data.template = this.state.template;
+    }
 
     if (this.state.usesOurCallback === 'true') {
       data.hasCallback = true;
@@ -87,7 +103,6 @@ var NewTemplate = React.createClass({
       data.hasCallback = this.state.hasCallback;
     }
     data.usesOurCallback = this.state.usesOurCallback;
-    data.template = this.state.template;
     data.checkForType = this.state.checkForType;
     data.checkFor = this.state.checkFor;
     data.logo = "/images/Optimizely-logo.png"
@@ -135,6 +150,7 @@ var NewTemplate = React.createClass({
 
   //change the language later
 	render: function () {
+
 		return (
       <div className="height--1-1">
 			  	<div className="flex height--1-1">
@@ -267,6 +283,7 @@ var NewTemplate = React.createClass({
                                         if (this.state.errors[index]) {
                                           var errName = this.state.errors[index]['tokenName'] || null;
                                           var errDescription = this.state.errors[index]['tokenDescription'] || null;
+
                                         }
                                         return (
                                           <div>
@@ -276,8 +293,8 @@ var NewTemplate = React.createClass({
           							        						</label>
           							            					<input type="text" name='tokenName' className="text-input" value={item.tokenName} onChange={this.onChangeFields.bind(this, index)}/>
           							        						<div className="form-note">(Ex. ACCESS_TOKEN)</div>
+                                              {tokenHere}
           						            					</td>
-                                            {tokenHere}
           							            				<td>
           							            					<label className="label">
           							          							Token Display Name:

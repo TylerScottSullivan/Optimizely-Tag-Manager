@@ -19,7 +19,6 @@ var AvailableTableContent = React.createClass({
         $(this.refs.AvTable).tablesorter();
   },
 
-
   render: function() {
     return (
       <div className="flex--1 soft-double--sides scroll">

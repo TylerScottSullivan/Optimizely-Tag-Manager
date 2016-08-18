@@ -55,6 +55,7 @@ var MySidePanel = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     // resets information on sidepanel when new row is clicked
+    console.log('nextProps____________', nextProps)
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
@@ -64,7 +65,7 @@ var MySidePanel = React.createClass({
         for (var i = 0; i < data.length; i ++) {
           var d = data[i].split(',');
           for (var option in options) {
-            if (d[0] === option) {
+            if (d[0] === option && d[1] !== nextProps.info.name) {
               options[option].push(d[1]);
             }
           }
