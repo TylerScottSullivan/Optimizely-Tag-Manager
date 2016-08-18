@@ -33,7 +33,7 @@ var MySidePanel = React.createClass({
       triggerOptions: null,
       changes: '',
       template: '',
-      specificTrigger: null
+      specificTrigger: null,
     };
   },
 
@@ -117,6 +117,7 @@ var MySidePanel = React.createClass({
     // sets up all other info correctly to be handled on backend
     data.active = this.state.info.active;
     data.template = this.state.template;
+    // data.name = this.state.name;
 
     // ajax call to update tag on backend
     if (Object.keys(errors).length === 0) {
@@ -338,7 +339,7 @@ var MySidePanel = React.createClass({
                   <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
                 </div>
                 <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-                  <option value="onDocumentReady" selected disabled>Select a trigger</option>
+                  <option selected disabled>Select a trigger</option>
                 {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
                   return <option value={trigger}>{trigger}</option>
                   })

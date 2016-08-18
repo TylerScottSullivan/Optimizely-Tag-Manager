@@ -7,7 +7,7 @@ var NewTemplate = React.createClass({
     return {
       type: '',
       displayName: '',
-      discription: '',
+      description: '',
       fields: [],
       template: '',
       hasCallback: 'true',
@@ -15,8 +15,9 @@ var NewTemplate = React.createClass({
       checkForType: 'function',
       checkFor: '',
       usesOurCallback: 'false',
-      errors: {},
-      logo: null
+      errors: {'displayName': null, 'type': null, 'email': null},
+      logo: null,
+      codeExample: ''
     };
   },
 
@@ -34,6 +35,13 @@ var NewTemplate = React.createClass({
 
   //this change the enable and triggers
   onChange: function(e) {
+    var errors = this.state.errors;
+    errors[e.target.name] = false;
+    console.log('errorsss', errors)
+    this.setState({
+      errors: this.state.errors
+    });
+
     var newState = Object.assign({}, this.state);
     newState[e.target.name] = e.target.value;
     this.setState(newState);
@@ -41,10 +49,13 @@ var NewTemplate = React.createClass({
   },
 
   onChangeSnippet: function(newVal) {
-      this.setState({
-        template: newVal
-      });
-      console.log('onchangeSnippet', this.state.template)
+    var errors = this.state.errors;
+    errors.template = false;
+    this.setState({
+      template: newVal,
+      errors: this.state.errors
+    });
+    console.log('onchangeSnippet', this.state.template)
   },
 
   onSubmit: function(e) {
@@ -68,9 +79,11 @@ var NewTemplate = React.createClass({
         f['token'] = field.tokenName.replace(/ /g, '_');
         f['tokenExample'] = field.tokenExample;
 
-        return f;
-      // }
+      return f;
     }));
+    console.log('about length', this.state.type)
+    console.log('about length', this.state.type.length)
+
     if (!this.state.type.length) {
       errors['type'] = `Database name is required`;
     } else {
@@ -96,6 +109,8 @@ var NewTemplate = React.createClass({
     } else {
       data.template = this.state.template;
     }
+
+    data.codeExample = this.state.codeExample;
 
     if (this.state.usesOurCallback === 'true') {
       data.hasCallback = true;
@@ -150,6 +165,11 @@ var NewTemplate = React.createClass({
 
   //change the language later
 	render: function () {
+    var errorDisplayName = (this.state.errors.displayName) ? 'validation' : '';
+    var errorType = (this.state.errors.type) ? 'validation' : '';
+    var errorEmail = (this.state.errors.email) ? 'validation' : '';
+    var errorTemplate = (this.state.errors.template) ? 'validation' : '';
+    var errorDescription = (this.state.errors.description) ? 'validation' : '';
 
 		return (
       <div className="height--1-1">
@@ -167,21 +187,24 @@ var NewTemplate = React.createClass({
 							        		<label className="label">
 							          			Display Name
 							        		</label>
-							        		<input type="text" className="text-input" name='displayName' onChange={this.onChange}/>
+							        		<input type="text" className={`text-input ${errorDisplayName}`} name='displayName' onChange={this.onChange}/>
+                          {(this.state.errors.displayName !== false) ? <div className='warning'>{this.state.errors.displayName}</div> : null}
 							        		<div className="form-note">This will be the display name for your tag. (Ex. Google Universal Analytics)</div>
 							      		</li>
 							      		<li className="form-field__item">
 							        		<label className="label">
 							          			Database Name
 						        			</label>
-							        		<input type="text" className="text-input" name='type' onChange={this.onChange}/>
+							        		<input type="text" className={`text-input ${errorType}`} name='type' onChange={this.onChange}/>
+                          {(this.state.errors.type !== false) ? <div className='warning'>{this.state.errors.type}</div> : null}
 							        		<div className="form-note">This will be the name of your tag in our database. Please do not include spaces. (Ex. Google_Analytics)</div>
 							      		</li>
 							      		<li className="form-field__item">
 							        		<label className="label">
 							          			Description
 							        		</label>
-							        		<input type="text" className="text-input" name='description' onChange={this.onChange}/>
+							        		<input type="text" className={`text-input ${errorDescription}`} name='description' onChange={this.onChange}/>
+                          {(this.state.errors.description !== false) ? <div className='warning'>{this.state.errors.description}</div> : null}
 							        		<div className="form-note">
 							        			<p> This will be the description of your tag that will be displayed in the side panel of this application. </p>
 							        			<p> (Ex. Use this tag to insert the Google Universal Analytics tracking code into your website through Optimizely.) </p>
@@ -239,7 +262,7 @@ var NewTemplate = React.createClass({
 				        					<label className="label">
 							          			Please enter your code here:
 							        		</label>
-						         			<div className="editor">
+						         			<div className={`editor ${errorTemplate}`}>
 								           		<AceEditor
 								             		className="editor text-input text-input-styled"
 								             		mode="javascript"
@@ -252,6 +275,7 @@ var NewTemplate = React.createClass({
 								             		onChange={this.onChangeSnippet}
 								           		/>
 						        			</div>
+                          {(this.state.errors.template !== false) ? <div className='warning'>{this.state.errors.template}</div> : null}
 					       	  			</li>
 							      		<li className="form-field__item">
 							        		<label className="label">
@@ -283,7 +307,6 @@ var NewTemplate = React.createClass({
                                         if (this.state.errors[index]) {
                                           var errName = this.state.errors[index]['tokenName'] || null;
                                           var errDescription = this.state.errors[index]['tokenDescription'] || null;
-
                                         }
                                         return (
                                           <div>
@@ -342,7 +365,8 @@ var NewTemplate = React.createClass({
                     <label className="label">
                         What is an email that we can reach you?
                     </label>
-                    <input type="text" className="text-input" name='email' value={this.state.email} onChange={this.onChange}/>
+                    <input type="text" className={`text-input ${errorEmail}`} name='email' value={this.state.email} onChange={this.onChange}/>
+                      {(this.state.errors.email !== false) ? <div className='warning'>{this.state.errors.email}</div> : null}
                     <div className="form-note">
                       <p> We will update you upon the approval of your template. </p>
                     </div>
