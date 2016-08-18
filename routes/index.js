@@ -71,7 +71,7 @@ router.post('/', function(req, res, next) {
         .then(utils.getJavascript.bind(utils))
         .then(utils.buildJavascript.bind(utils))
         .then(function(response) {
-          res.status(200).send('I am alright')
+          res.status(200).json(utils.tag)
         })
         .catch(function(err) {
           console.log("Error at the end of /", err)

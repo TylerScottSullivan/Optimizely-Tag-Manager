@@ -162,13 +162,14 @@ var SearchBar = React.createClass({
           console.log("data", data)
           console.log("this.props", this.props)
           // this function rerenders table and sidepanel with newly added tag, separate from ajax call but using the ajax data sent over
-        	this.props.onDownload(this.props.downloadedProject.concat(data))
+        	this.props.onDownload(this.props.downloadedProject.concat(response))
           console.log("[anything]")
             // gets trigger options with ajax call when component is re-rendered
             $.ajax({
 		          url: '/options' + window.location.search,
 		          type: 'GET',
 		          success: function(triggers) {
+                console.log('hi i am here checking modal')
 		            this.setState({
                   triggerOptions: triggers,
                   modalIsOpen: false

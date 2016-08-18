@@ -17,6 +17,7 @@ var utils = {
   tagid: null,
   addCallbacksBool: false,
   oldCallback: null,
+  tag: null,
   findMaster: function(project) {
     this.project = project;
     return Master.find();
@@ -30,6 +31,7 @@ var utils = {
     if (!tag || tag.name === "custom") {
       var fields = [];
       var master = this.masters.filter(function(item) {
+        console.log("ITEMS", item.name, this.body.name)
         return item.name === this.body.name;
       }.bind(this))[0];
 
@@ -83,6 +85,7 @@ var utils = {
     }
   },
   updateProject: function(tag) {
+    this.tag = tag;
     this.project.tags.push(tag._id);
     return new Promise(function(resolve, reject) {
       if(tag.trackingTriggerType !== "onDocumentReady" && tag.trackingTriggerType !== "inHeader" && tag.trackingTriggerType !== "onPageLoad" && tag.trackingTriggerType !== "onEvent") {
