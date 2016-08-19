@@ -353,6 +353,8 @@ var MySidePanel = React.createClass({
             {/*this renders trigger options, makes selected trigger the initial trigger option rendered*/}
             <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
               {
+                // Refactor to triggerOptions = {inHeader: "Immediately", onDocumentReady: "On Page Load"... }
+
                 ['inHeader', 'onDocumentReady', 'onTrigger', 'onEvent', 'onPageLoad'].map((item) => {
                   var selected = (item === this.state.trackingTrigger);
                   return <option value={item} selected={selected}> {item} </option>

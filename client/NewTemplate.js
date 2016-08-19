@@ -17,7 +17,8 @@ var NewTemplate = React.createClass({
       usesOurCallback: 'false',
       errors: {'displayName': null, 'type': null, 'email': null},
       logo: null,
-      codeExample: ''
+      codeExample: '',
+      submitted: false
     };
   },
 
@@ -84,15 +85,16 @@ var NewTemplate = React.createClass({
     console.log('about length', this.state.type)
     console.log('about length', this.state.type.length)
 
-    if (!this.state.type.length) {
-      errors['type'] = `Database name is required`;
-    } else {
-      data.type = this.state.type.split(' ').join('');
-    }
     if (!this.state.displayName.length) {
       errors['displayName'] = `Display name is required`;
     } else {
       data.displayName = this.state.displayName;
+      var type = this.state.displayName.split(' ').join('_');
+      if (type[0] === '*') {
+        data.type = type.slice(1, data.type.length);
+      } else {
+        data.type = type;
+      }
     }
     if (!this.state.email.length) {
       errors['email'] = `Email is required`;
@@ -130,7 +132,8 @@ var NewTemplate = React.createClass({
         data: data,
         success: function(data) {
           console.log('Add new template successful');
-        },
+          this.setState({submitted: true});
+        }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
         }
@@ -170,7 +173,7 @@ var NewTemplate = React.createClass({
     var errorEmail = (this.state.errors.email) ? 'validation' : '';
     var errorTemplate = (this.state.errors.template) ? 'validation' : '';
     var errorDescription = (this.state.errors.description) ? 'validation' : '';
-
+    if (!this.state.submitted){
 		return (
       <div className="height--1-1">
 			  	<div className="flex height--1-1">
@@ -190,14 +193,6 @@ var NewTemplate = React.createClass({
 							        		<input type="text" className={`text-input ${errorDisplayName}`} name='displayName' onChange={this.onChange}/>
                           {(this.state.errors.displayName !== false) ? <div className='warning'>{this.state.errors.displayName}</div> : null}
 							        		<div className="form-note">This will be the display name for your tag. (Ex. Google Universal Analytics)</div>
-							      		</li>
-							      		<li className="form-field__item">
-							        		<label className="label">
-							          			Database Name
-						        			</label>
-							        		<input type="text" className={`text-input ${errorType}`} name='type' onChange={this.onChange}/>
-                          {(this.state.errors.type !== false) ? <div className='warning'>{this.state.errors.type}</div> : null}
-							        		<div className="form-note">This will be the name of your tag in our database. Please do not include spaces. (Ex. Google_Analytics)</div>
 							      		</li>
 							      		<li className="form-field__item">
 							        		<label className="label">
@@ -276,15 +271,10 @@ var NewTemplate = React.createClass({
 								           		/>
 						        			</div>
                           {(this.state.errors.template !== false) ? <div className='warning'>{this.state.errors.template}</div> : null}
-					       	  			</li>
-							      		<li className="form-field__item">
-							        		<label className="label">
-							          			Example
-							          			<span className="label__optional" >(Optional) example</span>
-							        		</label>
-							        		<input type="text" className="text-input" name='codeExample'/>
-							        		<div className="form-note">Form Note</div>
-							      		</li>
+                          <div className="form-note">
+							        			<p> Your code will be wrapped in a <code>&lt;script&gt;</code> tag. </p>
+							        		</div>
+                          </li>
 							      		<li className="form-field__item">
 							        		<label className="label">Please add all tokens (Access Keys, IDs, etc.) needed for your tag.</label>
 							        		<table className="table table--add-row width--1-1">
@@ -298,7 +288,7 @@ var NewTemplate = React.createClass({
                                       </button>) :
                                      this.state.fields.map((item, index) => {
                                         var tokenHere;
-                                        var token = '{{' + item.tokenName.replace(/ /g, '_') + '}}';
+                                        var token = '"{{' + item.tokenName.replace(/ /g, '_') + '}}"';
                                         if (item.tokenName) {
                                           tokenHere = <div name='token' value={token} onChange={this.onChangeFields}>Your token name is <code>{token}</code></div>
                                         } else {
@@ -380,8 +370,18 @@ var NewTemplate = React.createClass({
 	    			</div>
 	  			</div>
 			</div>
-		)
+		)} else {
+      return (
+        <div className="height--1-1">
+  			  	<div className="flex height--1-1">
+  			    	<div className="flex--1 soft-double--sides">
+                <div className="flex--1 sd-headsmall">You have successfully submitted a new template. We will be in touch shortly.</div>
+              </div>
+            </div>
+          </div>
+      )
 	}
+}
 });
 
 module.exports = NewTemplate;

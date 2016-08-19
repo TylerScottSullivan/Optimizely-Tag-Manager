@@ -9,8 +9,6 @@ var snippets = require('./snippets');
 var findOrCreate = require('mongoose-findorcreate');
 var Handlebars = require('handlebars');
 
-
-
 var utils = {
   body: null,
   project: null,

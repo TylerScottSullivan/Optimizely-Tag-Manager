@@ -235,17 +235,17 @@ var SearchBar = React.createClass({
     var errorName = (this.state.errors['displayName']) ? 'validation' : '';
     var errorTagDescription = (this.state.errors['tagDescription']) ? 'validation' : '';
     var errorCustom = (this.state.errors['template']) ? 'validation' : '';
-
+    //this is the search bar
+    // <div className="button-group">
+    //   <div className="search">
+    //     <input type="text" className="text-input text-input--search width--200" placeholder="Filter by Name"/>
+    //   </div>
+    //   <button className="button" type="button">Search</button>
+    // </div>
     return (
     	<div>
         <ul className="flex push-double--ends">
           <li className="push-triple--right">
-            <div className="button-group">
-              <div className="search">
-                <input type="text" className="text-input text-input--search width--200" placeholder="Filter by Name"/>
-              </div>
-              <button className="button" type="button">Search</button>
-            </div>
           </li>
           <li className="anchor--right">
             <button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
