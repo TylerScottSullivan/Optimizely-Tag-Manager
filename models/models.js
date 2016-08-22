@@ -108,10 +108,11 @@ var masterSchema = mongoose.Schema({
   approved: Boolean,
   callbackCode: String,
   template: String,
-  usesOurCallback: Boolean
+  usesOurCallback: Boolean,
+  category: String
 });
 
-
+masterSchema.plugin(findOrCreate);
 projectSchema.plugin(findOrCreate);
 module.exports = {
   'Project': mongoose.model('Project', projectSchema),

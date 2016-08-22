@@ -181,44 +181,74 @@ router.get('/template', function(req, res, next){
 })
 
 router.post('/template', function(req, res, next) {
-  console.log('i am inside template')
   var tokens = [];
-  console.log('req.body', req.body)
+
+  //pushing token values
   JSON.parse(req.body.fields).forEach((field)=>{
     tokens.push({'tokenName': field.token, 'tokenDisplayName': field.tokenName, 'tokenDescription': field.tokenDescription})
   })
-  console.log('tokens', tokens)
+
+  //setting template code
   var template = req.body.template;
-  // console.log(req.body.hasCallback)
-  console.log('this is callback', req.body.usesOurCallback)
-  if (req.body.usesOurCallback) {
+
+  //sorry -- this was necessary because the front end is passing us a string value of true or false
+  var usesOurCallbackValue = JSON.parse(req.body.usesOurCallback);
+  console.log("THIS IS OUR CALLBACK VALUE_____________", usesOurCallbackValue, typeof usesOurCallbackValue);
+  //adds callback if they choose
+  if (usesOurCallbackValue) {
     template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === \''+req.body.checkForType+'\') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
   }
-  console.log('template', template)
-
-  var m = new Master({
-    name: req.body.type,
-    displayName: req.body.displayName,
-    tokens: tokens,
-    tagDescription: req.body.description,
-    hasCallback: req.body.hasCallback,
-    usesOurCallback: req.body.usesOurCallback,
-    approved: false,
-    template: template,
-    checkFor: req.body.checkFor,
-    checkForType: req.body.checkForType
-  })
-  m.save(function(err, master) {
-    if (err) {
-      next(err);
-    }
-    else {
-      console.log('saving new template correct', master)
-      // res.redirect('/')
-      res.send('i am all good')
-    }
-  })
-})
+  Master.findOne({'name': req.body.type})
+        .then(function(master) {
+          if (master) {
+            console.log("NAME FIELD MUST BE UNIQUE", master, req.body.type);
+            throw "Name field must be unique";
+          }
+          else {
+            var m = new Master({
+                    'name': req.body.type,
+                    'displayName': req.body.displayName,
+                    'tokens': tokens,
+                    'tagDescription': req.body.description,
+                    'hasCallback': req.body.hasCallback,
+                    'usesOurCallback': req.body.usesOurCallback,
+                    'approved': false,
+                    'template': template,
+                    'checkFor': req.body.checkFor,
+                    'checkForType': req.body.checkForType
+                  });
+            return m.save();
+          }
+        })
+        .then(function(master) {
+          res.status(200).send('Approved.')
+        })
+        .catch(function(err) {
+          next(err);
+        });
+  // var m = new Master({
+  //   name: req.body.type,
+  //   displayName: req.body.displayName,
+  //   tokens: tokens,
+  //   tagDescription: req.body.description,
+  //   hasCallback: req.body.hasCallback,
+  //   usesOurCallback: req.body.usesOurCallback,
+  //   approved: false,
+  //   template: template,
+  //   checkFor: req.body.checkFor,
+  //   checkForType: req.body.checkForType
+  // })
+  // m.save(function(err, master) {
+  //   if (err) {
+  //     next(err);
+  //   }
+  //   else {
+  //     console.log('saving new template correct', master)
+  //     // res.redirect('/')
+  //     res.send('i am all good')
+  //   }
+  // })
+});
 
 router.get('/restrictedOptions/:tagid', function(req, res, next) {
   var utils = new Utils();
