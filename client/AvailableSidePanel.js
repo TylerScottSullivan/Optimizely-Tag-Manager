@@ -3,11 +3,12 @@ var AvailableInputFields = require('./AvailableInputFields');
 
 var AvailableSidePanel = React.createClass({
   _reloadOptions: function() {
+    // get the most updated options
+    //also copied to MySidePanel and SearchBar
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful', data);
         var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
         for (var i = 0; i < data.length; i ++) {
           var d = data[i].split(',');
@@ -17,7 +18,6 @@ var AvailableSidePanel = React.createClass({
             }
           }
         }
-        console.log('optionssss', options)
         this.setState({triggerOptions: options, specificTrigger: options[data[0].split(',')[0]]})
       }.bind(this),
       error: function(err) {
@@ -25,8 +25,10 @@ var AvailableSidePanel = React.createClass({
       }
     });
   },
+
   getInitialState: function() {
     this._reloadOptions();
+    //pass in info from AvailableTagsPage
     return {
       info: this.props.info,
       tokens: this.props.info.tokens,
@@ -34,39 +36,36 @@ var AvailableSidePanel = React.createClass({
       active: true,
       errors: {},
       triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
-      specificTrigger: null
+      specificTrigger: null,
+      clicked: false
     };
-
   },
 
   componentWillReceiveProps: function(nextProps) {
     this._reloadOptions();
     this.setState({trackingTrigger: 'inHeader'})
-    console.log('receiving props', nextProps)
-    // nextProps.info.tokens = nextProps.info.tokens.map((token) => {
-    //   return Object.assign({}, token, {value: ''})
-    // })
-    // gets trigger options with ajax call when component is first rendered
-
 
     // resets information on sidepanel when new row is clicked
     if (Object.keys(nextProps.info).length > 0) {
-      console.log("nextProps", nextProps)
       nextProps.info.tokens = nextProps.info.tokens.map((token) => {
         return Object.assign({}, token, {value: ''})
       })
       this.setState({
         info: nextProps.info,
-        tokens: nextProps.info.tokens
+        tokens: nextProps.info.tokens,
+        clicked: false
       })
     }
   },
 
   //adds new tag, rendering on front end and sending ajax call to backend
   onAddTag: function(e) {
-    // prevents Add button from screwing shit up
+    // prevents Add button from screwing up
     var data = {};
     var errors = {}
+    //set clicked to true indicating the user has clicked on add. The button will be immediately disabled.
+    //prevent from double clicking
+    this.setState({clicked: true});
 
     //sets tokens correctly to be handled on backend
     this.state.tokens.map((token) => {
@@ -91,7 +90,7 @@ var AvailableSidePanel = React.createClass({
     data.template = this.props.info.template;
     data.hasCallback = this.props.info.hasCallback;
     data.callBacks = this.props.info.callBacks;
-    console.log('here is what i am sending', data)
+    console.log('This is the full data', data)
     //ajax call to add tag to backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -101,6 +100,7 @@ var AvailableSidePanel = React.createClass({
         success: function(response) {
           // this function rerenders table and sidepanel with newly added tag, separate from ajax call but using the ajax data sent over
           this.props.onDownload(this.props.downloadedProject.concat(data))
+          this.setState({clicked: false})
         }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
@@ -108,7 +108,6 @@ var AvailableSidePanel = React.createClass({
       });
     } else {
       // error handling
-      console.log('there is an error omg');
       this.setState({
         errors: errors
       });
@@ -120,13 +119,11 @@ var AvailableSidePanel = React.createClass({
     var tokens = this.state.tokens;
     var errors = this.state.errors;
     errors[e.target.name] = false;
-    console.log('errorsss', errors)
     tokens[index].value = e.target.value;
     this.setState({
       tokens: tokens,
       errors: this.state.errors
     });
-    console.log('this is the new state errorsss', this.state.errors)
   },
 
   //error handling and changes state for enable/disable and triggers
@@ -256,22 +253,14 @@ var AvailableSidePanel = React.createClass({
               </div>
             </div>
           :
-            // <div>
-            //   <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button>
-            // </div>
             <div>
-              {this.state.specificTrigger !== "Select a trigger" ?
+              {this.state.specificTrigger !== "Select a trigger" && !this.state.clicked ?
                <button className="btn-uniform-add button button--highlight" onClick={this.onAddTag}>Add Tag</button> :
                <button className="btn-uniform-add button button--highlight" disabled onClick={this.onAddTag}>Add Tag</button>}
             </div>
           }
-
-
-
-
         </div>
       )
-
     } else {
       // if no row has been selected, shows default information
       return (
@@ -286,9 +275,6 @@ var AvailableSidePanel = React.createClass({
     }
   // below brace closes render function
   }
-
-
-
 })
 
 module.exports = AvailableSidePanel;

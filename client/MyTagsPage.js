@@ -50,7 +50,6 @@ var MyTagsPage = React.createClass({
 
   // selects a row and passes that row information into the rendered sidepanel
   onSelect: function(item, rowinfo) {
-    console.log('this is what gets selected', rowinfo)
     this.setState({
       sidePanel: rowinfo, //this is an object
       sidePanelIndex: item,
@@ -84,7 +83,6 @@ var MyTagsPage = React.createClass({
         }
       }
     };
-    console.log('this is the full info i am passing to mysidePanel', currentInfo)
 
     var splicedArray = newArray;
 

@@ -31,24 +31,22 @@ var NewTemplate = React.createClass({
       fields: fields,
       errors: errors
     });
-    console.log('on change fields', this.state.fields)
   },
 
   //this change the enable and triggers
   onChange: function(e) {
     var errors = this.state.errors;
     errors[e.target.name] = false;
-    console.log('errorsss', errors)
+    //detect empty fields and set errors for the notifications to show
     this.setState({
       errors: this.state.errors
     });
-
     var newState = Object.assign({}, this.state);
     newState[e.target.name] = e.target.value;
     this.setState(newState);
-    console.log('newState', newState)
   },
 
+//set changed for editor
   onChangeSnippet: function(newVal) {
     var errors = this.state.errors;
     errors.template = false;
@@ -56,7 +54,6 @@ var NewTemplate = React.createClass({
       template: newVal,
       errors: this.state.errors
     });
-    console.log('onchangeSnippet', this.state.template)
   },
 
   onSubmit: function(e) {
@@ -72,24 +69,23 @@ var NewTemplate = React.createClass({
         errors[i] = errors[i] || {};
         errors[i]['tokenDescription'] = `Token description is required`;
       }
-      console.log('err is herereerere', errors)
 
-        var f = {};
-        f['tokenName'] = field.tokenName;
-        f['tokenDescription'] = field.tokenDescription;
-        f['token'] = field.tokenName.replace(/ /g, '_');
-        f['tokenExample'] = field.tokenExample;
-
+      var f = {};
+      f['tokenName'] = field.tokenName;
+      f['tokenDescription'] = field.tokenDescription;
+      f['token'] = field.tokenName.replace(/ /g, '_');
+      f['tokenExample'] = field.tokenExample;
       return f;
     }));
-    console.log('about length', this.state.type)
-    console.log('about length', this.state.type.length)
 
     if (!this.state.displayName.length) {
       errors['displayName'] = `Display name is required`;
     } else {
       data.displayName = this.state.displayName;
+      //type is the name we store in the database. We need to remove all the spaces
       var type = this.state.displayName.split(' ').join('_');
+      //we have set type default to start with '*' and the backend checks for '*'.
+      //therefore if the real type the user input starts with '*', we will remove it
       if (type[0] === '*') {
         data.type = type.slice(1, data.type.length);
       } else {
@@ -139,7 +135,6 @@ var NewTemplate = React.createClass({
         }
       })
     } else {
-      console.log('there is an error omg');
       this.setState({
         errors: errors
       });
@@ -159,7 +154,6 @@ var NewTemplate = React.createClass({
   },
 
   onDeleteField: function(i, e) {
-    e.preventDefault()
     this.state.fields.splice(i, 1);
     this.setState({
       fields: this.state.fields
@@ -168,6 +162,7 @@ var NewTemplate = React.createClass({
 
   //change the language later
 	render: function () {
+    //these are error handling for the input field to turn red when there is an error
     var errorDisplayName = (this.state.errors.displayName) ? 'validation' : '';
     var errorType = (this.state.errors.type) ? 'validation' : '';
     var errorEmail = (this.state.errors.email) ? 'validation' : '';
@@ -371,6 +366,7 @@ var NewTemplate = React.createClass({
 	  			</div>
 			</div>
 		)} else {
+      //this tells the user the template is submitted successfully
       return (
         <div className="height--1-1">
   			  	<div className="flex height--1-1">

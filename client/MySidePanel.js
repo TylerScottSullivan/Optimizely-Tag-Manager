@@ -34,6 +34,7 @@ var MySidePanel = React.createClass({
       changes: '',
       template: '',
       specificTrigger: null,
+      clicked: false
     };
   },
 
@@ -55,12 +56,10 @@ var MySidePanel = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     // resets information on sidepanel when new row is clicked
-    console.log('nextProps____________', nextProps)
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful', data);
         var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
         for (var i = 0; i < data.length; i ++) {
           var d = data[i].split(',');
@@ -70,7 +69,6 @@ var MySidePanel = React.createClass({
             }
           }
         }
-        console.log('optionssss', options)
         this.setState({triggerOptions: options})
       }.bind(this),
       error: function(err) {
@@ -84,14 +82,17 @@ var MySidePanel = React.createClass({
         changes: nextProps.info.template,
         clickUpdate: false,
         trackingTrigger: nextProps.info.trackingTriggerType,
-        specificTrigger: nextProps.info.trackingTrigger
+        specificTrigger: nextProps.info.trackingTrigger,
+        clicked: false
       })
     }
   },
 
   // sends updated tag info to backend and re-renders row and sidepanel properly
   onUpdate: function() {
-
+    //set clicked to true indicating the user has clicked on add. The button will be immediately disabled.
+    //prevent from double clicking
+    this.setState({clicked: true});
     var data = {};
     var errors = {}
     data.fields = [];
@@ -105,7 +106,6 @@ var MySidePanel = React.createClass({
          data.fields.push({"name": field.name, "value": field.value})
       }
     })
-    console.log('here are the new fields', data)
 
     var trigger;
     if (this.state.trackingTrigger === 'onDocumentReady'||this.state.trackingTrigger === 'inHeader') {
@@ -126,14 +126,14 @@ var MySidePanel = React.createClass({
         type: 'POST',
         data: data,
         success: function(response) {
-          console.log("response", response)
           // updates front end row and sidepanel with newly updated tag
           this.props.onDownload(this.props.splicedArray.slice(0, this.props.index).concat(
               Object.assign({}, this.props.splicedArray[this.props.index], response), this.props.splicedArray.slice(this.props.index + 1)))
 
           // sets condition to show updated message
           this.setState({
-            clickUpdate: true
+            clickUpdate: true,
+            clicked: false
           })
         }.bind(this),
         error: function(err) {
@@ -149,7 +149,7 @@ var MySidePanel = React.createClass({
 
   // sends delete call to backend for a tag and re-renders rows and sidepanel properly
   onDelete: function() {
-
+    this.setState({clicked: true});
     return $.ajax({
       url: '/deletetag/' + this.props.info._id + window.location.search,
       type: 'POST',
@@ -157,6 +157,7 @@ var MySidePanel = React.createClass({
         //  sets deleted state up to MyTagsPage to re-render sidepanel properly
         this.props.onDelete();
         //  re-renders rows
+        this.setState({clicked: false})
         this.props.onDownload(this.props.downloaded.slice(0, this.props.index).concat(this.props.downloaded.slice(this.props.index + 1)));
       }.bind(this),
 
@@ -208,18 +209,9 @@ var MySidePanel = React.createClass({
         })
       }
     }
-
-    // if (e.target.name === "trackingTrigger" && expandTriggers.indexOf(e.target.value) > -1) {
-    //   if (notExpandTriggers.indexOf(this.state.specificTrigger) > -1) {
-    //     console.log('gh');
-    //     this.setState({
-    //       specificTrigger: "Select a trigger"
-    //     })
-    //   }
-    // }
   },
 
-  // changes code editor code (i think) // Mojia?
+  // changes code editor code
   onChangeSnippet: function(newVal) {
       this.setState({
         changes: newVal
@@ -400,12 +392,14 @@ var MySidePanel = React.createClass({
             </div>
 
             <div>
-              {this.state.specificTrigger !== "Select a trigger" ?
+              {this.state.specificTrigger !== "Select a trigger" && !this.state.clicked ?
                <button className="btn-uniform-add button button--highlight" onClick={this.onUpdate}>Update Tag</button> :
                <button className="btn-uniform-add button button--highlight" disabled onClick={this.onUpdate}>Update Tag</button>}
             </div>
             <div>
-              <button className="btn-uniform-del button button--highlight" onClick={this.onDelete}>Delete</button>
+              {!this.state.clicked ?
+                <button className="btn-uniform-del button button--highlight" onClick={this.onDelete}>Delete</button> :
+                <button className="btn-uniform-del button button--highlight" disabled onClick={this.onDelete}>Delete</button>}
             </div>
             {this.state.clickUpdate ?
               <div className="yellowbox">

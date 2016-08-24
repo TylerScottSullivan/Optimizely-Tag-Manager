@@ -12,18 +12,19 @@ const customStyles = {
     bottom                : 'auto',
     marginRight           : '-50%',
     transform             : 'translate(-50%, -50%)',
-    height                : '550px',
+    height                : '580px',
     width                 : '700px'
   }
 };
 
 var SearchBar = React.createClass({
+  //gets all the options
+  //this is called at getInitialState, in the success callback of onAddTag, closeModal, componentWillReceiveProps
   _reloadOptions: function() {
     $.ajax({
       url: '/options' + window.location.search,
       type: 'GET',
       success: function(data) {
-        console.log('get options successful', data);
         var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
         for (var i = 0; i < data.length; i++) {
           var d = data[i].split(',');
@@ -33,7 +34,6 @@ var SearchBar = React.createClass({
             }
           }
         }
-        console.log('optionssss', options)
         this.setState({triggerOptions: options, specificTrigger: options[data[0].split(',')[0]]})
       }.bind(this),
       error: function(err) {
@@ -55,7 +55,8 @@ var SearchBar = React.createClass({
       errors: {},
       triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
       specificTrigger: null,
-      customId: null
+      customId: null,
+      clicked: false
     };
   },
 
@@ -70,28 +71,9 @@ var SearchBar = React.createClass({
       this.setState({modalIsOpen: true});
   },
 
-  // not used?
-  afterOpenModal: function() {
-    // references are now sync'd and can be accessed.
-    this.refs.subtitle.style.color = '#0081BA';
-  },
-
   // closes modal
-  // gets trigger options with ajax call each time after modal is closed
   closeModal: function() {
-	  var triggerOptions;
-
-    // $.ajax({
-    //   url: '/options' + window.location.search,
-    //   type: 'GET',
-    //   success: function(triggers) {
-    //     this.setState({triggerOptions: triggers})
-    //   }.bind(this),
-    //   error: function(err) {
-    //     console.error("Err posting", err.toString());
-    //   }
-    // });
-
+    //resets the model to default, so all fields are empty the next time the user opens
     this.setState({
       modalIsOpen: false,
   		name: 'custom',
@@ -101,31 +83,25 @@ var SearchBar = React.createClass({
   		trackingTrigger: 'inHeader',
   		active: true,
   		errors: {},
-      customId: null
+      customId: null,
+      clicked: false
     });
   },
 
   //adds new custom tag, rendering on front end and sending ajax call to backend
   addCustomTag: function() {
+    //set clicked to true indicating the user has clicked on add. The button will be immediately disabled.
+    //prevent from double clicking
+    this.setState({clicked: true})
     var data = {};
-    var errors = {}
+    var errors = {};
 
     //sets up info correctly to be handled on backend
     data.active = this.state.active;
     var index = Math.floor(Math.random()*10000000000);
-    this.setState({
-  		name: 'custom',
-  		displayName: '',
-  		tagDescription: '',
-  		template: '',
-  		trackingTrigger: 'inHeader',
-  		active: true,
-  		errors: {},
-  		triggerOptions: []
-    });
+
     data.name = this.state.name;
     data.customId = index;
-    console.log('data.name', data.customId)
     data.fields = [];
 
     // form validation handling
@@ -154,6 +130,17 @@ var SearchBar = React.createClass({
     }
     data.trackingTrigger = trigger;
     console.log('here is the full data', data)
+    //this resets the states after sending
+    this.setState({
+      name: 'custom',
+      displayName: '',
+      tagDescription: '',
+      template: '',
+      trackingTrigger: 'inHeader',
+      active: true,
+      errors: {},
+      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
+    });
     //ajax call to add tag to backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
@@ -161,33 +148,20 @@ var SearchBar = React.createClass({
         type: 'POST',
         data: data,
         success: function(response) {
-          console.log("data", data)
-          console.log("this.props", this.props)
           // this function rerenders table and sidepanel with newly added tag, separate from ajax call but using the ajax data sent over
         	this.props.onDownload(this.props.downloadedProject.concat(response))
-          console.log("[anything]")
-            // gets trigger options with ajax call when component is re-rendered
-            $.ajax({
-		          url: '/options' + window.location.search,
-		          type: 'GET',
-		          success: function(triggers) {
-                console.log('hi i am here checking modal')
-		            this.setState({
-                  triggerOptions: triggers,
-                  modalIsOpen: false
-                })
-		          }.bind(this),
-		          error: function(err) {
-		            console.error("Err posting", err.toString());
-		          }
-		        });
+          this._reloadOptions();
+          this.setState({
+            modalIsOpen: false,
+            clicked: false
+          })
 		      }.bind(this),
           error: function(err) {
             console.error("Err posting", err.toString());
           }
       });
     } else {
-      // sets errors in state??? IDK. Mojia?
+      // sets errors in state when there are errors, so the error notification appear
       this.setState({
         errors: errors,
         displayName: this.state.displayName,
@@ -202,8 +176,8 @@ var SearchBar = React.createClass({
   //error handling and changes state for enable/disable and triggers
   onChange: function(e) {
     //prevents enable/disable buttons from screwing shit up
-    e.preventDefault();
-
+    const expandTriggers = ['onTrigger', 'onEvent', 'onPageLoad'];
+    const notExpandTriggers = ['inHeader', 'onDocumentReady'];
     // verbose way of changing enabled/disabled state
     if (e.target.name === "active") {
       if (this.state.active === false) {
@@ -220,6 +194,23 @@ var SearchBar = React.createClass({
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
       this.setState(newState);
+    }
+
+    var changingCalledOn = e.target.name === "trackingTrigger";
+    var movingToNotExpand = notExpandTriggers.indexOf(e.target.value) > -1;
+    var movingToExpand = expandTriggers.indexOf(e.target.value) > -1;
+
+    if (changingCalledOn) {
+      if (movingToNotExpand) {
+        this.setState({
+          specificTrigger: e.target.value
+        })
+      }
+      else if (movingToExpand) {
+        this.setState({
+          specificTrigger: "Select a trigger"
+        })
+      }
     }
   },
 
@@ -253,7 +244,6 @@ var SearchBar = React.createClass({
             {/*shows a modal to input custom code*/}
   			    <Modal
   			      isOpen={this.state.modalIsOpen}
-  			      onAfterOpen={this.afterOpenModal}
   			      onRequestClose={this.closeModal}
   			      style={customStyles}
               >
@@ -317,8 +307,6 @@ var SearchBar = React.createClass({
                 </select>
 
 
-
-                {/* Renders each trigger option */}
                 {
                   (this.state.trackingTrigger === 'onTrigger' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onPageLoad') ? (
                     <div>
@@ -326,7 +314,7 @@ var SearchBar = React.createClass({
                       <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
                     </div>
                     <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-                      <option value="onDocumentReady" selected disabled>Select a trigger</option>
+                      <option selected >Select a trigger</option>
                     {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
                       return <option value={trigger}>{trigger}</option>
                       })
@@ -335,6 +323,8 @@ var SearchBar = React.createClass({
                   </div>
                   ) : null
                 }
+
+
 
                 {/* togglels between enabled and disabled buttons */}
   	    		    <div className="flex togglebutton">
@@ -353,8 +343,13 @@ var SearchBar = React.createClass({
   	    		  </div>
 
   			      <div className='flex pushed-right'>
-  			        <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
-                <button className="button button--highlight" onClick={this.addCustomTag}> Add Custom Tag </button>
+  			        <div><button className="button right-margin" onClick={this.closeModal}> Cancel </button></div>
+
+                <div>{this.state.specificTrigger !== "Select a trigger" && !this.state.clicked ?
+                 <button className="button button--highlight" onClick={this.addCustomTag}>Add Custom Tag</button> :
+                 <button className="button button--highlight" disabled onClick={this.addCustomTag}>Add Custom Tag</button>}
+                 </div>
+
   		        </div>
             </Modal>
           </li>
