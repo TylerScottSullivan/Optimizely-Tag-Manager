@@ -22,7 +22,7 @@ var MyTagsPage = React.createClass({
       this.props.onMaster(response);
     })
     // fetches tags from backend
-    .then(() => fetch('http://localhost:4001/download/' + window.location.search))
+    .then(() => fetch('http://localhost:4001/tag/' + window.location.search))
     .then(response => response.json())
     .then((r) => {
       // sends tags up to App(index.js) to re-render other tabs/side panels

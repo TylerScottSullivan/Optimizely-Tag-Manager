@@ -122,8 +122,8 @@ var MySidePanel = React.createClass({
     // ajax call to update tag on backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
-        url: '/updatetag/' + this.props.info._id + window.location.search,
-        type: 'POST',
+        url: '/tag/' + this.props.info._id + window.location.search,
+        type: 'PUT',
         data: data,
         success: function(response) {
           console.log("response", response)
@@ -151,8 +151,8 @@ var MySidePanel = React.createClass({
   onDelete: function() {
 
     return $.ajax({
-      url: '/deletetag/' + this.props.info._id + window.location.search,
-      type: 'POST',
+      url: '/tag/' + this.props.info._id + window.location.search,
+      type: 'DELETE',
       success: function(data) {
         //  sets deleted state up to MyTagsPage to re-render sidepanel properly
         this.props.onDelete();

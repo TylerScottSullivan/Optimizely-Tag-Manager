@@ -95,7 +95,7 @@ var AvailableSidePanel = React.createClass({
     //ajax call to add tag to backend
     if (Object.keys(errors).length === 0) {
       return $.ajax({
-        url: '/' + window.location.search,
+        url: '/tag' + window.location.search,
         type: 'POST',
         data: data,
         success: function(response) {

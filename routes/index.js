@@ -35,30 +35,30 @@ router.get('/', function(req, res, next) {
           });
 });
 
-router.get('/request', function(req, res, next) {
-  res.render('request');
-});
+// router.get('/request', function(req, res, next) {
+//   res.render('request');
+// });
 
-router.post('/request', function(req, res, next) {
-  var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription};
-  var t = new Tag({
-    name: req.body.type,
-    tagDescription: req.body.tagDescription,
-    fields: fields,
-    custom: req.body.snippet
-  });
-  t.save(function(err, tag) {
-    if (err) {
-      console.log("Error in index.js line 42 saving snippet tag", err)
-    }
-    else {
-      res.status(200).send("Okay with saving the tag")
-    }
-  })
-})
+// router.post('/request', function(req, res, next) {
+//   var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription};
+//   var t = new Tag({
+//     name: req.body.type,
+//     tagDescription: req.body.tagDescription,
+//     fields: fields,
+//     custom: req.body.snippet
+//   });
+//   t.save(function(err, tag) {
+//     if (err) {
+//       console.log("Error in index.js line 42 saving snippet tag", err)
+//     }
+//     else {
+//       res.status(200).send("Okay with saving the tag")
+//     }
+//   })
+// })
 
-//add
-router.post('/', function(req, res, next) {
+//adding a tag
+router.post('/tag', function(req, res, next) {
   //either find or create a new project object, to which we will append a new tag w/appropriate fields
   var utils = new Utils();
   utils.body = req.body;
@@ -79,7 +79,8 @@ router.post('/', function(req, res, next) {
         })
 });
 
-router.post('/deletetag/:tagid', function(req, res, next) {
+//deleting a tag
+router.delete('/tag/:tagid', function(req, res, next) {
   var utils = new Utils();
   utils.tagid = req.params.tagid;
   console.log("WOOOOOOOW", utils.tagid);
@@ -116,9 +117,9 @@ router.get('/master', (req, res, next) => {
 })
 
 
-// /download/:projectid
+
 // GET: gets all current tags, find project by project id, return all tags from a current project
-router.get('/download', (req, res, next) => {
+router.get('/tag', (req, res, next) => {
   console.log("[pre-require]");
   var utils = new Utils();
   Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
@@ -132,9 +133,9 @@ router.get('/download', (req, res, next) => {
   })
 })
 
-// /updatetag/:projectid/:tagid
-// Post: updated information for tag
-router.post('/updatetag/:tagid', (req, res, next) => {
+
+// Updating a tag
+router.put('/tag/:tagid', (req, res, next) => {
   var utils = new Utils();
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
@@ -157,6 +158,7 @@ router.post('/updatetag/:tagid', (req, res, next) => {
          })
 })
 
+//getting the options for a tag
 router.get('/options', function(req, res, next) {
   var utils = new Utils();
   utils.body = req.body;
@@ -176,10 +178,12 @@ router.get('/options', function(req, res, next) {
          })
 })
 
+//renders template form
 router.get('/template', function(req, res, next){
   res.render('template')
 })
 
+//creates a new template
 router.post('/template', function(req, res, next) {
   var tokens = [];
 
@@ -194,7 +198,8 @@ router.post('/template', function(req, res, next) {
   //sorry -- this was necessary because the front end is passing us a string value of true or false
   var usesOurCallbackValue = JSON.parse(req.body.usesOurCallback);
   console.log("THIS IS OUR CALLBACK VALUE_____________", usesOurCallbackValue, typeof usesOurCallbackValue);
-  //adds callback if they choose
+
+  //adds callback if the user chooses
   if (usesOurCallbackValue) {
     template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === \''+req.body.checkForType+'\') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
   }
@@ -226,42 +231,21 @@ router.post('/template', function(req, res, next) {
         .catch(function(err) {
           next(err);
         });
-  // var m = new Master({
-  //   name: req.body.type,
-  //   displayName: req.body.displayName,
-  //   tokens: tokens,
-  //   tagDescription: req.body.description,
-  //   hasCallback: req.body.hasCallback,
-  //   usesOurCallback: req.body.usesOurCallback,
-  //   approved: false,
-  //   template: template,
-  //   checkFor: req.body.checkFor,
-  //   checkForType: req.body.checkForType
-  // })
-  // m.save(function(err, master) {
-  //   if (err) {
-  //     next(err);
-  //   }
-  //   else {
-  //     console.log('saving new template correct', master)
-  //     // res.redirect('/')
-  //     res.send('i am all good')
-  //   }
-  // })
 });
 
-router.get('/restrictedOptions/:tagid', function(req, res, next) {
-  var utils = new Utils();
-  utils.tagid = req.params.tagid;
-  Tag.find({'projectId': req.optimizely.current_project})
-     .then(utils.restrictOptions.bind(utils))
-     .then(function(response) {
-        res.setHeader('Content-Type', 'application/json');
-        res.send(JSON.stringify(response)); //send an array of options
-     })
-     .catch(function(err) {
-       console.log("Error at the end of /options", err)
-     })
-})
+//getting restrictedOptions -- not calling children
+// router.get('/restrictedOptions/:tagid', function(req, res, next) {
+//   var utils = new Utils();
+//   utils.tagid = req.params.tagid;
+//   Tag.find({'projectId': req.optimizely.current_project})
+//      .then(utils.restrictOptions.bind(utils))
+//      .then(function(response) {
+//         res.setHeader('Content-Type', 'application/json');
+//         res.send(JSON.stringify(response)); //send an array of options
+//      })
+//      .catch(function(err) {
+//        console.log("Error at the end of /options", err)
+//      })
+// })
 
 module.exports = router;
