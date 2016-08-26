@@ -63,7 +63,7 @@ router.post('/', function(req, res, next) {
   var utils = new Utils();
   utils.body = req.body;
   Project.findOne({'projectId': req.optimizely.current_project})
-        .then(utils.findMaster.bind(utils))
+        .then(utils.setProjectFindMasters.bind(utils))
         .then(utils.findTagSetMasters.bind(utils))
         .then(utils.createTag.bind(utils))
         .then(utils.updateProject.bind(utils))
@@ -86,8 +86,8 @@ router.post('/deletetag/:tagid', function(req, res, next) {
   Tag.find({"projectId": req.optimizely.current_project})
      .then(utils.removeCallbacks.bind(utils))
      .then(utils.removeTag.bind(utils))
-     .then(utils.findAllMasters.bind(utils))
-     .then(utils.setAllMasters.bind(utils))
+     .then(utils.findMasters.bind(utils))
+     .then(utils.setMasters.bind(utils))
      .then(utils.getProject.bind(utils, req.optimizely.current_project, req.params.tagid))
      .then(utils.removeTagFromProject.bind(utils))
      .then(utils.populateProject.bind(utils))
@@ -142,7 +142,7 @@ router.post('/updatetag/:tagid', (req, res, next) => {
 
   console.log("I AM SETTING THE TAG ID HERE in UPDATE________________________", req.params.tagid)
   Project.findOne({projectId: req.optimizely.current_project})
-         .then(utils.findMaster.bind(utils))
+         .then(utils.setProjectFindMasters.bind(utils))
          .then(utils.setMaster.bind(utils))
          .then(utils.updateTag.bind(utils))
          .then(utils.chooseCallbackPath.bind(utils))
