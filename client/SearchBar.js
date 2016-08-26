@@ -201,7 +201,10 @@ var SearchBar = React.createClass({
 
   //error handling and changes state for enable/disable and triggers
   onChange: function(e) {
-    //prevents enable/disable buttons from screwing shit up
+
+
+
+    //prevents enable/disable buttons from refreshing the page
     e.preventDefault();
 
     // verbose way of changing enabled/disabled state
@@ -220,6 +223,30 @@ var SearchBar = React.createClass({
       var newState = Object.assign({}, this.state);
       newState[e.target.name] = e.target.value;
       this.setState(newState);
+    }
+
+    //setting the state got messy here--this is how we fixed it
+    const expandTriggers = ['onTrigger', 'onEvent', 'onPageLoad'];
+    const notExpandTriggers = ['inHeader', 'onDocumentReady'];
+
+    //checking for which way we are moving -- from an expandTrigger -> notExpandTrigger, or other way
+    var changingCalledOn = e.target.name === "trackingTrigger";
+    var movingToNotExpand = notExpandTriggers.indexOf(e.target.value) > -1;
+    var movingToExpand = expandTriggers.indexOf(e.target.value) > -1;
+
+    //if moving to not expand, sets state as the name of trigger we are moving to (inHeader or onDocumentReady)
+    //otherwise sets the state to "Select a trigger", which will deactivate the add a tag button (see render)
+    if (changingCalledOn) {
+      if (movingToNotExpand) {
+        this.setState({
+          specificTrigger: e.target.value
+        })
+      }
+      else if (movingToExpand) {
+        this.setState({
+          specificTrigger: "Select a trigger"
+        })
+      }
     }
   },
 
@@ -326,7 +353,7 @@ var SearchBar = React.createClass({
                       <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
                     </div>
                     <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-                      <option value="onDocumentReady" selected disabled>Select a trigger</option>
+                      <option selected>Select a trigger</option>
                     {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
                       return <option value={trigger}>{trigger}</option>
                       })
@@ -354,7 +381,11 @@ var SearchBar = React.createClass({
 
   			      <div className='flex pushed-right'>
   			        <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
-                <button className="button button--highlight" onClick={this.addCustomTag}> Add Custom Tag </button>
+                <div>
+                  {this.state.specificTrigger !== "Select a trigger" ?
+                   <button className="btn-uniform-add button button--highlight" onClick={this.addCustomTag}>Add Tag</button> :
+                   <button className="btn-uniform-add button button--highlight" disabled onClick={this.addCustomTag}>Add Tag</button>}
+                </div>
   		        </div>
             </Modal>
           </li>
