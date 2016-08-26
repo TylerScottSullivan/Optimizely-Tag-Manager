@@ -10,11 +10,11 @@ var NewTemplate = React.createClass({
       description: '',
       fields: [],
       template: '',
-      hasCallback: 'true',
+      hasCallback: true,
       email: '',
       checkForType: 'function',
       checkFor: '',
-      usesOurCallback: 'false',
+      usesOurCallback: false,
       errors: {'displayName': null, 'type': null, 'email': null},
       logo: null,
       codeExample: ''
@@ -35,6 +35,27 @@ var NewTemplate = React.createClass({
 
   //this change the enable and triggers
   onChange: function(e) {
+    var correctVal;
+    console.log(e.target.value, "target value");
+    if (e.target.name === "usesOurCallback") {
+      if (e.target.value === "true") {
+        correctVal = true
+      } else if (e.target.value == "false") {
+        correctVal = false
+      };
+      this.setState({
+        usesOurCallback: correctVal
+      })
+    } else if (e.target.name === "hasCallback") {
+      if (e.target.value === "true") {
+        correctVal = true
+      } else if (e.target.value == "false") {
+        correctVal = false
+      };
+      this.setState({
+        hasCallback: correctVal
+      })
+    } else {
     var errors = this.state.errors;
     errors[e.target.name] = false;
     console.log('errorsss', errors)
@@ -46,6 +67,7 @@ var NewTemplate = React.createClass({
     newState[e.target.name] = e.target.value;
     this.setState(newState);
     console.log('newState', newState)
+  }
   },
 
   onChangeSnippet: function(newVal) {
@@ -112,7 +134,7 @@ var NewTemplate = React.createClass({
 
     data.codeExample = this.state.codeExample;
 
-    if (this.state.usesOurCallback === 'true') {
+    if (this.state.usesOurCallback === true) {
       data.hasCallback = true;
     } else {
       data.hasCallback = this.state.hasCallback;
@@ -165,6 +187,7 @@ var NewTemplate = React.createClass({
 
   //change the language later
 	render: function () {
+    console.log(this.state, 'please help')
     var errorDisplayName = (this.state.errors.displayName) ? 'validation' : '';
     var errorType = (this.state.errors.type) ? 'validation' : '';
     var errorEmail = (this.state.errors.email) ? 'validation' : '';
@@ -218,10 +241,10 @@ var NewTemplate = React.createClass({
 							          			<option value={true}>Yes</option>
 							          			<option value={false}>No</option>
 							        		</select>
-                          <div>{(this.state.hasCallback === 'true') ? <div className="form-note">Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
+                          <div>{(this.state.hasCallback === true) ? <div className="form-note">Please put <code>{"{{{...}}}"}</code> around your callback</div> : null}</div>
 							      		</li>
 
-                        {(this.state.hasCallback === 'false') ?
+                        {(this.state.hasCallback === false) ?
                            (
                              <li className="form-field__item">
      				        					<label className="label">
@@ -236,7 +259,7 @@ var NewTemplate = React.createClass({
                         }
 
                       {
-                        (this.state.usesOurCallback === 'true') ?
+                        (this.state.usesOurCallback === true) ?
                         (
                           <div>
                           <li className="form-field__item">
