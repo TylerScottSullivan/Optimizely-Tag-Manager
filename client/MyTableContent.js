@@ -29,9 +29,9 @@ var MyTableContent = React.createClass({
           <thead>
             <tr>
               <th className = "cell-collapse">Logo</th>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Called On</th>
+              <th id ="mytablerow-dn-width" >Name</th>
+              <th id="mytablerow-cat-width">Category</th>
+              <th id="mytablerow-tt-width">Called On</th>
               <th className="cell-collapse">Status</th>
             </tr>
           </thead>

@@ -31,6 +31,17 @@ a {
 	font-size: 20px;
 }
 
+#mytablerow-dn-width {
+	width: 600px;
+}
+#mytablerow-cat-width {
+	width: 300px;
+}
+
+#mytablerow-tt-width {
+	width: 400px;
+}
+
 .sidepanel {
 	width: 400px;
 	position: relative;
