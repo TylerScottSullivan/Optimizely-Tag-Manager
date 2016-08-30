@@ -219,14 +219,14 @@ var MySidePanel = React.createClass({
     // }
   },
 
-  // changes code editor code (i think) // Mojia?
+  // changes code editor code 
   onChangeSnippet: function(newVal) {
       this.setState({
         changes: newVal
       });
   },
 
-  // changes code editor code in modal once set (i think) // Mojia?
+  // changes code editor code in modal once set
   updateCustom: function() {
     this.setState({
       template: this.state.changes,
