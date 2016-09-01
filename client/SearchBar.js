@@ -187,7 +187,7 @@ var SearchBar = React.createClass({
           }
       });
     } else {
-      // sets errors in state??? IDK. Mojia?
+      // sets errors in state when there are errors, so the error notification appear
       this.setState({
         errors: errors,
         displayName: this.state.displayName,
@@ -250,7 +250,7 @@ var SearchBar = React.createClass({
     }
   },
 
-  // changes code editor code (i think) // Mojia?
+  // changes code editor code 
   onChangeSnippet: function(newVal) {
       this.setState({
         template: newVal
@@ -266,14 +266,6 @@ var SearchBar = React.createClass({
     return (
     	<div>
         <ul className="flex push-double--ends">
-          <li className="push-triple--right">
-            <div className="button-group">
-              <div className="search">
-                <input type="text" className="text-input text-input--search width--200" placeholder="Filter by Name"/>
-              </div>
-              <button className="button" type="button">Search</button>
-            </div>
-          </li>
           <li className="anchor--right">
             <button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
 
