@@ -421,7 +421,7 @@ var utils = {
     project.tags.splice(project.tags.indexOf(this.tagid), 1);
     return project.save();
   },
-  setMaster: function(masters) {
+  setMasterFindTagByID: function(masters) {
     //set the master and find the correct tag
     this.masters = masters;
     return Tag.findById(this.tagid)

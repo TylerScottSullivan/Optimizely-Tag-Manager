@@ -144,7 +144,7 @@ router.put('/tag/:tagid', (req, res, next) => {
   console.log("I AM SETTING THE TAG ID HERE in UPDATE________________________", req.params.tagid)
   Project.findOne({projectId: req.optimizely.current_project})
          .then(utils.setProjectFindMasters.bind(utils))
-         .then(utils.setMaster.bind(utils))
+         .then(utils.setMasterFindTagByID.bind(utils))
          .then(utils.updateTag.bind(utils))
          .then(utils.chooseCallbackPath.bind(utils))
          .then(utils.populateProject.bind(utils))
