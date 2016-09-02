@@ -500,52 +500,64 @@ var utils = {
   setMasters: function(masters) {
     this.masters = masters;
     return;
-  }
+  },
   //NOTE: these functions were written to get rid of children in options for a tag to be called on
   //NOTE: including children would create a recursive loop when rendering the javascript
   //NOTE: it was decided that this would be better done on the client side, but the logic is here, commented out
   //NOTE: has not been tested
   //TODO: getParents & restrictOptions does not account for custom tags, needs similar workaround as to be found in above functions
-  // restrictOptions: function(tags) {
-      //takes in all tags and this.tagid is set to the starting tag we are trying to update
-      // var startingTag = tags.filter(function(item) {
-      //   return item._id === this.tagid;
-      // }.bind(this));
-      // startingTag = startingTag.name;
-      // var noGos = getChildren(tags, startingTag, []);
-      // availableTagTriggers = tags.filter(function(item) {
-      //   if (item.name === "custom") {
-      //     return !(noGos.includes(item.customId) && item.active);
-      //   }
-      //   else {
-      //     return !(noGos.includes(item.name)) && item.active;
-      //   }
-      // });
-      //return availableTagTriggers;
-  // },
-  // getChildren: function(tags, startingTag, list) {
-  //
-    // var children = tags.filter(function(item) {
-    //   if (item.name === 'custom') {
-    //     return startingTag.callbacks.includes(item.customId);
-    //   }
-    //   else {
-    //     return startingTag.callbacks.includes(item.name)
-    //   }
-    // })
-  //
-  //   for(var i = 0; i < children.length; i++) {
-  //     list.concat(getChildren(tags, children[i], list));
-  //   }
-    // if (startingTag.name === "custom") {
-    //   list.concat(startingTag.customId);
-    // }
-    // else {
-    //   list.concat([startingTag.name]);
-    // }
-  //
-  //   return list;
-  // }
+  restrictOptions: function(tags) {
+      // takes in all tags and this.tagid is set to the starting tag we are trying to update
+
+      //if we are adding a tag for the first time, it will not have any children, and will not have to go
+      //through any additional steps
+      console.log('this.tagid', this.tagid, this.tagid === 'undefined', typeof this.tagid)
+      if (this.tagid === 'undefined' || this.tagid === null || this.tagid === undefined) {
+        return tags;
+      }
+
+      var startingTag = tags.filter(function(item) {
+        console.log("ITEMS", item._id.toString(), this.tagid.toString(), typeof item._id.toString(), typeof this.tagid.toString())
+        return item._id.toString() === this.tagid.toString();
+      }.bind(this))[0];
+      console.log("STARTING TAG", startingTag)
+      var noGos = this.getChildren(tags, startingTag, []);
+      console.log("NOGOS", noGos)
+      availableTagTriggers = tags.filter(function(item) {
+        if (item.name === "custom") {
+          return !(noGos.includes(item.customId) && item.active);
+        }
+        else {
+          return !(noGos.includes(item.name)) && item.active;
+        }
+      });
+      console.log("[STAGE] got past noGos")
+      return availableTagTriggers;
+  },
+  getChildren: function(tags, startingTag, list) {
+    // console.log("ALL TAGS", tags)
+    console.log("*********STARTING TAG***********", startingTag)
+    var children = tags.filter(function(item) {
+      if (item.name === 'custom') {
+        return startingTag.callbacks.includes(item.customId);
+      }
+      else {
+        return startingTag.callbacks.includes(item.name)
+      }
+    })
+    console.log("CHILDREN", children)
+    for(var i = 0; i < children.length; i++) {
+      list.concat(this.getChildren(tags, children[i], list));
+    }
+    if (startingTag.name === "custom") {
+      list.push(startingTag.customId);
+    }
+    else {
+      list.push(startingTag.name);
+    }
+
+    return list;
+  }
 }
 class Utils {
   constructor() {

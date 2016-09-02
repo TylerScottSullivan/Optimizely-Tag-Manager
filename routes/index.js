@@ -159,13 +159,19 @@ router.put('/tag/:tagid', (req, res, next) => {
 })
 
 //getting the options for a tag
-router.get('/options', function(req, res, next) {
+router.get('/options/:tagid', function(req, res, next) {
   var utils = new Utils();
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
-  utils.tagid = req.params.tagid;
+  if (req.params.tagid === "0") {
+    utils.tagid = null;
+  }
+  else {
+    utils.tagid = req.params.tagid;
+  }
   Project.findOne({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
+         .then(utils.restrictOptions.bind(utils))
          .then(utils.getOptions.bind(utils))
          .then(utils.getPageOptions.bind(utils))
          .then(utils.addProjectOptions.bind(utils))

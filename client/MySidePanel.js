@@ -56,8 +56,10 @@ var MySidePanel = React.createClass({
   componentWillReceiveProps: function(nextProps) {
     // resets information on sidepanel when new row is clicked
     console.log('nextProps____________', nextProps)
+    console.log("THIS.STATE________", this.state)
+    console.log("THIS.2", nextProps.info._id)
     $.ajax({
-      url: '/options' + window.location.search,
+      url: '/options/'+ nextProps.info._id + window.location.search,
       type: 'GET',
       success: function(data) {
         console.log('get options successful', data);
@@ -219,7 +221,7 @@ var MySidePanel = React.createClass({
     // }
   },
 
-  // changes code editor code 
+  // changes code editor code
   onChangeSnippet: function(newVal) {
       this.setState({
         changes: newVal

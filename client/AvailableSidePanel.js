@@ -4,7 +4,7 @@ var AvailableInputFields = require('./AvailableInputFields');
 var AvailableSidePanel = React.createClass({
   _reloadOptions: function() {
     $.ajax({
-      url: '/options' + window.location.search,
+      url: '/options/0' + window.location.search,
       type: 'GET',
       success: function(data) {
         console.log('get options successful', data);
