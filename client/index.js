@@ -33,7 +33,6 @@ var SearchBar = require('./SearchBar');
 var MyTagsPage = require('./MyTagsPage');
 var AvailableTagsPage = require('./AvailableTagsPage');
 var NewTemplate = require('./NewTemplate');
-var SubmitNew = require('./SubmitNew');
 
 // react table stuff we don't use
 var Table = Reactable.Table,
