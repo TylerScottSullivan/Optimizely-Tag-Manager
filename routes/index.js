@@ -144,7 +144,7 @@ router.put('/tag/:tagid', (req, res, next) => {
   console.log("I AM SETTING THE TAG ID HERE in UPDATE________________________", req.params.tagid)
   Project.findOne({projectId: req.optimizely.current_project})
          .then(utils.setProjectFindMasters.bind(utils))
-         .then(utils.setMaster.bind(utils))
+         .then(utils.setMasterFindTagByID.bind(utils))
          .then(utils.updateTag.bind(utils))
          .then(utils.chooseCallbackPath.bind(utils))
          .then(utils.populateProject.bind(utils))
@@ -196,11 +196,13 @@ router.post('/template', function(req, res, next) {
   var template = req.body.template;
 
   //sorry -- this was necessary because the front end is passing us a string value of true or false
-  var usesOurCallbackValue = JSON.parse(req.body.usesOurCallback);
-  console.log("THIS IS OUR CALLBACK VALUE_____________", usesOurCallbackValue, typeof usesOurCallbackValue);
+  // var usesOurCallbackValue = JSON.parse(req.body.usesOurCallback);
+  // console.log("THIS IS OUR CALLBACK VALUE_____________", usesOurCallbackValue, typeof usesOurCallbackValue);
 
+  // console.log("USESOURCALBACK ___________", req.body.usesOurCallback, typeof req.body.usesOurCallback)
   //adds callback if the user chooses
-  if (usesOurCallbackValue) {
+  if (JSON.parse(req.body.usesOurCallback)) {
+  //if (req.body.usesOurCallback) {
     template += 'var '+req.body.checkFor+'_callback = {{{callback}}};var interval = window.setInterval(function() {if ((typeof '+req.body.checkFor+') === \''+req.body.checkForType+'\') {'+req.body.checkFor+'_callback();window.clearInterval(interval);}}, 2000);window.setTimeout(function() {window.clearInterval(interval);}, 4000);'
   }
   Master.findOne({'name': req.body.type})

@@ -34,6 +34,7 @@ var MyTagsPage = require('./MyTagsPage');
 var AvailableTagsPage = require('./AvailableTagsPage');
 var NewTemplate = require('./NewTemplate');
 
+
 // react table stuff we don't use
 var Table = Reactable.Table,
     Thead = Reactable.Thead,

@@ -151,6 +151,8 @@ var NewTemplate = React.createClass({
       return $.ajax({
         url: '/template' + window.location.search,
         type: 'POST',
+        datatype: 'json',
+        contentType: 'application/json',
         data: data,
         success: function(data) {
           console.log('Add new template successful');
