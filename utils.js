@@ -501,11 +501,6 @@ var utils = {
     this.masters = masters;
     return;
   },
-  //NOTE: these functions were written to get rid of children in options for a tag to be called on
-  //NOTE: including children would create a recursive loop when rendering the javascript
-  //NOTE: it was decided that this would be better done on the client side, but the logic is here, commented out
-  //NOTE: has not been tested
-  //TODO: getParents & restrictOptions does not account for custom tags, needs similar workaround as to be found in above functions
   restrictOptions: function(tags) {
       // takes in all tags and this.tagid is set to the starting tag we are trying to update
 
@@ -525,7 +520,7 @@ var utils = {
       console.log("NOGOS", noGos)
       availableTagTriggers = tags.filter(function(item) {
         if (item.name === "custom") {
-          return !(noGos.includes(item.customId) && item.active);
+          return !(noGos.includes(item.customId)) && item.active;
         }
         else {
           return !(noGos.includes(item.name)) && item.active;
