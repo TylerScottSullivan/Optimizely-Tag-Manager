@@ -34,6 +34,7 @@ var MySidePanel = React.createClass({
       changes: '',
       template: '',
       specificTrigger: null,
+      optionsReady: false
     };
   },
 
@@ -55,6 +56,7 @@ var MySidePanel = React.createClass({
 
   componentWillReceiveProps: function(nextProps) {
     // resets information on sidepanel when new row is clicked
+    this.setState({optionsReady: false});
     console.log('nextProps____________', nextProps)
     console.log("THIS.STATE________", this.state)
     console.log("THIS.2", nextProps.info._id)
@@ -74,6 +76,7 @@ var MySidePanel = React.createClass({
         }
         console.log('optionssss', options)
         this.setState({triggerOptions: options})
+        this.setState({optionsReady: true})
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());
@@ -273,9 +276,15 @@ var MySidePanel = React.createClass({
     // assuming tag is not deleted, displays regular information
     if(!this.props.deleted) {
 
-
-      // if a tag has been selected, will display the proper information
-  		if (this.props.info && Object.keys(this.props.info).length !== 0 || this.props.deleted) {
+      if(!this.state.optionsReady) {
+        return(
+          <div className="sidepanel background--faint">
+            <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
+            <div> Loading... </div>
+          </div>
+        )
+      } else if ((this.props.info && Object.keys(this.props.info).length !== 0 || this.props.deleted) && this.state.optionsReady) {
+         // if a tag has been selected, will display the proper information
   			return (
           <div data-toggle='validator' className="sidepanel background--faint">
             <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
