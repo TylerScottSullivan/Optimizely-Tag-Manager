@@ -20,7 +20,7 @@ const customStyles = {
 var SearchBar = React.createClass({
   _reloadOptions: function() {
     $.ajax({
-      url: '/options' + window.location.search,
+      url: '/options/0' + window.location.search,
       type: 'GET',
       success: function(data) {
         console.log('get options successful', data);
@@ -375,8 +375,8 @@ var SearchBar = React.createClass({
   			        <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
                 <div>
                   {this.state.specificTrigger !== "Select a trigger" ?
-                   <button className="btn-uniform-add button button--highlight" onClick={this.addCustomTag}>Add Tag</button> :
-                   <button className="btn-uniform-add button button--highlight" disabled onClick={this.addCustomTag}>Add Tag</button>}
+                   <button className="button button--highlight" onClick={this.addCustomTag}>Add Tag</button> :
+                   <button className="button button--highlight" disabled onClick={this.addCustomTag}>Add Tag</button>}
                 </div>
   		        </div>
             </Modal>

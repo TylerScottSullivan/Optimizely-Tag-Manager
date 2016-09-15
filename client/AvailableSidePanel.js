@@ -40,7 +40,6 @@ var AvailableSidePanel = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-    this._reloadOptions();
     this.setState({trackingTrigger: 'inHeader'})
     console.log('receiving props', nextProps)
     // nextProps.info.tokens = nextProps.info.tokens.map((token) => {
@@ -59,6 +58,10 @@ var AvailableSidePanel = React.createClass({
         info: nextProps.info,
         tokens: nextProps.info.tokens
       })
+    }
+
+    if (Object.keys(nextProps.downloadedProject).length > Object.keys(this.props.downloadedProject).length) {
+        this._reloadOptions();
     }
   },
 
