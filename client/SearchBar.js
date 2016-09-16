@@ -19,8 +19,9 @@ const customStyles = {
 
 var SearchBar = React.createClass({
   _reloadOptions: function() {
+    console.warn("Reloading options from SearchBar. This is probably being called too often!");
     $.ajax({
-      url: '/options' + window.location.search,
+      url: '/options/0' + window.location.search,
       type: 'GET',
       success: function(data) {
         console.log('get options successful', data);
@@ -60,9 +61,15 @@ var SearchBar = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    console.warn("Now receiving props into SearchBar", nextProps);
     this.setState({trackingTrigger: 'inHeader'})
-    // gets trigger options with ajax call when component is first rendered
-    this._reloadOptions();
+    // gets trigger options with ajax call ONLY IF
+    // downloadedProject array changes length (in which case we may have new options)
+    // AND the component is not receiving initial downloadedProject array (from length 0 -> x)
+    if (this.props.downloadedProject.length !== nextProps.downloadedProject.length
+        && this.props.downloadedProject.length > 0) {
+      this._reloadOptions();
+    }
   },
 
   // opens modal
@@ -264,9 +271,7 @@ var SearchBar = React.createClass({
     var errorCustom = (this.state.errors['template']) ? 'validation' : '';
 
     return (
-    	<div>
-        <ul className="flex push-double--ends">
-          <li className="anchor--right">
+          <li className="anchor--right" style={{marginTop: '-5px'}}>
             <button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
 
             {/*shows a modal to input custom code*/}
@@ -381,8 +386,6 @@ var SearchBar = React.createClass({
   		        </div>
             </Modal>
           </li>
-        </ul>
-      </div>
     )
   }
 });
