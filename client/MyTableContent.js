@@ -23,7 +23,6 @@ var MyTableContent = React.createClass({
     return (
      	<div className="flex--1 soft-double--sides scroll">
         {/*passes App props into Search Bar component*/}
-       	<SearchBar value={this.props.splicedArray} {...this.props}/>
         <h1 className='header1'> My Tags </h1>
         <table className="table table--rule table--hover myTable" ref='myTable'>
           <thead>

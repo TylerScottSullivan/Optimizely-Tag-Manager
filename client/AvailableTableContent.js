@@ -23,7 +23,6 @@ var AvailableTableContent = React.createClass({
     return (
       <div className="flex--1 soft-double--sides scroll">
         {/*passes App props into Search Bar component*/}
-        <SearchBar {...this.props}/>
         <h1 className='header1'> Available Tags </h1>
         <table className="table table--rule table--hover myTable" ref='AvTable'>
           <thead>

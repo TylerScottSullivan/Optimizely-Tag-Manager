@@ -70,7 +70,7 @@ var App = React.createClass({
   render: function() {
     return (
     	<div>
-        <Tab/>
+        <Tab onDownload={this.onDownload} onMaster={this.onMaster} {...this.state}/>
         {/* passes functions into tabs as props*/}
         {React.cloneElement(this.props.children, Object.assign({}, this.state, {onDownload: this.onDownload, onMaster: this.onMaster}), null)}
       </div>

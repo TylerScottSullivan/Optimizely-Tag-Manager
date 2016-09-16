@@ -1,6 +1,7 @@
 var React = require('react');
-import { Router, Route, IndexRoute, IndexRedirect, Link, IndexLink, hashHistory } from 'react-router'
+var SearchBar = require('./SearchBar');
 
+import { Router, Route, IndexRoute, IndexRedirect, Link, IndexLink, hashHistory } from 'react-router'
 
 var Tab = React.createClass({
   render: function() {
@@ -16,6 +17,7 @@ var Tab = React.createClass({
           <Link to="/submitNewTemplate" activeClassName="is-active" className="tabs-nav__item">
             <li className="tabs-nav__item" data-oui-tabs-nav-item>Submit New Template</li>
           </Link>
+          <SearchBar value={this.props.splicedArray} {...this.props}/>
         </ul>
       </div>
     )
