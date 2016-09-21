@@ -370,7 +370,7 @@ var utils = {
   getTagOptions: function(project) {
     //gets all tags that are callback-able, part of this project, and enabled
     this.project = project;
-    return Tag.find({'hasCallback': true, 'projectId': this.project.projectId, "active": true});
+    return Tag.find({'projectId': this.project.projectId});
   },
   populateProject: function(updatedProject) {
     return updatedProject.populate({path: 'tags'}).execPopulate();
@@ -507,23 +507,23 @@ var utils = {
       //if we are adding a tag for the first time, it will not have any children, and will not have to go
       //through any additional steps
       console.log('this.tagid', this.tagid, this.tagid === 'undefined', typeof this.tagid)
-      if (this.tagid === 'undefined' || this.tagid === null || this.tagid === undefined) {
+      if (this.tagid === 'undefined' || !this.tagid) {
         return tags;
       }
 
-      var startingTag = tags.filter(function(item) {
+      var startingTag = tags.filter((item) => {
         console.log("ITEMS", item._id.toString(), this.tagid.toString(), typeof item._id.toString(), typeof this.tagid.toString())
         return item._id.toString() === this.tagid.toString();
-      }.bind(this))[0];
+      })[0];
       console.log("STARTING TAG", startingTag)
       var noGos = this.getChildren(tags, startingTag, []);
       console.log("NOGOS", noGos)
       availableTagTriggers = tags.filter(function(item) {
         if (item.name === "custom") {
-          return !(noGos.includes(item.customId)) && item.active;
+          return item.active && item.hasCallback && !(noGos.includes(item.customId));
         }
         else {
-          return !(noGos.includes(item.name)) && item.active;
+          return item.active && item.hasCallback && !(noGos.includes(item.name));
         }
       });
       console.log("[STAGE] got past noGos")
@@ -531,6 +531,7 @@ var utils = {
   },
   getChildren: function(tags, startingTag, list) {
     // console.log("ALL TAGS", tags)
+    //TODO: startingTag possibly undefined
     console.log("*********STARTING TAG***********", startingTag)
     var children = tags.filter(function(item) {
       if (item.name === 'custom') {

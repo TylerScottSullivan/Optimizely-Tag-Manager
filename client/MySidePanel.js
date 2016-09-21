@@ -60,29 +60,30 @@ var MySidePanel = React.createClass({
     console.log('nextProps____________', nextProps)
     console.log("THIS.STATE________", this.state)
     console.log("THIS.2", nextProps.info._id)
-    $.ajax({
-      url: '/options/'+ nextProps.info._id + window.location.search,
-      type: 'GET',
-      success: function(data) {
-        console.log('get options successful', data);
-        var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
-        for (var i = 0; i < data.length; i ++) {
-          var d = data[i].split(',');
-          for (var option in options) {
-            if (d[0] === option && d[1] !== nextProps.info.name) {
-              options[option].push(d[1]);
+
+    if (nextProps.info._id) {
+      $.ajax({
+        url: '/options/'+ nextProps.info._id + window.location.search,
+        type: 'GET',
+        success: function(data) {
+          console.log('get options successful', data);
+          var options = {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []};
+          for (var i = 0; i < data.length; i ++) {
+            var d = data[i].split(',');
+            for (var option in options) {
+              if (d[0] === option && d[1] !== nextProps.info.name) {
+                options[option].push(d[1]);
+              }
             }
           }
+          console.log('optionssss', options)
+          this.setState({triggerOptions: options})
+          this.setState({optionsReady: true})
+        }.bind(this),
+        error: function(err) {
+          console.error("Err posting", err.toString());
         }
-        console.log('optionssss', options)
-        this.setState({triggerOptions: options})
-        this.setState({optionsReady: true})
-      }.bind(this),
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
-    if (nextProps.info) {
+      });
       this.setState({
         info: nextProps.info,
         fields: nextProps.info.fields,
