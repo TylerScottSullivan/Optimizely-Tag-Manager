@@ -85,8 +85,12 @@ var MyTagsPage = React.createClass({
       }
     };
     console.log('this is the full info i am passing to mysidePanel', currentInfo)
+    console.log(this.state.sidePanel, "sidePanel passing");
+    console.log(this.state.sidePanelIndex, "sidePanel index passing")
 
     var splicedArray = newArray;
+
+    console.log("this is the info i am passing to mysidePanel spliaced Array", splicedArray)
 
     return (
       <div className="flex height--1-1">

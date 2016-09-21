@@ -55,11 +55,17 @@ var MySidePanel = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
+    console.log("receiving props", nextProps)
+    console.log(this.state.optionsReady, "options ready")
     // resets information on sidepanel when new row is clicked
     this.setState({optionsReady: false});
     console.log('nextProps____________', nextProps)
     console.log("THIS.STATE________", this.state)
     console.log("THIS.2", nextProps.info._id)
+
+    if(!nextProps.info._id) {
+      this.setState({optionsReady: true})
+    }
 
     if (nextProps.info._id) {
       $.ajax({
@@ -79,6 +85,7 @@ var MySidePanel = React.createClass({
           console.log('optionssss', options)
           this.setState({triggerOptions: options})
           this.setState({optionsReady: true})
+          console.log(this.state.optionsReady, "after options loaded")
         }.bind(this),
         error: function(err) {
           console.error("Err posting", err.toString());
@@ -284,7 +291,7 @@ var MySidePanel = React.createClass({
             <div> Loading... </div>
           </div>
         )
-      } else if ((this.props.info && Object.keys(this.props.info).length !== 0 || this.props.deleted) && this.state.optionsReady) {
+      } else if ((this.props.info && Object.keys(this.props.info).length !== 0 || this.props.deleted) && this.state.optionsReady && this.state.info.approved) {
          // if a tag has been selected, will display the proper information
   			return (
           <div data-toggle='validator' className="sidepanel background--faint">
