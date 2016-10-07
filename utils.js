@@ -18,7 +18,6 @@ var utils = {
   tagid: null,
   addCallbacks: function(tags) {
     //adds tag as a "callback" of the tag it is triggered on
-    console.log("[stage] ADDCALLBACKS")
     //if the function is passed an array of tags, set this.tags = tags
     if (tags && tags.hasOwnProperty('length')) {
       this.tags = tags;
@@ -28,7 +27,6 @@ var utils = {
     var myTag = this.tags.filter(function(item) {
       return item._id.toString() === this.tagid.toString();
     }.bind(this))[0];
-    console.log("MY TAG", myTag);
     //find tag to add the callback to
     var parentTag = this.tags.filter(function(item) {
       //trackingTrigger is a customId if the parent tag is a custom tag
@@ -39,7 +37,6 @@ var utils = {
         return item.name === myTag.trackingTrigger;
       }
     })[0];
-    console.log("PARENT TAG", parentTag)
     //we don't want to change the actual tag just in case (mongo is weird) so we're using a temp variable
     var temp = myTag.name;
     if (myTag.name === 'custom') {
@@ -49,8 +46,6 @@ var utils = {
     // if the parentTag exists, add myTag's name (temp) to it's callback, else return myTag (allows us to get the projectId later in promise chain)
     if(parentTag) {
       parentTag.callbacks.push(temp);
-      console.log("temp", temp)
-      console.log("parentTag", parentTag.callbacks)
       return parentTag.save();
     } else {
       return myTag;
@@ -220,6 +215,21 @@ var utils = {
 
     //finds all tags with this.body.name and the current project
     return Tag.findOne({"name": this.body.name, "projectId": this.project.projectId});
+  },
+  getChildren: function(tags, startingTag, list) {
+    //getting the children of a tag to rule them out of being a trigger
+    //for /options route
+
+    var children = tags.filter(function(item) {
+        return startingTag.callbacks.includes(item.name);
+      // }
+    })
+    for(var i = 0; i < children.length; i++) {
+      list.concat(this.getChildren(tags, children[i], list));
+    }
+
+    list.push(startingTag.name);
+    return list;
   },
   getJavascript: function(populatedProject) {
     //sets the this.combinedJavascript field to be used later in buildJavascript in PUT call to project_javascript
@@ -421,6 +431,30 @@ var utils = {
     project.tags.splice(project.tags.indexOf(this.tagid), 1);
     return project.save();
   },
+  restrictOptions: function(tags) {
+      // takes in all tags and this.tagid is set to the starting tag we are trying to update
+      //if we are adding a tag for the first time, it will not have any children, and will not have to go
+      //through any additional steps
+      if (this.tagid === 'undefined' || !this.tagid) {
+        return tags.filter(function(item) {
+          return item.name !== "custom";
+        });
+      }
+
+      var startingTag = tags.filter((item) => {
+        return item._id.toString() === this.tagid.toString();
+      })[0];
+      var noGos = this.getChildren(tags, startingTag, []);
+
+      var availableTagTriggers = tags.filter(function(item) {
+          return item.active && item.hasCallback && !(noGos.includes(item.name)) && item.name !== "custom";
+      });
+      return availableTagTriggers;
+  },
+  setMasters: function(masters) {
+    this.masters = masters;
+    return;
+  },
   setMasterFindTagByID: function(masters) {
     //set the master and find the correct tag
     this.masters = masters;
@@ -468,91 +502,28 @@ var utils = {
   updateProject: function(tag) {
     //updates the tags of a project and saves the project
     //also updates the tag which the new tag is called on to include it in callbacks
-    console.log("[state] UPDATE PROJECT")
     this.tag = tag;
     this.project.tags.push(tag._id);
     return new Promise(function(resolve, reject) {
       //check if need to add callbacks to any tags
-      console.log("TAG", tag);
       if(tag.trackingTriggerType === "onTrigger") {
-        console.log("[stage], inside new promise if statement")
         Tag.findOne({"name": tag.trackingTrigger, "projectId": this.project.projectId})
            .then(function(trackerTag) {
-             console.log("[stage], found trackerTag", trackerTag)
               if (tag.name === "custom") {
                 trackerTag.callbacks.push(tag.customId);
               }
               else {
                 trackerTag.callbacks.push(tag.name);
               }
-              console.log('trackerTag.callbacks new', trackerTag.callbacks)
               return trackerTag.save();
             }.bind(this))
            .then(() => resolve(this.project.save()) )
            .catch(err => reject(err) );
       }
       else {
-        console.log("[stage], inside new promise else statement")
         resolve(this.project.save());
       }
     }.bind(this));
-  },
-  setMasters: function(masters) {
-    this.masters = masters;
-    return;
-  },
-  restrictOptions: function(tags) {
-      // takes in all tags and this.tagid is set to the starting tag we are trying to update
-
-      //if we are adding a tag for the first time, it will not have any children, and will not have to go
-      //through any additional steps
-      console.log('this.tagid', this.tagid, this.tagid === 'undefined', typeof this.tagid)
-      if (this.tagid === 'undefined' || !this.tagid) {
-        return tags;
-      }
-
-      var startingTag = tags.filter((item) => {
-        console.log("ITEMS", item._id.toString(), this.tagid.toString(), typeof item._id.toString(), typeof this.tagid.toString())
-        return item._id.toString() === this.tagid.toString();
-      })[0];
-      console.log("STARTING TAG", startingTag)
-      var noGos = this.getChildren(tags, startingTag, []);
-      console.log("NOGOS", noGos)
-      availableTagTriggers = tags.filter(function(item) {
-        if (item.name === "custom") {
-          return item.active && item.hasCallback && !(noGos.includes(item.customId));
-        }
-        else {
-          return item.active && item.hasCallback && !(noGos.includes(item.name));
-        }
-      });
-      console.log("[STAGE] got past noGos")
-      return availableTagTriggers;
-  },
-  getChildren: function(tags, startingTag, list) {
-    // console.log("ALL TAGS", tags)
-    //TODO: startingTag possibly undefined
-    console.log("*********STARTING TAG***********", startingTag)
-    var children = tags.filter(function(item) {
-      if (item.name === 'custom') {
-        return startingTag.callbacks.includes(item.customId);
-      }
-      else {
-        return startingTag.callbacks.includes(item.name)
-      }
-    })
-    console.log("CHILDREN", children)
-    for(var i = 0; i < children.length; i++) {
-      list.concat(this.getChildren(tags, children[i], list));
-    }
-    if (startingTag.name === "custom") {
-      list.push(startingTag.customId);
-    }
-    else {
-      list.push(startingTag.name);
-    }
-
-    return list;
   }
 }
 class Utils {

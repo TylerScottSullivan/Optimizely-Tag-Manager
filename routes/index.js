@@ -35,28 +35,6 @@ router.get('/', function(req, res, next) {
           });
 });
 
-// router.get('/request', function(req, res, next) {
-//   res.render('request');
-// });
-
-// router.post('/request', function(req, res, next) {
-//   var fields = {"name": req.body.fieldName, 'description': req.body.fieldDescription};
-//   var t = new Tag({
-//     name: req.body.type,
-//     tagDescription: req.body.tagDescription,
-//     fields: fields,
-//     custom: req.body.snippet
-//   });
-//   t.save(function(err, tag) {
-//     if (err) {
-//       console.log("Error in index.js line 42 saving snippet tag", err)
-//     }
-//     else {
-//       res.status(200).send("Okay with saving the tag")
-//     }
-//   })
-// })
-
 //adding a tag
 router.post('/tag', function(req, res, next) {
   //either find or create a new project object, to which we will append a new tag w/appropriate fields
@@ -83,7 +61,6 @@ router.post('/tag', function(req, res, next) {
 router.delete('/tag/:tagid', function(req, res, next) {
   var utils = new Utils();
   utils.tagid = req.params.tagid;
-  console.log("WOOOOOOOW", utils.tagid);
   Tag.find({"projectId": req.optimizely.current_project})
      .then(utils.removeCallbacks.bind(utils))
      .then(utils.removeTag.bind(utils))
@@ -95,7 +72,6 @@ router.delete('/tag/:tagid', function(req, res, next) {
      .then(utils.getJavascript.bind(utils))
      .then(utils.buildJavascript.bind(utils))
      .then(function(response) {
-       console.log("GOT TO THE END OF THE DELTE CHAIN")
        res.status(200).send('I am alright')
      })
      .catch(function(err) {
@@ -120,10 +96,8 @@ router.get('/master', (req, res, next) => {
 
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/tag', (req, res, next) => {
-  console.log("[pre-require]");
   var utils = new Utils();
   Tag.find({'projectId': req.optimizely.current_project}, function(err, tags) {
-    console.log("[tag found]");
     if (err) {
       console.log('err finding tags in download/:projectid', err)
     } else {
@@ -141,7 +115,6 @@ router.put('/tag/:tagid', (req, res, next) => {
   utils.body.projectId = req.optimizely.current_project;
   utils.tagid = req.params.tagid;
 
-  console.log("I AM SETTING THE TAG ID HERE in UPDATE________________________", req.params.tagid)
   Project.findOne({projectId: req.optimizely.current_project})
          .then(utils.setProjectFindMasters.bind(utils))
          .then(utils.setMasterFindTagByID.bind(utils))
@@ -240,20 +213,5 @@ router.post('/template', function(req, res, next) {
           next(err);
         });
 });
-
-//getting restrictedOptions -- not calling children
-// router.get('/restrictedOptions/:tagid', function(req, res, next) {
-//   var utils = new Utils();
-//   utils.tagid = req.params.tagid;
-//   Tag.find({'projectId': req.optimizely.current_project})
-//      .then(utils.restrictOptions.bind(utils))
-//      .then(function(response) {
-//         res.setHeader('Content-Type', 'application/json');
-//         res.send(JSON.stringify(response)); //send an array of options
-//      })
-//      .catch(function(err) {
-//        console.log("Error at the end of /options", err)
-//      })
-// })
 
 module.exports = router;

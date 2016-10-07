@@ -35,38 +35,27 @@ var tagSchema = mongoose.Schema({
 tagSchema.methods.render = function(tags, masters) {
   //data structured {tags:, masters:, innerCallback:, template:}
   var filtered = [];
-  // console.log("[stage inside render this:]", this);
-  // console.log("[tags]", tags);
-  // console.log('[masters]', masters);
   if (tags) {
     //filtered are the tags that this has as children ["*937249734", "GA"]
-    console.log("TAGS", tags)
      filtered = tags.filter(function(item) {
        if (item.name === "custom") {
-         console.log("THIS.CALLBACKS", this.callbacks, "ITEM", item.customId)
          return this.callbacks.includes(item.customId);
        }
        else {
-         console.log("THIS.CALLBACKS", this.callbacks, "ITEM", item.name)
          return this.callbacks.includes(item.name);
        }
     }.bind(this));
-    console.log('FINAL FILTERED', filtered)
   }
-  // console.log('[filtered]', filtered);
   var innerCallback = '';
   for (var i = 0; i < filtered.length; i++) {
     innerCallback += filtered[i].render(tags, masters);
   }
-  // console.log('innerCallback1', innerCallback);
   var index = Math.floor(Math.random()*1000);
   innerCallback="function callback" + index + " (){"+innerCallback+"}";
-  // console.log('innerCallback2', innerCallback);
 
   var master = masters.filter(function(item) {
     return this.name === item.name;
   }.bind(this))[0];
-  // console.log('myMaster', master);
 
   var handleBarsFields = {};
 
@@ -74,27 +63,20 @@ tagSchema.methods.render = function(tags, masters) {
     handleBarsFields[this.fields[i].name] = this.fields[i].value;
   }
 
-  // console.log('[handlebarsFields]',handleBarsFields);
   var template;
   if (this.name === 'GA') {
-    // console.log('[stage got inside GA tag]');
     innerCallback += 'callback' + index + '();';
-    // console.log('[innerCallback after GA insertion]', innerCallback);
     template = Handlebars.compile(master.template);
   }
 
   handleBarsFields.callback = innerCallback;
-  // console.log('[handleBarsFields after callback addition]', handleBarsFields);
 
-  console.log("handleBarsFields", handleBarsFields)
   if (this.name === 'custom') {
-    console.log('custom', this.name, this.template)
     template = Handlebars.compile(this.template);
   } else {
     template = Handlebars.compile(master.template);
   }
   var x = template(handleBarsFields);
-  console.log("template(handleBarsFields);", x);
   return x;
 };
 
