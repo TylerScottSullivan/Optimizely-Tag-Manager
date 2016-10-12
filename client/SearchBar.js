@@ -271,7 +271,7 @@ var SearchBar = React.createClass({
     var errorCustom = (this.state.errors['template']) ? 'validation' : '';
 
     return (
-          <li className="anchor--right" style={{marginTop: '-5px'}}>
+          <li className="anchor--right" style={{marginTop: '-5px', marginRight: '-10px'}}>
             <button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
 
             {/*shows a modal to input custom code*/}
