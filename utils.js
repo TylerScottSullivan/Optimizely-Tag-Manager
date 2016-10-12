@@ -16,6 +16,7 @@ var utils = {
   project: null,
   tag: null,
   tagid: null,
+  token: null,
   addCallbacks: function(tags) {
     //adds tag as a "callback" of the tag it is triggered on
     //if the function is passed an array of tags, set this.tags = tags
@@ -337,12 +338,13 @@ var utils = {
     this.tags = tags;
 
     //make call to optimizely for all events associated with the id
-    var token = process.env.API_TOKEN;
+    var token = this.body.token;
+    console.log("HAYYYYYY LOOOOOOK", token)
     return rp({
          uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
          method: 'GET',
          headers: {
-           "Token": token,
+           "Authorization": "Bearer " + token,
            "Content-Type": "application/json"
          }
        })
@@ -356,12 +358,13 @@ var utils = {
     this.events = events;
 
     //makes call for all pages associated with project
-    var token = process.env.API_TOKEN;
+    var token = this.body.token;
+    console.log("HAYYYYYY LOOOOOOK", token)
     return rp({
          url: "https://www.optimizelyapis.com/v2/pages?project_id=" + this.body.projectId,
          method: 'GET',
          headers: {
-           "Token": token,
+           "Authorization": "Bearer " + token,
            "Content-Type": "application/json"
          }
        })
