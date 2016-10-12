@@ -19,7 +19,6 @@ router.use(function(req, res, next) {
   //setting req.optimizely up for future use
   req.optimizely = userContext.context.environment;
   req.token = userContext.context.client.access_token;
-  console.log("HEY LOOK", req.token)
   next();
 });
 /* GET home page. */

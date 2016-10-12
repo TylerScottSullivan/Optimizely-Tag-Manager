@@ -339,7 +339,6 @@ var utils = {
 
     //make call to optimizely for all events associated with the id
     var token = this.body.token;
-    console.log("HAYYYYYY LOOOOOOK", token)
     return rp({
          uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
          method: 'GET',
@@ -359,7 +358,6 @@ var utils = {
 
     //makes call for all pages associated with project
     var token = this.body.token;
-    console.log("HAYYYYYY LOOOOOOK", token)
     return rp({
          url: "https://www.optimizelyapis.com/v2/pages?project_id=" + this.body.projectId,
          method: 'GET',
