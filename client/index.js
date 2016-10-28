@@ -29,6 +29,7 @@ var App = React.createClass({
     return {
     	masterTemplates: [],
     	projectTags: [],
+      completeTags: [],
       selectedTab: 0
     }
   },
@@ -46,6 +47,7 @@ var App = React.createClass({
   componentDidMount: function() {
     var masterTemplates;
     var projectTags;
+    var completeTags;
 
     fetch('http://localhost:4001/master' + window.location.search)
     .then((response) => response.json())
@@ -58,9 +60,11 @@ var App = React.createClass({
       projectTags = response;
       console.log("tags", response)})
     .then(response => {
+      completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
       this.setState({
         masterTemplates: masterTemplates,
-        projectTags: projectTags
+        projectTags: projectTags,
+        completeTags: completeTags
       })
     })
     .catch((e) => {
@@ -78,6 +82,37 @@ var App = React.createClass({
     } else if (selectedTab === 2) {
       return [<NTP/>, null]
     }
+  },
+
+  _mergeMasterTemplatesWithProjectTags: function(masterTemplates, projectTags) {
+    var completeTagsArray = [];
+    var completeTag = {};
+    var counter = 0;
+    var paired;
+
+    for (var i = 0; i < masterTemplates.length; i++) {
+      console.log("master i", masterTemplates[i].name)
+      paired = false;
+      for (var j = 0; j < projectTags.length; j++) {
+        console.log("project j", projectTags[j].name);
+        if (masterTemplates[i].name === projectTags[j].name) {
+          console.log('joined');
+          completeTag = $.extend({}, masterTemplates[i], projectTags[j]);
+          completeTag.added = true;
+          completeTagsArray.push(completeTag);
+          paired = true;
+        };
+      }
+
+      if (!paired) {
+        completeTag = masterTemplates[i];
+        completeTag.added = false;
+        completeTagsArray.push(completeTag);
+      }
+    }
+
+    return completeTagsArray;
+
   },
 
   render: function() {
