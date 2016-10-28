@@ -70,6 +70,21 @@ var App = React.createClass({
     .catch((e) => {
         console.log("Err: " , e);
     })
+
+
+    $.ajax({
+      url: '/options/57fe44354624defb9ba9f6ea' + window.location.search,
+      type: 'GET',
+      success: function(data) {
+        console.log('get options successful', data);
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
+    console.log('reaching')
+
+
   },
 
 
@@ -91,12 +106,12 @@ var App = React.createClass({
     var paired;
 
     for (var i = 0; i < masterTemplates.length; i++) {
-      console.log("master i", masterTemplates[i].name)
+      // console.log("master i", masterTemplates[i].name)
       paired = false;
       for (var j = 0; j < projectTags.length; j++) {
-        console.log("project j", projectTags[j].name);
+        // console.log("project j", projectTags[j].name);
         if (masterTemplates[i].name === projectTags[j].name) {
-          console.log('joined');
+          // console.log('joined');
           completeTag = $.extend({}, masterTemplates[i], projectTags[j]);
           completeTag.added = true;
           completeTagsArray.push(completeTag);
