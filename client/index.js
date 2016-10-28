@@ -43,66 +43,25 @@ var App = React.createClass({
 
   },
 
-  _getProjectTags: function() {
-    this.setState({
-      projectTags: tags
-    })
-  },
-
-  // _getMasterTemplates: function() {
-  //   return fetch('http://localhost:4001/master' + window.location.search)
-  //   .then(function(response) { 
-  //     if (response.ok) {
-  //       response.json()
-  //       .then(function(response) {
-  //         return response;
-  //       });
-  //     } else {
-  //       console.log('Network response was not ok.');
-  //     }
-  //   })
-  //   .catch((e) => {
-  //       console.log("Err: " , e);
-  //   })
-  // },
-
   componentDidMount: function() {
-
-    // var masters = this._getMasterTemplates();
-
-    // masters.then(function(value) {
-    //   console.log("master templates", value)
-    // });
-
-    // .then(function(response) {
-    //   console.log(response)
-    // })
-
-    // var p1 = new Promise(function(resolve, reject) {
-    //   var masters = this._getMasterTemplates();
-    //   if (masters) {
-    //     fullfill(masters)
-    //   }
-    // }).bind(this);
-
-    // p1.then(function(masters) {
-    //   console.log("master templates", masters)
-    // });
-    // this._getMasterTemplates().then(function(response) {
-    //   console.log("Master Templates", response)
-    // })
-    // console.log("Master Templates", masterTemplates);
+    var masterTemplates;
+    var projectTags;
 
     fetch('http://localhost:4001/master' + window.location.search)
-    .then(function(response) { 
-      if (response.ok) {
-        response.json()
-        .then(function(response) {
-          return console.log("Yay");
-        });
-      } else {
-        console.log('Network response was not ok.');
-      }
+    .then((response) => response.json())
+    .then(response => {
+      masterTemplates = response;
+      console.log("response", response)}) 
+    .then(() => fetch('http://localhost:4001/tag/' + window.location.search))
+    .then(response => response.json())
+    .then(response => {
+      projectTags = response;
+      console.log("tags", response)})
+    .then(response => {
+      this.setState({
+        masterTemplates: masterTemplates,
+        projectTags: projectTags
+      })
     })
     .catch((e) => {
         console.log("Err: " , e);
