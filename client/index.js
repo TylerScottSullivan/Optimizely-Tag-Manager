@@ -33,20 +33,7 @@ var App = React.createClass({
     }
   },
 
-  // function to refresh/update state when called in other components
-  getProjectTags: function(tags) {
-    this.setState({
-      projectTags: tags
-    })
-  },
-
-  // function to refresh/update state when called in other components
-  getMasterTemplates: function(masters) {
-    this.setState({
-      masterTemplates: masters
-    })
-  },
-
+  // updates selectedTab state if and only if a new tab is selected
   handleClick: function(index) {
     if (this.state.selectedTab != index) {
       this.setState({
@@ -56,23 +43,90 @@ var App = React.createClass({
 
   },
 
+  _getProjectTags: function() {
+    this.setState({
+      projectTags: tags
+    })
+  },
+
+  // _getMasterTemplates: function() {
+  //   return fetch('http://localhost:4001/master' + window.location.search)
+  //   .then(function(response) { 
+  //     if (response.ok) {
+  //       response.json()
+  //       .then(function(response) {
+  //         return response;
+  //       });
+  //     } else {
+  //       console.log('Network response was not ok.');
+  //     }
+  //   })
+  //   .catch((e) => {
+  //       console.log("Err: " , e);
+  //   })
+  // },
+
+  componentDidMount: function() {
+
+    // var masters = this._getMasterTemplates();
+
+    // masters.then(function(value) {
+    //   console.log("master templates", value)
+    // });
+
+    // .then(function(response) {
+    //   console.log(response)
+    // })
+
+    // var p1 = new Promise(function(resolve, reject) {
+    //   var masters = this._getMasterTemplates();
+    //   if (masters) {
+    //     fullfill(masters)
+    //   }
+    // }).bind(this);
+
+    // p1.then(function(masters) {
+    //   console.log("master templates", masters)
+    // });
+    // this._getMasterTemplates().then(function(response) {
+    //   console.log("Master Templates", response)
+    // })
+    // console.log("Master Templates", masterTemplates);
+
+    fetch('http://localhost:4001/master' + window.location.search)
+    .then(function(response) { 
+      if (response.ok) {
+        response.json()
+        .then(function(response) {
+          return console.log("Yay");
+        });
+      } else {
+        console.log('Network response was not ok.');
+      }
+    })
+    .catch((e) => {
+        console.log("Err: " , e);
+    })
+  },
+
+
+  //given the tab selected, returns an array - [DisplayedPage, SidePanel]
+  _displaySelectedTab: function(selectedTab) {
+    if (selectedTab === 0) {
+      return [<MTP/>, <MSP/>]
+    } else if (selectedTab === 1) {
+      return [<ATP/>, <ASP/>]
+    } else if (selectedTab === 2) {
+      return [<NTP/>, null]
+    }
+  },
+
   render: function() {
     var selectedTab = this.state.selectedTab;
     var TabNames = ['My Tags', 'Available Tags', 'Submit New Template'];
-    var DisplayedPage;
-    var SidePanel;
 
-    if (selectedTab === 0) {
-      DisplayedPage = <MTP/>
-      SidePanel = <MSP/>
-    } else if (selectedTab === 1) {
-      DisplayedPage = <ATP/>
-      SidePanel = <ASP/>
-    } else if (selectedTab === 2) {
-      DisplayedPage = <NTP/> 
-      SidePanel = <div></div> 
-    }
-
+    var DisplayedPage = this._displaySelectedTab(selectedTab)[0];
+    var SidePanel = this._displaySelectedTab(selectedTab)[1];
 
     console.log(this.state, "this state")
 
