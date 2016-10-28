@@ -2,12 +2,10 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Modal = require('react-modal');
 
-// code editor
-var react = require('react-ace');
+var _ = require('underscore');
 
-// react table that has not been implemented for sorting and filtering
-var Reactable = require('reactable');
-import { render } from 'react-dom';
+// code editor 
+var react = require('react-ace');
 
 //code editor imports
 import brace from 'brace';
@@ -16,91 +14,87 @@ import 'brace/mode/javascript';
 import 'brace/theme/github';
 import 'brace/theme/tomorrow';
 
-// i don't think we use this either
-import Toggle from 'react-toggle';
-
-var _ = require('underscore');
-
-// we don't use oui react components but here it is
-import { Attention } from 'optimizely-oui';
-
-// react router obviously
-import { Router, Route, IndexRoute, IndexRedirect, Link, IndexLink, hashHistory } from 'react-router'
-
-// tab routing with react router
-var Tab = require('./Tab');
-var SearchBar = require('./SearchBar');
-var MyTagsPage = require('./MyTagsPage');
-var AvailableTagsPage = require('./AvailableTagsPage');
-var NewTemplate = require('./NewTemplate');
-//var SubmitNew = require('./SubmitNew');
-
-// react table stuff we don't use
-var Table = Reactable.Table,
-    Thead = Reactable.Thead,
-    Th = Reactable.Th,
-    Tr = Reactable.Tr,
-    Td = Reactable.Td,
-    unsafe = Reactable.unsafe;
-
+var ATP = require('./ATP');
+var MTP = require('./MTP');
+var NTP = require('./NTP');
+var ActiveTab = require('./ActiveTab');
+var NonActiveTabs = require('./NonActiveTabs');
+var SearchAndCustom = require('./SearchAndCustom');
+var ASP = require('./ASP');
+var MSP = require('./MSP');
 
 var App = React.createClass({
+
   getInitialState: function() {
     return {
-    	masters: [],
-    	downloadedProject: []
+    	masterTemplates: [],
+    	projectTags: [],
+      selectedTab: 0
     }
   },
 
   // function to refresh/update state when called in other components
-  onDownload: function(projects) {
+  getProjectTags: function(tags) {
     this.setState({
-      downloadedProject: projects
+      projectTags: tags
     })
   },
 
-  // function to refresh/update state when called in other components but never called i think
-  onMaster: function(master) {
+  // function to refresh/update state when called in other components
+  getMasterTemplates: function(masters) {
     this.setState({
-      masters: master
+      masterTemplates: masters
     })
   },
 
-//this.props.children is referring to the three tags
+  handleClick: function(index) {
+    if (this.state.selectedTab != index) {
+      this.setState({
+        selectedTab: index
+      })
+    };
+
+  },
+
   render: function() {
+    var selectedTab = this.state.selectedTab;
+    var TabNames = ['My Tags', 'Available Tags', 'Submit New Template'];
+    var DisplayedPage;
+    var SidePanel;
+
+    if (selectedTab === 0) {
+      DisplayedPage = <MTP/>
+      SidePanel = <MSP/>
+    } else if (selectedTab === 1) {
+      DisplayedPage = <ATP/>
+      SidePanel = <ASP/>
+    } else if (selectedTab === 2) {
+      DisplayedPage = <NTP/> 
+      SidePanel = <div></div> 
+    }
+
+
+    console.log(this.state, "this state")
+
     return (
-    	<div>
-        <Tab onDownload={this.onDownload} onMaster={this.onMaster} {...this.state}/>
-        {/* passes functions into tabs as props*/}
-        {React.cloneElement(this.props.children, Object.assign({}, this.state, {onDownload: this.onDownload, onMaster: this.onMaster}), null)}
+      <div className="tabs tabs--small tabs--sub" data-oui-tabs>
+        <ul className="tabs-nav soft-double--sides">
+          {TabNames.map((name, index) => {
+              return (selectedTab === index) ? 
+              <ActiveTab key={index} onClick={() => this.handleClick(index) } name={name} /> : <NonActiveTabs key={index} onClick={() => this.handleClick(index)} name={name}/>
+          })}
+        </ul>
+        <div className="flex height--1-1">
+          <div className="flex--1 soft-double--sides">
+            <SearchAndCustom/>
+            {DisplayedPage}
+          </div>
+          {SidePanel}
+        </div> 
       </div>
     );
   }
 });
 
-// styles for modal
-const customStyles = {
-  content : {
-    top                   : '50%',
-    left                  : '50%',
-    right                 : 'auto',
-    bottom                : 'auto',
-    marginRight           : '-50%',
-    transform             : 'translate(-50%, -50%)',
-    height                : '550px',
-    width                 : '700px'
-  }
-};
 
-
-// react router
-ReactDOM.render((
-  <Router history={hashHistory}>
-    <Route path="/" component={App}>
-      <IndexRedirect to="/myTags" />
-      <Route path="/myTags" component={MyTagsPage}/>
-      <Route path="/availableTags" component={AvailableTagsPage}/>
-      <Route path="/submitNewTemplate" component={NewTemplate}/>
-    </Route>
-  </Router>
-), document.getElementById('root'))
+ReactDOM.render(<App />, document.getElementById('root'));
