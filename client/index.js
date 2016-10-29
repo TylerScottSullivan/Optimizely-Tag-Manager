@@ -84,6 +84,20 @@ var App = React.createClass({
     });
     console.log('reaching')
 
+    $.ajax({
+      url: 'https://www.optimizelyapis.com/v2/pages?project_id=6919181723', 
+      method: 'GET',
+      headers: {
+           "Authorization": "Bearer 2:614e8633VxEzlpqYYcFqkhhQFprGPF-p4wdgVtq93V_4PXVc4-g",
+           "Content-Type": "application/json"
+      },
+      success: function(data) {
+        console.log('get page Options successful', data);
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
 
   },
 
@@ -91,7 +105,7 @@ var App = React.createClass({
   //given the tab selected, returns an array - [DisplayedPage, SidePanel]
   _displaySelectedTab: function(selectedTab) {
     if (selectedTab === 0) {
-      return [<MTP/>, <MSP/>]
+      return [<MTP completeTags={this.state.completeTags}/>, <MSP/>]
     } else if (selectedTab === 1) {
       return [<ATP/>, <ASP/>]
     } else if (selectedTab === 2) {

@@ -21,6 +21,24 @@ router.use(function(req, res, next) {
   req.token = userContext.context.client.access_token;
   next();
 });
+
+
+router.get('/pageOptions', function(req, res, next) {
+    console.log("token", req.token);
+    token = req.token;
+    return rp({
+         url: "https://www.optimizelyapis.com/v2/pages?project_id=" + "6919181723",
+         method: 'GET',
+         headers: {
+           "Authorization": "Bearer " + token,
+           "Content-Type": "application/json"
+         }
+    })
+});
+
+
+
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   Project.findOrCreate({'projectId': req.optimizely.current_project},
