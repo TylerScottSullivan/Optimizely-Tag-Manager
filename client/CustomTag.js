@@ -40,10 +40,11 @@ var CustomTag = React.createClass({
 
   },
 
-  changeToggleButton: function(newToggle) {
-  	this.setState({
-  		active: newToggle
-  	})
+  // changes code editor code 
+  changeSnippet: function(newSnippet) {
+      this.setState({
+        template: newSnippet
+      });
   },
 
   changeDisplayName: function(newName) {
@@ -58,21 +59,35 @@ var CustomTag = React.createClass({
   	})
   },
 
-  getInitialState: function() {
-	return {
-      modalIsOpen: false,
-      name: 'custom',
-      displayName: '',
-      tagDescription: '',
-      template: '',
-      trackingTrigger: 'inHeader',
-      active: true,
-      errors: {},
-      triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
-      specificTrigger: null,
-      customId: null
-    };
+  changeToggleButton: function(newToggle) {
+  	this.setState({
+  		active: newToggle
+  	})
   },
+
+  getInitialState: function() {
+		return {
+		  modalIsOpen: false,
+		  name: 'custom',
+		  displayName: '',
+		  tagDescription: '',
+		  template: '',
+		  trackingTrigger: 'inHeader',
+		  active: true,
+		  errors: {},
+		  triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
+		  specificTrigger: null,
+		  customId: null,
+		  projectDoneLoading: false
+		};
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+		console.log("HIT WILL RECEIVE PROPS")
+		this.setState({
+			projectDoneLoading: true
+		})
+	},
 
   // opens modal
   openModal: function() {
@@ -87,7 +102,7 @@ var CustomTag = React.createClass({
   	  name: 'custom',
   	  displayName: '',
   	  tagDescription: '',
- 	  template: '',
+ 	  	template: '',
   	  trackingTrigger: 'inHeader',
       active: true,
   	  errors: {},
@@ -95,47 +110,54 @@ var CustomTag = React.createClass({
     });
   },
 
-  // changes code editor code 
-  changeSnippet: function(newSnippet) {
-      this.setState({
-        template: newSnippet
-      });
-  },
-
   render: function () {
   	console.log("modal state", this.state)
-	return (
-	  <li className="anchor--right">
-		<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
-	      {/*shows a modal to input custom code*/}
-		  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
-            <h2 ref="subtitle">Create Custom Tag</h2>
-            	<div className='modaltext'>
-            		<div> Please create your own tag by inserting Javascript.</div>
-  				    <div className="editor">
-  				        <AceEditor
-  				        	className={`editor`}
-						    mode="javascript"
-						    theme="tomorrow"
-						    name="template"
-						    height="120px"
-						    width="620px"
-						    editorProps={{$blockScrolling: true}}
-  				        	value={this.state.template}
-  				         	onChange={this.changeSnippet}
-  				        />
-  				    </div>
+
+	  if (!this.state.projectDoneLoading) {
+	  	return (
+		  	<li className="anchor--right">
+				<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
+			      {/*shows a modal to input custom code*/}
+				  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
+		          <h2 ref="subtitle">Create Custom Tag</h2>
+		          <div className='welcome'> Loading... </div> 
+		          </Modal>
+			  </li>
+	  		)
+	  }
+
+		return (
+		  <li className="anchor--right">
+			<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
+		      {/*shows a modal to input custom code*/}
+			  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
+	            <h2 ref="subtitle">Create Custom Tag</h2>
+	            	<div className='modaltext'>
+	            		<div> Please create your own tag by inserting Javascript.</div>
+	  				    <div className="editor">
+	  				        <AceEditor
+	  				        	className={`editor`}
+							    mode="javascript"
+							    theme="tomorrow"
+							    name="template"
+							    height="120px"
+							    width="620px"
+							    editorProps={{$blockScrolling: true}}
+	  				        	value={this.state.template}
+	  				         	onChange={this.changeSnippet}
+	  				        />
+	  				    </div>
 		            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
 		            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription}/>
 		            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
-		  		</div>	
-		  		<div className='flex pushed-right'>
-		  			<button className="button right-margin" onClick={this.closeModal}> Cancel </button>
-		            <button className="button button--highlight" onClick={this.addCustomTag}>Add Tag</button>
-		  		</div>
-          </Modal>
-	  </li>
-	)
+			  		</div>	
+			  		<div className='flex pushed-right'>
+			  			<button className="button right-margin" onClick={this.closeModal}> Cancel </button>
+			            <button className="button button--highlight" onClick={this.addCustomTag}>Add Tag</button>
+			  		</div>
+	          </Modal>
+		  </li>
+		)
   } 
 
 })
