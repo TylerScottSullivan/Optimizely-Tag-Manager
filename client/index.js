@@ -43,8 +43,7 @@ var App = React.createClass({
 
       searchInput: '',
 
-      pages: [],
-      callbackTriggers: []
+      options: []
     }
   },
 
@@ -98,6 +97,16 @@ var App = React.createClass({
     return displayedTags
   },
 
+  _setTriggerOptionProp: function(pages, events, callbackTriggers) {
+    var options = [];
+
+    options.push(["On Page Load", pages]);
+    options.push(["On Event", events]);
+    options.push(["On Callback", callbackTriggers])
+
+    return options
+  },
+
   // _boot: function (token) {
   //   var masterTemplates;
   //   var projectTags;
@@ -134,6 +143,7 @@ var App = React.createClass({
     var pages = [];
     var events = [];
     var callbackTriggers = [];
+    var options = [];
 
     fetch('/getToken' + window.location.search)
     .then((response) => response.text())
@@ -176,48 +186,105 @@ var App = React.createClass({
     // .catch((e) => {
     //     console.log("Err: " , e);
     // })
+    var fetchMasterTemplates = fetch('/master' + window.location.search)
+                              .then((response) => response.json())
+                              .then(response => {
+                                masterTemplates = response;
+                              }) 
 
-    fetch('/eventOptions' + window.location.search)
-    .then((response) => response.json())
-    .then(response => {
-      console.log('event options', response)
-    })
+    var fetchTagsFromDB = fetch('/tag/' + window.location.search)
+                         .then(response => response.json())
+                         .then(response => {
+                           projectTags = response;
+                         })
 
-     fetch('/master' + window.location.search)
-    .then((response) => response.json())
-    .then(response => {
-      masterTemplates = response;
-      console.log("response", response)}) 
-    .then(() => fetch('/tag/' + window.location.search))
-    .then(response => response.json())
-    .then(response => {
-      projectTags = response;
-      console.log("tags", response)})
-    .then(() => fetch('/pageOptions' + window.location.search))
-    .then((response) => response.json())
-    .then(response => {
-      console.log('pages', response)
-      for (var i = 0; i < response.length; i++) {
-        pages.push(response[i].name)
-      }
-    })
-    .then(response => {
+    var fetchPageOptionsFromOpt = fetch('/pageOptions' + window.location.search)
+                                 .then((response) => response.json())
+                                 .then(response => {
+                                   for (var i = 0; i < response.length; i++) {
+                                      pages.push(response[i].name)
+                                   }
+                                  })
+
+    var fetchEventOptionsFromOpt = fetch('/eventOptions' + window.location.search)
+                                   .then((response) => response.json())
+                                   .then(response => {
+                                      for (var i = 0; i < response.length; i++) {
+                                        events.push(response[i].name)
+                                      }
+                                    })
+
+    Promise.all([fetchMasterTemplates, fetchTagsFromDB, fetchPageOptionsFromOpt, fetchEventOptionsFromOpt]).then(response => {
       completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
       callbackTriggers = this._filterForCallbackTriggers(completeTags);
-      console.log("callbackTriggers", callbackTriggers)
+      options = this._setTriggerOptionProp(pages, events, callbackTriggers);
 
       this.setState({
         token: token,
         masterTemplates: masterTemplates,
         projectTags: projectTags,
         completeTags: completeTags,
-        pages: pages,
-        callbackTriggers: callbackTriggers
-      })
+        options: options
+      })     
+    }).
+    catch((e) => {
+      console.log("Err:", e)
     })
-    .catch((e) => {
-        console.log("Err: " , e);
-    })
+
+    //     fetch('/eventOptions' + window.location.search)
+    // .then((response) => response.json())
+    // .then(response => {
+    //   console.log('alone event options', response)
+    //   for (var i = 0; i < response.length; i++) {
+    //     events.push(response[i].name)
+    //   }
+    //   console.log("event options filtered", events)
+    // })
+
+
+
+
+    //  fetch('/master' + window.location.search)
+    // .then((response) => response.json())
+    // .then(response => {
+    //   masterTemplates = response;
+    //   console.log("response", response)}) 
+    // .then(() => fetch('/tag/' + window.location.search))
+    // .then(response => response.json())
+    // .then(response => {
+    //   projectTags = response;
+    //   console.log("tags", response)})
+    // .then(() => fetch('/pageOptions' + window.location.search))
+    // .then((response) => response.json())
+    // .then(response => {
+    //   console.log('pages', response)
+    //   for (var i = 0; i < response.length; i++) {
+    //     pages.push(response[i].name)
+    //   }
+    // }).then(() => fetch('/eventOptions' + window.location.search))
+    // .then((response) => response.json())
+    // .then(response => {
+    //   for (var i = 0; i < response.length; i++) {
+    //     events.push(response[i].name)
+    //   }
+    // }).then(response => {
+    //   completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
+    //   callbackTriggers = this._filterForCallbackTriggers(completeTags);
+    //   console.log("callbackTriggers", callbackTriggers)
+
+    //   this.setState({
+    //     token: token,
+    //     masterTemplates: masterTemplates,
+    //     projectTags: projectTags,
+    //     completeTags: completeTags,
+    //     pages: pages,
+    //     events: events,
+    //     callbackTriggers: callbackTriggers
+    //   })
+    // })
+    // .catch((e) => {
+    //     console.log("Err: " , e);
+    // })
 
     // $.ajax({
     //   url: '/getToken' + window.location.search,
@@ -231,16 +298,16 @@ var App = React.createClass({
     // })
 
     ////// uncomment this one///////////////////
-    $.ajax({
-      url: '/options/57fe44354624defb9ba9f6ea' + window.location.search,
-      type: 'GET',
-      success: function(data) {
-        console.log('get options successful', data);
-      }.bind(this),
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
+    // $.ajax({
+    //   url: '/options/57fe44354624defb9ba9f6ea' + window.location.search,
+    //   type: 'GET',
+    //   success: function(data) {
+    //     console.log('get options successful', data);
+    //   }.bind(this),
+    //   error: function(err) {
+    //     console.error("Err posting", err.toString());
+    //   }
+    // });
 
     //  $.ajax({
     //   url: '/pageOptions' + window.location.search,
@@ -274,12 +341,8 @@ var App = React.createClass({
   _filterForCallbackTriggers: function(completeTags) {
     var callbackTriggers = [];
 
-    console.log("hello");
     for (var i = 0; i < completeTags.length; i++) {
       if (completeTags[i].added && completeTags[i].hasCallback) {
-        console.log("pushed")
-        console.log(completeTags[i].name)
-        console.log(completeTags[i].displayName)
         callbackTriggers.push([completeTags[i].name, completeTags[i].displayName])
       }
     }
@@ -349,7 +412,7 @@ var App = React.createClass({
         </ul>
         <div className="flex height--1-1">
           <div className="flex--1 soft-double--sides">
-            <SearchAndCustom searchInput={this.state.searchInput} changeSearchInput={this.changeSearchInput}/>
+            <SearchAndCustom searchInput={this.state.searchInput} changeSearchInput={this.changeSearchInput} options={this.state.options}/>
             {DisplayedPage}
           </div>
           {SidePanel}
