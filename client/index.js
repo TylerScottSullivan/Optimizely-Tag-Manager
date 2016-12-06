@@ -41,7 +41,10 @@ var App = React.createClass({
       availSP: {},
       availSPIndex: null,
 
-      searchInput: ''
+      searchInput: '',
+
+      pages: [],
+      callbackTriggers: []
     }
   },
 
@@ -128,6 +131,9 @@ var App = React.createClass({
     var masterTemplates;
     var projectTags;
     var completeTags;
+    var pages = [];
+    var events = [];
+    var callbackTriggers = [];
 
     fetch('/getToken' + window.location.search)
     .then((response) => response.text())
@@ -148,8 +154,36 @@ var App = React.createClass({
     //   console.log("token response", response);
     // }).then(() => 
 
-    ///uncomment////
-    fetch('/master' + window.location.search)
+    // fetch('/master' + window.location.search)
+    // .then((response) => response.json())
+    // .then(response => {
+    //   masterTemplates = response;
+    //   console.log("response", response)}) 
+    // .then(() => fetch('/tag/' + window.location.search))
+    // .then(response => response.json())
+    // .then(response => {
+    //   projectTags = response;
+    //   console.log("tags", response)})
+    // .then(response => {
+    //   completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
+    //   this.setState({
+    //     token: token,
+    //     masterTemplates: masterTemplates,
+    //     projectTags: projectTags,
+    //     completeTags: completeTags
+    //   })
+    // })
+    // .catch((e) => {
+    //     console.log("Err: " , e);
+    // })
+
+    fetch('/eventOptions' + window.location.search)
+    .then((response) => response.json())
+    .then(response => {
+      console.log('event options', response)
+    })
+
+     fetch('/master' + window.location.search)
     .then((response) => response.json())
     .then(response => {
       masterTemplates = response;
@@ -159,13 +193,26 @@ var App = React.createClass({
     .then(response => {
       projectTags = response;
       console.log("tags", response)})
+    .then(() => fetch('/pageOptions' + window.location.search))
+    .then((response) => response.json())
+    .then(response => {
+      console.log('pages', response)
+      for (var i = 0; i < response.length; i++) {
+        pages.push(response[i].name)
+      }
+    })
     .then(response => {
       completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
+      callbackTriggers = this._filterForCallbackTriggers(completeTags);
+      console.log("callbackTriggers", callbackTriggers)
+
       this.setState({
         token: token,
         masterTemplates: masterTemplates,
         projectTags: projectTags,
-        completeTags: completeTags
+        completeTags: completeTags,
+        pages: pages,
+        callbackTriggers: callbackTriggers
       })
     })
     .catch((e) => {
@@ -184,19 +231,18 @@ var App = React.createClass({
     // })
 
     ////// uncomment this one///////////////////
-    // $.ajax({
-    //   url: '/options/57fe44354624defb9ba9f6ea' + window.location.search,
-    //   type: 'GET',
-    //   success: function(data) {
-    //     console.log('get options successful', data);
-    //   }.bind(this),
-    //   error: function(err) {
-    //     console.error("Err posting", err.toString());
-    //   }
-    // });
-    // console.log('reaching')
+    $.ajax({
+      url: '/options/57fe44354624defb9ba9f6ea' + window.location.search,
+      type: 'GET',
+      success: function(data) {
+        console.log('get options successful', data);
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
 
-    // $.ajax({
+    //  $.ajax({
     //   url: '/pageOptions' + window.location.search,
     //   type: 'GET',
     //   success: function(data) {
@@ -205,24 +251,40 @@ var App = React.createClass({
     //   error: function(err) {
     //     console.error("Err posting", err.toString());
     //   }
+    // });   
+
+    // console.log("this state before pages ajax", this.state)
+    // $.ajax({
+    //   url: 'https://www.optimizelyapis.com/v2/pages?project_id=6919181723', 
+    //   method: 'GET',
+    //   headers: {
+    //        "Authorization": "Bearer " + "2:e9f48279X-k58liTfHe9l7QsHJpa3kuB0wAPx_WDrHxcz1hG_24",
+    //        "Content-Type": "application/json"
+    //   },
+    //   success: function(data) {
+    //     console.log('get page Options successful', data);
+    //   }.bind(this),
+    //   error: function(err) {
+    //     console.error("Err posting", err.toString());
+    //   }
     // });
 
-    console.log("this state before pages ajax", this.state)
-    $.ajax({
-      url: 'https://www.optimizelyapis.com/v2/pages?project_id=6919181723', 
-      method: 'GET',
-      headers: {
-           "Authorization": "Bearer " + "2:dceb9063sppewWI1uRuXo3tGxmdQvQo0tvzFCQtMnHIHZmGOc7E",
-           "Content-Type": "application/json"
-      },
-      success: function(data) {
-        console.log('get page Options successful', data);
-      }.bind(this),
-      error: function(err) {
-        console.error("Err posting", err.toString());
-      }
-    });
+  },
 
+  _filterForCallbackTriggers: function(completeTags) {
+    var callbackTriggers = [];
+
+    console.log("hello");
+    for (var i = 0; i < completeTags.length; i++) {
+      if (completeTags[i].added && completeTags[i].hasCallback) {
+        console.log("pushed")
+        console.log(completeTags[i].name)
+        console.log(completeTags[i].displayName)
+        callbackTriggers.push([completeTags[i].name, completeTags[i].displayName])
+      }
+    }
+
+    return callbackTriggers;
   },
 
 

@@ -24,20 +24,41 @@ router.use(function(req, res, next) {
 
 
 router.get('/pageOptions', function(req, res, next) {
-    console.log("token", req.token);
-    token = req.token;
-    return rp({
-         url: "https://www.optimizelyapis.com/v2/pages?project_id=" + "6919181723",
-         method: 'GET',
-         headers: {
-           "Authorization": "Bearer " + token,
-           "Content-Type": "application/json"
-         }
-    })
+  var options = {
+      method: 'GET',
+      url: 'https://www.optimizelyapis.com/v2/pages?project_id=' + req.optimizely.current_project, 
+      headers: {
+       "Authorization": "Bearer " + req.token,
+       "Content-Type": "application/json"
+      },
+      json: true
+  }
+
+  request(options).then(function(parseBody) {
+    res.send(parseBody)
+  }).catch(function(err) {
+    res.send("DIDN'T WORK")
+  })
 });
 
+router.get('/eventOptions', function(req, res, next) {
+  var options = {
+      method: 'GET',   
+      url: "https://www.optimizelyapis.com/v2/events?project_id=" + req.optimizely.current_project,
+      headers: {
+         "Authorization": "Bearer " + req.token,
+         "Content-Type": "application/json"
+      },
+      json: true
+  }
 
+  request(options). then(function(parseBody) {
+    res.send(parseBody)
+  }).catch(function(err) {
+    res.send("EVENT OPTIONS DIDN'T WORK")
+  })
 
+});
 
 /* GET home page. */
 router.get('/', function(req, res, next) {

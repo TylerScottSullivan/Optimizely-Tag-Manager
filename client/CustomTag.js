@@ -96,9 +96,9 @@ var CustomTag = React.createClass({
   },
 
   // changes code editor code 
-  onChangeSnippet: function(newVal) {
+  changeSnippet: function(newSnippet) {
       this.setState({
-        template: newVal
+        template: newSnippet
       });
   },
 
@@ -108,16 +108,31 @@ var CustomTag = React.createClass({
 	  <li className="anchor--right">
 		<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
 	      {/*shows a modal to input custom code*/}
-		  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles} >
+		  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
             <h2 ref="subtitle">Create Custom Tag</h2>
-            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
-            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription}/>
-            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
-  			
-  			<div className='flex pushed-right'>
-  			  <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
-              <button className="button button--highlight" onClick={this.addCustomTag}>Add Tag</button>
-  		    </div>
+            	<div className='modaltext'>
+            		<div> Please create your own tag by inserting Javascript.</div>
+  				    <div className="editor">
+  				        <AceEditor
+  				        	className={`editor`}
+						    mode="javascript"
+						    theme="tomorrow"
+						    name="template"
+						    height="120px"
+						    width="620px"
+						    editorProps={{$blockScrolling: true}}
+  				        	value={this.state.template}
+  				         	onChange={this.changeSnippet}
+  				        />
+  				    </div>
+		            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
+		            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription}/>
+		            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
+		  		</div>	
+		  		<div className='flex pushed-right'>
+		  			<button className="button right-margin" onClick={this.closeModal}> Cancel </button>
+		            <button className="button button--highlight" onClick={this.addCustomTag}>Add Tag</button>
+		  		</div>
           </Modal>
 	  </li>
 	)

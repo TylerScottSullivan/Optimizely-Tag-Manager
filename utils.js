@@ -59,11 +59,11 @@ var utils = {
     }
 
     var pageNames = JSON.parse(pages).map(function(item) {
-      return "onPageLoad," + item.api_name;
+      return "onPageLoad," + item.name;
     })
 
     var eventNames = JSON.parse(this.events).map(function(item) {
-      return "onEvent," + item.api_name;
+      return "onEvent," + item.name;
     })
 
     var toReturn = this.tagNames.concat(pageNames);
