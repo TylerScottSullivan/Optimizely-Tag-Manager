@@ -7,6 +7,19 @@ a {
   color: #00B7FF;
 }
 
+.bottom-margin {
+	margin: 0 0 15px 0;
+}
+
+.flex-wide {
+	display: flex;
+	flex-direction: row;
+}
+
+.margin-width {
+	margin: 0 0 0 10px;
+	width: 300px;
+}
 .welcome {
   padding-top: 5%;
   font-size: 15px;

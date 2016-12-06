@@ -6,6 +6,7 @@ var Modal = require('react-modal');
 
 var DisplayName = require('./DisplayName');
 var CustomDescription = require('./CustomDescription');
+var TriggerOptions = require('./TriggerOptions');
 var ToggleButton = require('./ToggleButton');
 
 // styles for modal
@@ -25,10 +26,6 @@ const customStyles = {
 var CustomTag = React.createClass({
 
   _reloadOptions: function() {
-
-  },
-
-  componentWillReceiveProps: function() {
 
   },
 
@@ -65,19 +62,32 @@ var CustomTag = React.createClass({
   	})
   },
 
+  changeTrigger: function(newTrigger) {
+  	this.setState({
+  		trigger: newTrigger
+  	})
+  },
+
+  changeOption: function(newOption) {
+  	this.setState({
+  		option: newOption
+  	})
+  },
+
   getInitialState: function() {
 		return {
 		  modalIsOpen: false,
+
 		  name: 'custom',
+		 	template: '',
 		  displayName: '',
 		  tagDescription: '',
-		  template: '',
-		  trackingTrigger: 'inHeader',
+		  trigger: 'Please Select a Trigger:',
+		  option: 'Trigger Options:',
 		  active: true,
 		  errors: {},
-		  triggerOptions: {'inHeader': [], 'onDocumentReady': [], 'onPageLoad': [], 'onEvent': [], 'onTrigger': []},
-		  specificTrigger: null,
 		  customId: null,
+
 		  projectDoneLoading: false
 		};
   },
@@ -149,6 +159,7 @@ var CustomTag = React.createClass({
 	  				    </div>
 		            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
 		            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription}/>
+		            <TriggerOptions options={this.props.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option}/>
 		            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
 			  		</div>	
 			  		<div className='flex pushed-right'>

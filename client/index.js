@@ -100,9 +100,9 @@ var App = React.createClass({
   _setTriggerOptionProp: function(pages, events, callbackTriggers) {
     var options = [];
 
-    options.push(["On Page Load", pages]);
-    options.push(["On Event", events]);
-    options.push(["On Callback", callbackTriggers])
+    options.push([["onPageLoad", "On Page Load"], pages]);
+    options.push([["onEvent", "On Event"], events]);
+    options.push([["onTrigger", "On Callback"], callbackTriggers])
 
     return options
   },
