@@ -5,6 +5,7 @@ var react = require('react-ace');
 var Modal = require('react-modal');
 
 var DisplayName = require('./DisplayName');
+var CustomDescription = require('./CustomDescription');
 var ToggleButton = require('./ToggleButton');
 
 // styles for modal
@@ -48,6 +49,12 @@ var CustomTag = React.createClass({
   changeDisplayName: function(newName) {
   	this.setState({
   		displayName: newName
+  	})
+  },
+
+  changeCustomDescription: function(newDescription) {
+  	this.setState({
+  		tagDescription: newDescription
   	})
   },
 
@@ -104,6 +111,7 @@ var CustomTag = React.createClass({
 		  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles} >
             <h2 ref="subtitle">Create Custom Tag</h2>
             <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
+            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription}/>
             <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
   			
   			<div className='flex pushed-right'>
