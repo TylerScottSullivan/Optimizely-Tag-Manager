@@ -4,6 +4,9 @@ import AceEditor from 'react-ace';
 var react = require('react-ace');
 var Modal = require('react-modal');
 
+var DisplayName = require('./DisplayName');
+var ToggleButton = require('./ToggleButton');
+
 // styles for modal
 const customStyles = {
   content : {
@@ -28,16 +31,24 @@ var CustomTag = React.createClass({
 
   },
 
-  closeModal: function() {
-
-  },
-
   addCustomTag: function() {
 
   },
 
   onChange: function(e) {
 
+  },
+
+  changeToggleButton: function(newToggle) {
+  	this.setState({
+  		active: newToggle
+  	})
+  },
+
+  changeDisplayName: function(newName) {
+  	this.setState({
+  		displayName: newName
+  	})
   },
 
   getInitialState: function() {
@@ -58,7 +69,23 @@ var CustomTag = React.createClass({
 
   // opens modal
   openModal: function() {
-      this.setState({modalIsOpen: true});
+    this.setState({
+      modalIsOpen: true
+    });
+  },
+
+  closeModal: function() {
+    this.setState({
+      modalIsOpen: false,
+  	  name: 'custom',
+  	  displayName: '',
+  	  tagDescription: '',
+ 	  template: '',
+  	  trackingTrigger: 'inHeader',
+      active: true,
+  	  errors: {},
+      customId: null
+    });
   },
 
   // changes code editor code 
@@ -69,7 +96,23 @@ var CustomTag = React.createClass({
   },
 
   render: function () {
-	return <div> Hello </div>
+  	console.log("modal state", this.state)
+	return (
+	  <li className="anchor--right">
+		<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
+	      {/*shows a modal to input custom code*/}
+		  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles} >
+            <h2 ref="subtitle">Create Custom Tag</h2>
+            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
+            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
+  			
+  			<div className='flex pushed-right'>
+  			  <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
+              <button className="button button--highlight" onClick={this.addCustomTag}>Add Tag</button>
+  		    </div>
+          </Modal>
+	  </li>
+	)
   } 
 
 })
