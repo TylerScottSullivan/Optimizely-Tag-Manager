@@ -125,6 +125,7 @@ var CustomTag = React.createClass({
   				         	onChange={this.changeSnippet}
   				        />
   				    </div>
+  				    <div> Hello </div>
 		            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
 		            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription}/>
 		            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
