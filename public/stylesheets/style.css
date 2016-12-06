@@ -218,6 +218,11 @@ textarea {
 .pixels {
 	margin-top: 8px;
 }
+
+
+.no-bottom-margin  {
+	margin-bottom: 0px !important;
+}
 /*pace*/
 
 .pace {

@@ -6,8 +6,8 @@ var CustomTag = require('./CustomTag');
 function SearchAndCustom(props) {
   return (
     <div>
-	  <ul className="flex push-double--ends">
-		<Search/>
+	  <ul className="flex no-bottom-margin push-double--ends">
+		<Search searchInput={props.searchInput} onChange={props.changeSearchInput}/>
 		<CustomTag/>
 	  </ul>
 	</div>

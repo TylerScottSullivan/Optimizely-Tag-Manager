@@ -111,6 +111,11 @@ router.get('/master', (req, res, next) => {
   })
 })
 
+router.get('/getToken', function(req, res, next) {
+  console.log("HELLO THIS IS HAPPENING", req.token)
+  res.send(req.token);
+})
+
 
 
 // GET: gets all current tags, find project by project id, return all tags from a current project
