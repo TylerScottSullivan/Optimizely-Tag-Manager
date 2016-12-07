@@ -71,18 +71,6 @@ var App = React.createClass({
         options: newOptions
       })
     }
-    //given it's a custom tag
-    // concat to project Tags
-    // merge Master and Project for Complete
-    // update state of projectTags and Complete, because callback triggers don't change for a custom tag
-
-    //if not a custom tag aka if name!== "custom"
-    // concat to project Tags
-    // merge Master and Project for Complete
-    // call _filterForCallbackTriggers
-    // call _setTriggerOptionProps
-    // update state for project tags, complete, and options
-
   },
 
   // updates selectedTab state if and only if a new tab is selected

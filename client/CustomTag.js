@@ -56,7 +56,7 @@ var CustomTag = React.createClass({
     if (!this.state.template) { errors['template'] = 'Javascript is required.'; }
     if (!this.state.displayName) { errors['displayName'] = 'Name is required.'; }
     if (!this.state.tagDescription) { errors['tagDescription'] = 'Tag description is required.'; }
-		if (this.state.trigger === 'Please Select a Trigger:') { errors['trigger'] = 'Trigger selection is required.'}
+		if (this.state.trigger === 'Select a Trigger:') { errors['trigger'] = 'Trigger selection is required.'}
     if ((this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') && (this.state.option === 'Trigger Options:')) {
     	errors['option'] = 'Option selection is required.'
     }

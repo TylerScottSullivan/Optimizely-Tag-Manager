@@ -20,6 +20,9 @@ var AIF = React.createClass({
         	placeholder={this.props.token.placeholder} value={this.props.token.value} 
         	onChange={this.handleTokenValueChange}
       	/>
+	      <div className='warning'>
+      		{this.props.errors[this.props.token.tokenDisplayName]}
+    	  </div>
 			</div>
 			)
 	}

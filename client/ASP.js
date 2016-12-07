@@ -1,6 +1,5 @@
 var React = require('react');
 
-
 var AIF = require('./AIF');
 var ToggleButton = require('./ToggleButton');
 var TriggerOptions = require('./TriggerOptions');
@@ -28,9 +27,37 @@ var ASP = React.createClass({
 				tokens: nextProps.tag.tokens,
 				trigger: 'Select a Trigger:',
 			  option: 'Trigger Options:',
-			  active: true
+			  active: true,
+
+			  errors: {}
 			})
 		}
+	},
+
+	validate: function() {
+		var errors = {};
+
+    this.state.tokens.map((token) => {
+      if (!token.value) {
+        errors[token.tokenDisplayName] = "Value is required";
+      }
+    })
+
+		if (this.state.trigger === 'Select a Trigger:') { errors['trigger'] = 'Trigger selection is required.' }
+    if ((this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') && (this.state.option === 'Trigger Options:')) {
+    	errors['option'] = 'Option selection is required.'
+    }
+
+    if (Object.keys(errors).length === 0) {
+    	this.setState({ errors: {} });
+    	this._addTag();
+    } else {
+    	this.setState({ errors: errors });
+    }
+	},
+
+	_addTag: function() {
+		console.log("VALIDATED");
 	},
 
 	changeTokenValue: function(index, newValue) {
