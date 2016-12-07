@@ -53,7 +53,7 @@ var App = React.createClass({
     // merge Master and Project for Complete
     // update state of projectTags and Complete, because callback triggers don't change for a custom tag
 
-    //if not a custom tag aka f name!== "custom"
+    //if not a custom tag aka if name!== "custom"
     // concat to project Tags
     // merge Master and Project for Complete
     // call _filterForCallbackTriggers
@@ -122,34 +122,6 @@ var App = React.createClass({
     return options
   },
 
-  // _boot: function (token) {
-  //   var masterTemplates;
-  //   var projectTags;
-  //   var completeTags;
-
-  //   fetch('/master' + window.location.search)
-  //   .then((response) => response.json())
-  //   .then(response => {
-  //     masterTemplates = response;
-  //     console.log("response", response)}) 
-  //   .then(() => fetch('/tag/' + window.location.search))
-  //   .then(response => response.json())
-  //   .then(response => {
-  //     projectTags = response;
-  //     console.log("tags", response)})
-  //   .then(response => {
-  //     completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
-  //     this.setState({
-  //       masterTemplates: masterTemplates,
-  //       projectTags: projectTags,
-  //       completeTags: completeTags
-  //     })
-  //   })
-  //   .catch((e) => {
-  //       console.log("Err: " , e);
-  //   })
-  // },
-
   componentDidMount: function() {
     var token;
     var masterTemplates;
@@ -166,18 +138,6 @@ var App = React.createClass({
       console.log("token response", response)
       token = response;
     })
-    // .then(this._boot(token))
-    // .then(function(response) {
-    //   console.log("hello right before response", response)
-    //   return response.text();
-    // }).then(function(j) {
-    //   console.log("token response", j)
-    // });
-
-
-    //       => {
-    //   console.log("token response", response);
-    // }).then(() => 
 
     // fetch('/master' + window.location.search)
     // .then((response) => response.json())
@@ -256,9 +216,6 @@ var App = React.createClass({
     //   console.log("event options filtered", events)
     // })
 
-
-
-
     //  fetch('/master' + window.location.search)
     // .then((response) => response.json())
     // .then(response => {
@@ -299,17 +256,6 @@ var App = React.createClass({
     // })
     // .catch((e) => {
     //     console.log("Err: " , e);
-    // })
-
-    // $.ajax({
-    //   url: '/getToken' + window.location.search,
-    //   type: 'GET',
-    //   success: function(data) {
-    //     console.log('success', data)
-    //   }.bind(this),
-    //   error: function(err) {
-    //     console.log("fail", err)
-    //   }
     // })
 
     ////// uncomment this one///////////////////

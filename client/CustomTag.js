@@ -25,38 +25,47 @@ const customStyles = {
 
 var CustomTag = React.createClass({
 
+  getInitialState: function() {
+		return {
+		  modalIsOpen: false,
+
+		  projectDoneLoading: false,
+
+		 	template: '',
+		  displayName: '',
+		  tagDescription: '',
+		  trigger: 'Please Select a Trigger:',
+		  option: 'Trigger Options:',
+		  active: true,
+
+		  errors: {}
+
+		};
+  },
+
+  componentWillReceiveProps: function(nextProps) {
+		console.log("HIT WILL RECEIVE PROPS")
+		this.setState({
+			projectDoneLoading: true
+		})
+	},
+
   validate: function() {
   	var errors = {};
 
-    if (! this.state.template) {
-      errors['template'] = 'Javascript is required.';
-    }
-
-    if (!this.state.displayName) {
-      errors['displayName'] = 'Name is required.';
-    }
-
-    if (!this.state.tagDescription) {
-      errors['tagDescription'] = 'Tag description is required.';
-    }
-
-    if (this.state.trigger === 'Please Select a Trigger:') {
-    	errors['trigger'] = 'Trigger selection is required.'
-    }
-
+    if (!this.state.template) { errors['template'] = 'Javascript is required.'; }
+    if (!this.state.displayName) { errors['displayName'] = 'Name is required.'; }
+    if (!this.state.tagDescription) { errors['tagDescription'] = 'Tag description is required.'; }
+		if (this.state.trigger === 'Please Select a Trigger:') { errors['trigger'] = 'Trigger selection is required.'}
     if ((this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') && (this.state.option === 'Trigger Options:')) {
     	errors['option'] = 'Option selection is required.'
     }
 
     if (Object.keys(errors).length === 0) {
-    	this.setState({
-    		errors: {}
-    	})
+    	this.setState({ errors: {} })
     	this._addCustomTag();
     } else {
-    	this.setState({
-    		errors: errors
-    	})
+    	this.setState({ errors: errors })
     }
 
   },
@@ -78,6 +87,7 @@ var CustomTag = React.createClass({
       data.trackingTrigger = this.state.trigger + ',' + this.state.option;
     }
     data.active = this.state.active;
+    
     console.log("state", this.state)
     console.log("data", data)
     return $.ajax({
@@ -134,31 +144,6 @@ var CustomTag = React.createClass({
   		option: newOption
   	})
   },
-
-  getInitialState: function() {
-		return {
-		  modalIsOpen: false,
-
-		  projectDoneLoading: false,
-
-		 	template: '',
-		  displayName: '',
-		  tagDescription: '',
-		  trigger: 'Please Select a Trigger:',
-		  option: 'Trigger Options:',
-		  active: true,
-
-		  errors: {}
-
-		};
-  },
-
-  componentWillReceiveProps: function(nextProps) {
-		console.log("HIT WILL RECEIVE PROPS")
-		this.setState({
-			projectDoneLoading: true
-		})
-	},
 
   // opens modal
   openModal: function() {

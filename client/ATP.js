@@ -6,13 +6,23 @@ var ATP = React.createClass({
 		return {
 			projectDoneLoading: false
 		}
+
 	},
 
+	componentWillMount: function() {
+	    if (this.props.completeTags.length !== 0) {
+			this.setState({
+				projectDoneLoading: true
+			})
+		}  
+	},
+	
 	componentWillReceiveProps: function(nextProps) {
-		console.log("HIT WILL RECEIVE PROPS")
-		this.setState({
-			projectDoneLoading: true
-		})
+	    if (nextProps.completeTags.length !== 0) {
+			this.setState({
+				projectDoneLoading: true
+			})
+		} 
 	},
 
 	_filterForCustomTags: function(completeTags) {
@@ -29,6 +39,7 @@ var ATP = React.createClass({
 	},
 
 	render: function () {
+		console.log("this state in render", this.state)
 		var tableHeaders = (
 			<div> 
 				<h1 className='header1'> Available Tags </h1>
@@ -46,7 +57,8 @@ var ATP = React.createClass({
 		     </div>
 			)
 
-		if (!this.state.projectDoneLoading) {
+		// if (!this.state.projectDoneLoading && this.props.searchInput.length === 0 && !this.state.projectMounted) {
+		if (!this.state.projectDoneLoading ) {
 			return (
 				<div> 
 					{tableHeaders}

@@ -46,7 +46,7 @@ var TriggerOptions = React.createClass({
 				<div className="bottom-margin flex-wide">
 					<div> 
 						<div className="flex">
-		        	<div className="flex--1 sd-headsmall"> Called On: </div>
+		        	<div className="flex--1 sd-headsmall"> Called: </div>
 		        </div>
 
 

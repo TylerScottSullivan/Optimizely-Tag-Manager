@@ -63,7 +63,7 @@ var MTP = React.createClass({
 			              <th className = "cell-collapse">Logo</th>
 			              <th id ="mytablerow-dn-width" >Name</th>
 			              <th id="mytablerow-cat-width">Category</th>
-			              <th id="mytablerow-tt-width">Called On</th>
+			              <th id="mytablerow-tt-width">Called</th>
 			              <th className="cell-collapse">Status</th>
 			            </tr>
 			          </thead>
@@ -113,7 +113,7 @@ var MTP = React.createClass({
 			              <th className = "cell-collapse">Logo</th>
 			              <th id ="mytablerow-dn-width" >Name</th>
 			              <th id="mytablerow-cat-width">Category</th>
-			              <th id="mytablerow-tt-width">Called On</th>
+			              <th id="mytablerow-tt-width">Called</th>
 			              <th className="cell-collapse">Status</th>
 			            </tr>
 			          </thead>
