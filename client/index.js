@@ -43,11 +43,34 @@ var App = React.createClass({
 
       searchInput: '',
 
-      options: []
+      options: [],
+      pages: [],
+      events: []
     }
   },
 
   addTagToProjectTags: function(tag) {
+    var newProjectTags = [];
+    var newCompleteTags = [];
+
+    newProjectTags = this.state.projectTags.concat(tag)
+    newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
+    if (tag.name === "custom") {
+      this.setState({
+        projectTags: newProjectTags,
+        completeTags: newCompleteTags
+      })
+    } else {
+      var newCallbackTriggers = [];
+      var newOptions = [];
+      newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
+      newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
+      this.setState({
+        projectTags: newProjectTags,
+        completeTags: newCompleteTags,
+        options: newOptions
+      })
+    }
     //given it's a custom tag
     // concat to project Tags
     // merge Master and Project for Complete
@@ -199,7 +222,9 @@ var App = React.createClass({
         masterTemplates: masterTemplates,
         projectTags: projectTags,
         completeTags: completeTags,
-        options: options
+        options: options,
+        pages: pages,
+        events: events
       })     
     }).
     catch((e) => {

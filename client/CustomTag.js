@@ -98,9 +98,7 @@ var CustomTag = React.createClass({
       	//response back is new DB custom tag
       	console.log("response", newCustomTagFromDB)
       	this.closeModal();
-      	// this.props.addTagToProjectTags(newCustomTagFromDB)
-        // this function rerenders table and sidepanel with newly added tag, separate from ajax call but using the ajax data sent over
-      	// this.props.onDownload(this.props.downloadedProject.concat(response))
+      	this.props.addTagToProjectTags(newCustomTagFromDB)
       }.bind(this),
       error: function(err) {
         console.error("Err posting", err.toString());

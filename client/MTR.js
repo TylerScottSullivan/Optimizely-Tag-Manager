@@ -8,16 +8,16 @@ var MTR = React.createClass({
 												 "GC": "Google Classic Analytics",
 												 "segment": "Segment",
 												 "facebook": "Facebook Tracking Pixel",
-												 "amplitude": "Amplitude"}
+												 "amplitude": "Amplitude" }
+
 		var split = addedTag.trackingTrigger.split(',');
+		
 		if (split[0] === "inHeader" ) { return "In Header"}
 		else if (split[0] === "onDocumentReady") {return "On Document Ready"} 
-		else if (addedTag.trackingTriggerType === "onPageLoad") {return "On Page Load - " + displayNames[addedTag.trackingTrigger]} 
-		else if (addedTag.trackingTriggerType  === "onEvent") {return "On Event - " + displayNames[addedTag.trackingTrigger]}
+		else if (addedTag.trackingTriggerType === "onPageLoad") {return "On Page Load - " + addedTag.trackingTrigger} 
+		else if (addedTag.trackingTriggerType  === "onEvent") {return "On Event - " + addedTag.trackingTrigger}
 		else if (addedTag.trackingTriggerType === "onTrigger") {return "On Callback - " + displayNames[addedTag.trackingTrigger]}
 		else {return "error"}
-
-
 	},
 
 	render: function() {
