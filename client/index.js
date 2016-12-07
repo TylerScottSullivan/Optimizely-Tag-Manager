@@ -48,6 +48,17 @@ var App = React.createClass({
   },
 
   addTagToProjectTags: function(tag) {
+    //given it's a custom tag
+    // concat to project Tags
+    // merge Master and Project for Complete
+    // update state of projectTags and Complete, because callback triggers don't change for a custom tag
+
+    //if not a custom tag aka f name!== "custom"
+    // concat to project Tags
+    // merge Master and Project for Complete
+    // call _filterForCallbackTriggers
+    // call _setTriggerOptionProps
+    // update state for project tags, complete, and options
 
   },
 
@@ -360,7 +371,7 @@ var App = React.createClass({
     if (selectedTab === 0) {
       return [<MTP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, <MSP/>]
     } else if (selectedTab === 1) {
-      return [<ATP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, <ASP/>]
+      return [<ATP completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, <ASP/>]
     } else if (selectedTab === 2) {
       return [<NTP/>, null]
     }

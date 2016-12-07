@@ -84,10 +84,11 @@ var CustomTag = React.createClass({
       url: '/tag' + window.location.search,
       type: 'POST',
       data: data,
-      success: function(response) {
+      success: function(newCustomTagFromDB) {
       	//response back is new DB custom tag
-      	console.log("response", response)
+      	console.log("response", newCustomTagFromDB)
       	this.closeModal();
+      	// this.props.addTagToProjectTags(newCustomTagFromDB)
         // this function rerenders table and sidepanel with newly added tag, separate from ajax call but using the ajax data sent over
       	// this.props.onDownload(this.props.downloadedProject.concat(response))
       }.bind(this),
