@@ -17,8 +17,9 @@ var ASP = React.createClass({
 	},
 
 	componentWillReceiveProps:function (nextProps) {
+
+		//checks for if next props is a tag
 		if (Object.keys(nextProps.tag).length > 0) {
-			var tokens;
 	    nextProps.tag.tokens = nextProps.tag.tokens.map((token) => {
 	      return Object.assign({}, token, {value: ''})
 	    })
@@ -58,6 +59,38 @@ var ASP = React.createClass({
 
 	_addTag: function() {
 		console.log("VALIDATED");
+		var data = {};
+
+    data.name = this.props.tag.name;
+    data.tagDescription = this.props.tag.tagDescription;
+    data.template = this.props.tag.template;
+    data.hasCallback = this.props.tag.hasCallback;
+    data.callBacks = this.props.tag.callBacks; // undefined
+    this.state.tokens.map((token) => {
+      data[token.tokenName] = token.value;
+    })
+    if (this.state.trigger === 'onDocumentReady'|| this.state.trigger === 'inHeader') {
+       data.trackingTrigger = this.state.trigger + ',' + this.state.trigger;
+    } else if (this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') {
+      data.trackingTrigger = this.state.trigger + ',' + this.state.option;
+    }
+    data.active = this.state.active
+
+    console.log("state", this.state)
+    console.log("data", data)
+    // return $.ajax({
+    //   url: '/tag' + window.location.search,
+    //   type: 'POST',
+    //   data: data,
+    //   success: function(newTagFromDB) {
+    //   	//response back is new DB tag
+    //   	console.log("response", newTagFromDB)
+    //   	this.props.addTagToProjectTags(newCustomTagFromDB)
+    //   }.bind(this),
+    //   error: function(err) {
+    //     console.error("Err posting", err.toString());
+    //   }
+    // })
 	},
 
 	changeTokenValue: function(index, newValue) {
@@ -89,7 +122,6 @@ var ASP = React.createClass({
 	render: function() {
     // if row has been selected, displays sidepanel information
     console.log("This ASP state", this.state)
-    console.log("THIS ASP TAG PROP", this.props.tag)
 		if (Object.keys(this.props.tag).length !== 0) {
 
 			return (
@@ -124,7 +156,7 @@ var ASP = React.createClass({
       )
 
     } else {
-      // if no row has been selected, shows default information
+  
       return (
         <div>
           <div className="sidepanel background--faint">
@@ -135,7 +167,7 @@ var ASP = React.createClass({
       )
 
     }
-  // below brace closes render function
+
   }
 })
 

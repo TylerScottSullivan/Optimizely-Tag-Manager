@@ -25,6 +25,7 @@ var AvailableSidePanel = React.createClass({
       }
     });
   },
+  
   getInitialState: function() {
     this._reloadOptions();
     return {
