@@ -8,7 +8,7 @@ function SearchAndCustom(props) {
     <div>
 	  <ul className="flex no-bottom-margin push-double--ends">
 		<Search searchInput={props.searchInput} onChange={props.changeSearchInput}/>
-		<CustomTag options={props.options}/>
+		<CustomTag options={props.options} addTagToProjectTags={props.addTagToProjectTags}/>
 	  </ul>
 	</div>
   )

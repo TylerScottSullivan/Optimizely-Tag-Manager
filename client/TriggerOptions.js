@@ -2,10 +2,6 @@ var React = require('react');
 
 var TriggerOptions = React.createClass({
 
-	// handleDisplayNameChange: function(e) {
-	// 	var name = e.target.value;
-	// 	this.props.onChange(name);
-	// },
 
 	_setTrackingTriggersAndOptions: function(options) {
 		var trackingTriggers = [];
@@ -62,6 +58,10 @@ var TriggerOptions = React.createClass({
 		        	})}
 
 		        </select>
+
+        	  <div className='warning'>
+            	{this.props.errors['trigger']}
+          	</div>
 	        </div> 
 
 	        { (this.props.currentTrigger === 'onPageLoad' || this.props.currentTrigger === 'onEvent') ?
@@ -76,9 +76,11 @@ var TriggerOptions = React.createClass({
 	            	{trackingOptions[this.props.currentTrigger].map((option, i) => {
 	              	return <option key={i} value={option}>{option}</option>
 	              })}
-
 	          	</select>
 
+	        	  <div className='warning'>
+	            	{this.props.errors['option']}
+	          	</div>
 	          </div>
 	        : null
 
@@ -98,7 +100,10 @@ var TriggerOptions = React.createClass({
 	              })}
 
 	          	</select>
-
+	          	
+	        	  <div className='warning'>
+	            	{this.props.errors['option']}
+	          	</div>
 	          </div>
 	        : null
 	      	}

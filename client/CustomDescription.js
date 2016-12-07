@@ -17,6 +17,9 @@ var CustomDescription = React.createClass({
 	            	Please add the description of your tag below.
 	            </div>
 	  		    <input name='tagDescription' value={this.props.tagDescription} onChange={this.handleCustomDescriptionChange}/>
+	  		    <div className='warning'>
+                	{this.props.errors['tagDescription']}
+              	</div>
   		    </div>
 		)
 	}

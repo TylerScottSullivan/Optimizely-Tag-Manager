@@ -47,6 +47,10 @@ var App = React.createClass({
     }
   },
 
+  addTagToProjectTags: function(tag) {
+
+  },
+
   // updates selectedTab state if and only if a new tab is selected
   changeTab: function(index) {
     if (this.state.selectedTab !== index) {
@@ -412,7 +416,7 @@ var App = React.createClass({
         </ul>
         <div className="flex height--1-1">
           <div className="flex--1 soft-double--sides">
-            <SearchAndCustom searchInput={this.state.searchInput} changeSearchInput={this.changeSearchInput} options={this.state.options}/>
+            <SearchAndCustom searchInput={this.state.searchInput} changeSearchInput={this.changeSearchInput} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>
             {DisplayedPage}
           </div>
           {SidePanel}

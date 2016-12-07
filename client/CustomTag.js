@@ -25,16 +25,76 @@ const customStyles = {
 
 var CustomTag = React.createClass({
 
-  _reloadOptions: function() {
+  validate: function() {
+  	var errors = {};
+
+    if (! this.state.template) {
+      errors['template'] = 'Javascript is required.';
+    }
+
+    if (!this.state.displayName) {
+      errors['displayName'] = 'Name is required.';
+    }
+
+    if (!this.state.tagDescription) {
+      errors['tagDescription'] = 'Tag description is required.';
+    }
+
+    if (this.state.trigger === 'Please Select a Trigger:') {
+    	errors['trigger'] = 'Trigger selection is required.'
+    }
+
+    if ((this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') && (this.state.option === 'Trigger Options:')) {
+    	errors['option'] = 'Option selection is required.'
+    }
+
+    if (Object.keys(errors).length === 0) {
+    	this.setState({
+    		errors: {}
+    	})
+    	this._addCustomTag();
+    } else {
+    	this.setState({
+    		errors: errors
+    	})
+    }
 
   },
 
-  addCustomTag: function() {
+  _addCustomTag: function() {
+  	console.log("VALIDATED")
+  	var data = {};
+    var index = Math.floor(Math.random()*10000000000);
 
-  },
-
-  onChange: function(e) {
-
+    data.customId = index;
+    data.fields = [];
+    data.name = 'custom';
+    data.template = this.state.template;
+    data.displayName = this.state.displayName;
+    data.tagDescription = this.state.tagDescription;
+    if (this.state.trigger === 'onDocumentReady'|| this.state.trigger === 'inHeader') {
+       data.trackingTrigger = this.state.trigger + ',' + this.state.trigger;
+    } else if (this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') {
+      data.trackingTrigger = this.state.trigger + ',' + this.state.option;
+    }
+    data.active = this.state.active;
+    console.log("state", this.state)
+    console.log("data", data)
+    return $.ajax({
+      url: '/tag' + window.location.search,
+      type: 'POST',
+      data: data,
+      success: function(response) {
+      	//response back is new DB custom tag
+      	console.log("response", response)
+      	this.closeModal();
+        // this function rerenders table and sidepanel with newly added tag, separate from ajax call but using the ajax data sent over
+      	// this.props.onDownload(this.props.downloadedProject.concat(response))
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    })
   },
 
   // changes code editor code 
@@ -78,17 +138,17 @@ var CustomTag = React.createClass({
 		return {
 		  modalIsOpen: false,
 
-		  name: 'custom',
+		  projectDoneLoading: false,
+
 		 	template: '',
 		  displayName: '',
 		  tagDescription: '',
 		  trigger: 'Please Select a Trigger:',
 		  option: 'Trigger Options:',
 		  active: true,
-		  errors: {},
-		  customId: null,
 
-		  projectDoneLoading: false
+		  errors: {}
+
 		};
   },
 
@@ -109,14 +169,16 @@ var CustomTag = React.createClass({
   closeModal: function() {
     this.setState({
       modalIsOpen: false,
-  	  name: 'custom',
+
+  	  template: '',
   	  displayName: '',
   	  tagDescription: '',
- 	  	template: '',
-  	  trackingTrigger: 'inHeader',
+		  trigger: 'Please Select a Trigger:',
+		  option: 'Trigger Options:',
       active: true,
-  	  errors: {},
-      customId: null
+
+      errors: {}
+
     });
   },
 
@@ -138,35 +200,31 @@ var CustomTag = React.createClass({
 
 		return (
 		  <li className="anchor--right">
-			<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
-		      {/*shows a modal to input custom code*/}
+				<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
+
 			  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
-	            <h2 ref="subtitle">Create Custom Tag</h2>
-	            	<div className='modaltext'>
-	            		<div> Please create your own tag by inserting Javascript.</div>
-	  				    <div className="editor">
-	  				        <AceEditor
-	  				        	className={`editor`}
-							    mode="javascript"
-							    theme="tomorrow"
-							    name="template"
-							    height="120px"
-							    width="620px"
-							    editorProps={{$blockScrolling: true}}
-	  				        	value={this.state.template}
-	  				         	onChange={this.changeSnippet}
-	  				        />
-	  				    </div>
-		            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName}/>
-		            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription}/>
-		            <TriggerOptions options={this.props.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option}/>
-		            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
-			  		</div>	
-			  		<div className='flex pushed-right'>
-			  			<button className="button right-margin" onClick={this.closeModal}> Cancel </button>
-			            <button className="button button--highlight" onClick={this.addCustomTag}>Add Tag</button>
-			  		</div>
-	          </Modal>
+	        <h2 ref="subtitle">Create Custom Tag</h2>
+
+        	<div className='modaltext'>
+        		<div> Please create your own tag by inserting Javascript.</div>
+			    	<div className="editor">
+  				    <AceEditor className={`editor`} mode="javascript" theme="tomorrow" name="template" height="120px" width="620px" editorProps={{$blockScrolling: true}} value={this.state.template} onChange={this.changeSnippet} />
+  				    <div className='warning'>
+                {this.state.errors['template']}
+              </div>
+  				  </div>
+            <DisplayName onChange={this.changeDisplayName} displayName={this.state.displayName} errors={this.state.errors}/>
+            <CustomDescription onChange={this.changeCustomDescription} tagDescription={this.state.tagDescription} errors={this.state.errors}/>
+            <TriggerOptions options={this.props.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option} errors={this.state.errors}/>
+            <ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
+		  		</div>	
+
+		  		<div className='flex pushed-right'>
+		  			<button className="button right-margin" onClick={this.closeModal}> Cancel </button>
+		        <button className="button button--highlight" onClick={this.validate}>Add Tag</button>
+		  		</div>
+	     </Modal>
+
 		  </li>
 		)
   } 
