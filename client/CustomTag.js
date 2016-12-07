@@ -34,7 +34,7 @@ var CustomTag = React.createClass({
 		 	template: '',
 		  displayName: '',
 		  tagDescription: '',
-		  trigger: 'Please Select a Trigger:',
+		  trigger: 'Select a Trigger:',
 		  option: 'Trigger Options:',
 		  active: true,
 

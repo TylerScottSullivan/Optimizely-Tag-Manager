@@ -340,9 +340,11 @@ var App = React.createClass({
   //given the tab selected, returns an array - [DisplayedPage, SidePanel]
   _displaySelectedTab: function(selectedTab) {
     if (selectedTab === 0) {
-      return [<MTP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, <MSP/>]
+      return [<MTP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
+              <MSP/>]
     } else if (selectedTab === 1) {
-      return [<ATP completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, <ASP/>]
+      return [<ATP completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
+              <ASP tag={this.state.availSP} options={this.state.options}/>]
     } else if (selectedTab === 2) {
       return [<NTP/>, null]
     }

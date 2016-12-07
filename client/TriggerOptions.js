@@ -38,6 +38,7 @@ var TriggerOptions = React.createClass({
 	},
 
 	render: function() {
+		console.log('TRIGGER OPTIONS PROPS', this.props)
 		var tracks = this._setTrackingTriggersAndOptions(this.props.options);
 		var trackingTriggers = tracks[0];
 		var trackingOptions = tracks[1];
@@ -52,7 +53,7 @@ var TriggerOptions = React.createClass({
 
 		        <select className="form-control" name='trackingTrigger' value={this.props.currentTrigger} onChange={this.handleTriggerChange}>
 
-		        	<option selected> Please Select a Trigger: </option> 
+		        	<option selected> Select a Trigger: </option> 
 		        	{trackingTriggers.map((trigger, i) => {
 		        		return <option key={i} value={trigger[0]}> {trigger[1]} </option>
 		        	})}
@@ -67,7 +68,7 @@ var TriggerOptions = React.createClass({
 	        { (this.props.currentTrigger === 'onPageLoad' || this.props.currentTrigger === 'onEvent') ?
 	           <div className="margin-width">
 	            <div className="flex">
-	              <div className="flex--1 sd-headsmall"> Please Select a Trigger Option: </div>
+	              <div className="flex--1 sd-headsmall"> Select a Trigger Option: </div>
 	            </div>
 
 	            <select className="form-control" name='specificTrigger' value={this.props.currentOption} onChange={this.handleOptionChange}>
@@ -89,7 +90,7 @@ var TriggerOptions = React.createClass({
 	      	{(this.props.currentTrigger === 'onTrigger') ?
 	           <div className="margin-width">
 	            <div className="flex">
-	              <div className="flex--1 sd-headsmall"> Please Select a Trigger Option: </div>
+	              <div className="flex--1 sd-headsmall"> Select a Trigger Option: </div>
 	            </div>
 
 	            <select className="form-control" name='specificTrigger' value={this.props.currentOption} onChange={this.handleOptionChange}>
