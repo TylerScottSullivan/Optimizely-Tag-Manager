@@ -8,7 +8,7 @@ function ATR(props) {
         <td id="row-centered">{props.nonCustomTag.category} </td>
         {/*&nbsp: forces space next to Added, statement checks for if tag has been added or not*/}
         {props.nonCustomTag.added ? 
-          <td id="row-centered"> &nbsp; Added </td>
+          <td id="row-centered"> Added </td>
         :
           <td id="row-centered"> Unadded </td>
         }

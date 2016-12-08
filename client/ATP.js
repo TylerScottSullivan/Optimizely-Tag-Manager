@@ -47,10 +47,10 @@ var ATP = React.createClass({
 		          <thead>
 		            <tr>
 		              <th className = "cell-collapse"> Logo </th>
-		              <th>Name</th>
-		              <th>Category</th>
+		              <th id="availtablerow-name-width">Name</th>
+		              <th id="availtablerow-cat-width">Category</th>
 		              {/*&nbsp: forces space next to Status*/}
-		              <th className="cell-collapse">&nbsp;&nbsp;Status</th>
+		              <th className="cell-collapse" id="availtablerow-status-width">Status</th>
 		            </tr>
 		          </thead>
 		        </table>
@@ -89,10 +89,10 @@ var ATP = React.createClass({
 			          <thead>
 			            <tr>
 			              <th className = "cell-collapse"> Logo </th>
-			              <th>Name</th>
-			              <th>Category</th>
+		              	  <th id="availtablerow-name-width">Name</th>
+			              <th id="availtablerow-cat-width">Category</th>
 			              {/*&nbsp: forces space next to Status*/}
-			              <th className="cell-collapse">&nbsp;&nbsp;Status</th>
+			              <th className="cell-collapse" id="availtablerow-status-width">Status</th>
 			            </tr>
 			          </thead>
 			          <tbody>
@@ -109,3 +109,5 @@ var ATP = React.createClass({
 })
 
 module.exports = ATP;
+
+//&nbsp;&nbsp;
