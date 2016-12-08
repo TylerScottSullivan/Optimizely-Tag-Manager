@@ -21,7 +21,7 @@ var MIF = React.createClass({
         	onChange={this.handleTokenValueChange}
       	/>
 	      <div className='warning'>
-      		{this.props.errors[this.props.token.tokenDisplayName]}
+      		{this.props.errors[this.props.token.name]}
     	  </div>
 			</div>
 			)

@@ -60,6 +60,32 @@ router.get('/eventOptions', function(req, res, next) {
 
 });
 
+
+router.get('/callbacks/:tagid', function(req, res, next) {
+  console.log("ITS MAKING IT TO HERE")
+  var utils = new Utils();
+  utils.body = req.body;
+  utils.body.projectId = req.optimizely.current_project;
+  utils.body.token = req.token;
+  if (req.params.tagid === "0") {
+    utils.tagid = null;
+  }
+  else {
+    utils.tagid = req.params.tagid;
+  }
+  Project.findOne({'projectId': req.optimizely.current_project})
+         .then(utils.getTagOptions.bind(utils))
+         .then(utils.restrictOptions.bind(utils))
+         // .then(utils.addProjectOptions.bind(utils))
+         .then(function(response) {
+            res.setHeader('Content-Type', 'application/json');
+            res.send(JSON.stringify(response)); //send an array of options
+         })
+         .catch(function(err) {
+           console.log("Error at the end of /options", err)
+         }) 
+})
+
 /* GET home page. */
 router.get('/', function(req, res, next) {
   Project.findOrCreate({'projectId': req.optimizely.current_project},
@@ -175,6 +201,7 @@ router.put('/tag/:tagid', (req, res, next) => {
            console.log("Error at the end of /update", err)
          })
 })
+
 
 //getting the options for a tag
 router.get('/options/:tagid', function(req, res, next) {

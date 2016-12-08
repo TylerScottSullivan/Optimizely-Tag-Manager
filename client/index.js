@@ -330,7 +330,7 @@ var App = React.createClass({
   _displaySelectedTab: function(selectedTab) {
     if (selectedTab === 0) {
       return [<MTP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <MSP tag={this.state.mySP}/>]
+              <MSP tag={this.state.mySP} options={this.state.options}/>]
     } else if (selectedTab === 1) {
       return [<ATP completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
               <ASP tag={this.state.availSP} options={this.state.options}/>]

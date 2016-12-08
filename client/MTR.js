@@ -5,10 +5,10 @@ var MTR = React.createClass({
 
 	_displayTrigger: function(addedTag) {
 		var displayNames = { "GA": "Google Universal Analytics",
-												 "GC": "Google Classic Analytics",
-												 "segment": "Segment",
-												 "facebook": "Facebook Tracking Pixel",
-												 "amplitude": "Amplitude" }
+							 "GC": "Google Classic Analytics",
+							 "segment": "Segment",
+							 "facebook": "Facebook Tracking Pixel",
+							 "amplitude": "Amplitude" }
 
 		var split = addedTag.trackingTrigger.split(',');
 		

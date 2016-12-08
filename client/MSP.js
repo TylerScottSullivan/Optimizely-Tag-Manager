@@ -5,6 +5,7 @@ var react = require('react-ace');
 var Modal = require('react-modal');
 
 var ToggleButton = require('./ToggleButton');
+var TriggerOptions = require('./TriggerOptions');
 var MIF = require('./MIF');
 
 // styles for modal
@@ -31,56 +32,108 @@ var MSP = React.createClass({
 			template: '',
 			changesToSnippet: '',
 			fields: {},
+			options: [],
+			trigger: 'Select a Trigger:',
+		  option: 'Trigger Options:',
 			active: false,
 
-			errors: {}
+			errors: {},
+			customError: {}
 	  }
 	},
 
 	componentWillReceiveProps: function(nextProps) {
 
+    if(!nextProps.tag._id) {
+      this.setState({optionsReady: true})
+    }
+
+    var newOptions;
 		if (Object.keys(nextProps.tag).length > 0) {
-	    // nextProps.tag.fields = nextProps.tag.fields.map((field) => {
-	    //   return Object.assign({}, field)
-	    // })
-
-			this.setState({
-				active: nextProps.tag.active,
-				changesToSnippet: nextProps.tag.template,
-				fields: nextProps.tag.fields,
-				optionsReady: true,
-
-				errors: {}
-			})
+			fetch('/callbacks/' + nextProps.tag._id + window.location.search)
+		  .then((response) => response.json())
+		  .then((callBackObjects) => this._setTagOptions(callBackObjects, this.props.options))
+		  .then((newOptions) => 
+				this.setState({
+					changesToSnippet: nextProps.tag.template,
+					fields: nextProps.tag.fields,
+					optionsReady: true,
+					options: newOptions,
+					trigger: 'Select a Trigger:',
+				  option: 'Trigger Options:',
+					active: nextProps.tag.active,
+					errors: {},
+					customError: {}
+				})
+			)
 		}
 		      
 	},
 
-	_getCallBackOptions: function() {
+	_setTagOptions: function(callBackObjects, options) {
+		var newOptions;
+		console.log("Options", options);
+		console.log("callBackObjects", callBackObjects)
+		var callBackArray = [];
+		for(var i=0; i < callBackObjects.length; i++) {
+			callBackArray.push([callBackObjects[i].name, callBackObjects[i].displayName])
+		}
 
+		options[2][1] = callBackArray;
+		newOptions = options;
+
+		console.log("new Options", newOptions)
+
+		return newOptions
 	},
 
-	_setCallBackOptions: function() {
+	// _displayCurrentTrigger: function(tag) {
+	// 	var displayNames = { "GA": "Google Universal Analytics",
+	// 											 "GC": "Google Classic Analytics",
+	// 											 "segment": "Segment",
+	// 											 "facebook": "Facebook Tracking Pixel",
+	// 											 "amplitude": "Amplitude" }
 
-	},
+	// 	var split = tag.trackingTrigger.split(',');
+		
+	// 	if (split[0] === "inHeader" ) { return ["In Header", 'Trigger Options:']}
+	// 	else if (split[0] === "onDocumentReady") {return ["On Document Ready", 'Trigger Options:']} 
+	// 	else if (tag.trackingTriggerType === "onPageLoad") {return ["On Page Load", tag.trackingTrigger]} 
+	// 	else if (tag.trackingTriggerType  === "onEvent") {return ["On Event", tag.trackingTrigger]}
+	// 	else if (tag.trackingTriggerType === "onTrigger") {return ["On Callback", displayNames[tag.trackingTrigger]]}
+	// 	else {return ["error", "error"]}
+	// },
 
-	_validate: function() {
+	validate: function() {
+		var errors = {};
 
-	},
+    this.state.fields.map((field) => {
+      if (!field.value) {
+        errors[field.name] = "Value is required";
+      }
+    })
 
-	onUpdate: function() {
+		if (this.state.trigger === 'Select a Trigger:') { errors['trigger'] = 'Trigger selection is required.' }
+    if ((this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') && (this.state.option === 'Trigger Options:')) {
+    	errors['option'] = 'Option selection is required.'
+    }
+
+    if (Object.keys(errors).length === 0) {
+    	this.setState({ errors: {} });
+    	this._updateTag();
+    } else {
+    	this.setState({ errors: errors });
+    }
 
 	},
 
 	_updateTag: function() {
+		console.log("VALIDATED");
 
 	},
 
-	onDelete: function() {
 
-	},
-
-	_deleteTag: function() {
+	deleteTag: function() {
 
 	},
 
@@ -102,7 +155,25 @@ var MSP = React.createClass({
 	    });
 	},
 
-	updateCustom: function() {
+	validateCustom: function() {
+		var customError = {};
+
+		if (this.props.tag.name === "custom") {
+			if (!this.state.changesToSnippet) {
+				customError['changesToSnippet'] = 'Javascript is required.'
+			}
+		}
+
+    if (Object.keys(customError).length === 0) {
+    	this.setState({ customError: {} });
+    	this._updateCustom();
+    } else {
+    	this.setState({ customError: customError });
+    }
+
+	},
+
+	_updateCustom: function() {
     this.setState({
       template: this.state.changesToSnippet,
       modalIsOpen: false
@@ -172,7 +243,7 @@ var MSP = React.createClass({
 			 )
     }
 
-    if (this.state.optionsReady) {
+    if (this.state.optionsReady && Object.keys(this.props.tag).length !== 0) {
 		  var completeTokens;
 
 		  if (this.props.tag.tokens && this.props.tag.fields) {
@@ -203,10 +274,13 @@ var MSP = React.createClass({
                 <div className="editor">
                   <AceEditor className="editablecustom" mode="javascript" theme="tomorrow" name="editablecustom" height="120px" width="620px" editorProps={{$blockScrolling: true}} value={this.state.changesToSnippet} onChange={this.changeSnippet}/>
                 </div>
+	              <div className='warning'>
+	                {this.state.customError['changesToSnippet']}
+	              </div>
               </div>
               <div className='flex pushed-right'>
                 <button className="button right-margin" onClick={this.closeModal}> Cancel </button>
-                <button className="button button--highlight" onClick={this.updateCustom}> Update Custom Tag </button>
+                <button className="button button--highlight" onClick={this.validateCustom}> Update Custom Tag </button>
               </div>
             </Modal>
           </div>
@@ -215,10 +289,10 @@ var MSP = React.createClass({
           }
 
           {completeTokens.map(function(token, i) { return <MIF key={i} index={i} token={token} value={this.state.fields[i].value} onTokenValueChange={this.changeTokenValue} errors={this.state.errors}/>}.bind(this))}
-
+          <TriggerOptions options={this.state.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option} errors={this.state.errors}/>
         	<ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
 
-          <div> <button className="btn-uniform-add button button--highlight">Update Tag</button> </div>
+          <div> <button className="btn-uniform-add button button--highlight" onClick={this.validate}>Update Tag</button> </div>
           <div> <button className="btn-uniform-del button button--highlight">Delete</button> </div>
 
           {this.state.clickUpdate ?
