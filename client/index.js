@@ -84,7 +84,7 @@ var App = React.createClass({
 
   changeMySidePanel: function(addedTag, index) {
     console.log("tag selected", index, addedTag)
-    if (this.state.mySPIndex !== index) {
+    if (this.state.mySPIndex !== index || this.state.searchInput.length !== 0) {
       this.setState({
         mySP: addedTag,
         mySPIndex: index,
@@ -96,7 +96,8 @@ var App = React.createClass({
 
   changeAvailSidePanel: function(nonCustomTag, index) {
     console.log("tag selected", index, nonCustomTag);
-    if (this.state.availSPIndex !== index) {
+    if (this.state.availSPIndex !== index || this.state.searchInput.length !== 0) {
+      console.log("HIT SET STATE INDEX")
       this.setState({
         availSP: nonCustomTag,
         availSPIndex: index

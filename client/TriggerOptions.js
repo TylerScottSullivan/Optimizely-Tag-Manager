@@ -62,7 +62,7 @@ var TriggerOptions = React.createClass({
 
         	  <div className='warning'>
             	{this.props.errors['trigger']}
-          	</div>
+          	  </div>
 	        </div> 
 
 	        { (this.props.currentTrigger === 'onPageLoad' || this.props.currentTrigger === 'onEvent') ?
