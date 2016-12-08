@@ -78,19 +78,19 @@ var ASP = React.createClass({
 
     console.log("state", this.state)
     console.log("data", data)
-    // return $.ajax({
-    //   url: '/tag' + window.location.search,
-    //   type: 'POST',
-    //   data: data,
-    //   success: function(newTagFromDB) {
-    //   	//response back is new DB tag
-    //   	console.log("response", newTagFromDB)
-    //   	this.props.addTagToProjectTags(newCustomTagFromDB)
-    //   }.bind(this),
-    //   error: function(err) {
-    //     console.error("Err posting", err.toString());
-    //   }
-    // })
+    return $.ajax({
+      url: '/tag' + window.location.search,
+      type: 'POST',
+      data: data,
+      success: function(newTagFromDB) {
+      	//response back is new DB tag
+      	console.log("response", newTagFromDB)
+      	this.props.addTagToProjectTags(newTagFromDB)
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    })
 	},
 
 	changeTokenValue: function(index, newValue) {
