@@ -43,25 +43,28 @@ var MSP = React.createClass({
 	},
 
 	componentWillReceiveProps: function(nextProps) {
-
+		console.log("NEXT MSP PROPS", nextProps)
     if(!nextProps.tag._id) {
       this.setState({optionsReady: true})
     }
 
-    var newOptions;
-		if (Object.keys(nextProps.tag).length > 0) {
+		if (Object.keys(nextProps.tag).length > 0 && (this.props.tag._id !== nextProps.tag._id)) {
 			fetch('/callbacks/' + nextProps.tag._id + window.location.search)
 		  .then((response) => response.json())
 		  .then((callBackObjects) => this._setTagOptions(callBackObjects, this.props.options))
 		  .then((newOptions) => 
 				this.setState({
+					optionsReady: true,
+					updated: false,
+					deleted: false,
+
 					changesToSnippet: nextProps.tag.template,
 					fields: nextProps.tag.fields,
-					optionsReady: true,
 					options: newOptions,
 					trigger: 'Select a Trigger:',
 				  option: 'Trigger Options:',
 					active: nextProps.tag.active,
+
 					errors: {},
 					customError: {}
 				})
@@ -86,23 +89,6 @@ var MSP = React.createClass({
 
 		return newOptions
 	},
-
-	// _displayCurrentTrigger: function(tag) {
-	// 	var displayNames = { "GA": "Google Universal Analytics",
-	// 											 "GC": "Google Classic Analytics",
-	// 											 "segment": "Segment",
-	// 											 "facebook": "Facebook Tracking Pixel",
-	// 											 "amplitude": "Amplitude" }
-
-	// 	var split = tag.trackingTrigger.split(',');
-		
-	// 	if (split[0] === "inHeader" ) { return ["In Header", 'Trigger Options:']}
-	// 	else if (split[0] === "onDocumentReady") {return ["On Document Ready", 'Trigger Options:']} 
-	// 	else if (tag.trackingTriggerType === "onPageLoad") {return ["On Page Load", tag.trackingTrigger]} 
-	// 	else if (tag.trackingTriggerType  === "onEvent") {return ["On Event", tag.trackingTrigger]}
-	// 	else if (tag.trackingTriggerType === "onTrigger") {return ["On Callback", displayNames[tag.trackingTrigger]]}
-	// 	else {return ["error", "error"]}
-	// },
 
 	validate: function() {
 		var errors = {};
@@ -129,11 +115,30 @@ var MSP = React.createClass({
 
 	_updateTag: function() {
 		console.log("VALIDATED");
+		this.setState({
+			updated: true
+		})
 
 	},
 
 
 	deleteTag: function() {
+		var tag = this.props.tag;
+
+    return $.ajax({
+      url: '/tag/' + this.props.tag._id + window.location.search,
+      type: 'DELETE',
+      success: function(data) {
+  			console.log("data deleted", data)
+  			this.setState({
+					deleted: true
+				})
+  			this.props.deleteTagFromProjectTags(tag);
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
 
 	},
 
@@ -293,9 +298,9 @@ var MSP = React.createClass({
         	<ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
 
           <div> <button className="btn-uniform-add button button--highlight" onClick={this.validate}>Update Tag</button> </div>
-          <div> <button className="btn-uniform-del button button--highlight">Delete</button> </div>
+          <div> <button className="btn-uniform-del button button--highlight" onClick={this.deleteTag}>Delete</button> </div>
 
-          {this.state.clickUpdate ?
+          {this.state.updated ?
           <div className="yellowbox"> This tag has now been updated. This change may take a couple of minutes before it is updated within your Optimizely tag. </div>
           :
  					 null
@@ -317,39 +322,19 @@ var MSP = React.createClass({
 module.exports = MSP;
 
 
-            // <div className="flex">
-            //    <div className="flex--1 sd-headsmall"> Called On: </div>
-            // </div>
+	// _displayCurrentTrigger: function(tag) {
+	// 	var displayNames = { "GA": "Google Universal Analytics",
+	// 											 "GC": "Google Classic Analytics",
+	// 											 "segment": "Segment",
+	// 											 "facebook": "Facebook Tracking Pixel",
+	// 											 "amplitude": "Amplitude" }
 
-            // {/*this renders trigger options, makes selected trigger the initial trigger option rendered*/}
-            // <select className="form-control" name='trackingTrigger' onChange={this.onChange}>
-            //   {
-            //     ['inHeader', 'onDocumentReady', 'onTrigger', 'onEvent', 'onPageLoad'].map((item) => {
-            //       var selected = (item === this.state.trackingTrigger);
-            //       return <option value={item} selected={selected}> {item} </option>
-            //     })
-            //   }
-            // </select>
-
-
-
-            // {/* Renders each trigger option */}
-            // {
-            //   (this.state.trackingTrigger === 'onTrigger' || this.state.trackingTrigger === 'onEvent' || this.state.trackingTrigger === 'onPageLoad') ? (
-            //     <div>
-            //     <div className="flex">
-            //       <div className="flex--1 sd-headsmall"> Please Select a Specific Trigger: </div>
-            //     </div>
-
-            //     <select className="form-control" name='specificTrigger' value={this.state.specificTrigger} onChange={this.onChange}>
-            //       <option selected>Select a trigger</option>
-            //     {this.state.triggerOptions[this.state.trackingTrigger].map((trigger) => {
-            //       return (trigger === this.state.specificTrigger) ? <option selected value={trigger}>{trigger}</option> : <option value={trigger}>{trigger}</option>
-            //       })
-            //     }
-            //   </select>
-            //   </div>
-            //   ) : null
-            // }
-
-
+	// 	var split = tag.trackingTrigger.split(',');
+		
+	// 	if (split[0] === "inHeader" ) { return ["In Header", 'Trigger Options:']}
+	// 	else if (split[0] === "onDocumentReady") {return ["On Document Ready", 'Trigger Options:']} 
+	// 	else if (tag.trackingTriggerType === "onPageLoad") {return ["On Page Load", tag.trackingTrigger]} 
+	// 	else if (tag.trackingTriggerType  === "onEvent") {return ["On Event", tag.trackingTrigger]}
+	// 	else if (tag.trackingTriggerType === "onTrigger") {return ["On Callback", displayNames[tag.trackingTrigger]]}
+	// 	else {return ["error", "error"]}
+	// },

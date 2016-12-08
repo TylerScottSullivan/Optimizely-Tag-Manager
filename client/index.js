@@ -36,7 +36,6 @@ var App = React.createClass({
 
       mySP: {},
       mySPIndex: null,
-      mySPDeleted: false,
 
       availSP: {},
       availSPIndex: null,
@@ -47,6 +46,39 @@ var App = React.createClass({
       pages: [],
       events: []
     }
+  },
+
+  deleteTagFromProjectTags: function(tag) {
+    console.log("GETS TO BEGINNING OF DELETED TAGS")
+    var tagID = tag._id;
+    var newProjectTags = [];
+    var newCompleteTags = [];
+    for (var i = 0; i < this.state.projectTags.length; i++) {
+      if (this.state.projectTags[i]._id !== tagID) {
+        newProjectTags.push(this.state.projectTags[i])
+      }
+    }
+    console.log("GETS PAST FOUR LOOP")
+    newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
+    if (tag.name === "custom") {
+      console.log("GETS TO SETTING STATE INDEX")
+      this.setState({
+        projectTags: newProjectTags,
+        completeTags: newCompleteTags
+      })
+    } else {
+      console.log("GETS TO NON CUSTOM STATE HERE")
+      var newCallbackTriggers = [];
+      var newOptions = [];
+      newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
+      newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
+      this.setState({
+        projectTags: newProjectTags,
+        completeTags: newCompleteTags,
+        options: newOptions
+      })
+    }
+
   },
 
   addTagToProjectTags: function(tag) {
@@ -87,8 +119,7 @@ var App = React.createClass({
     if (this.state.mySPIndex !== index || this.state.searchInput.length !== 0) {
       this.setState({
         mySP: addedTag,
-        mySPIndex: index,
-        mySPDeleted: false
+        mySPIndex: index
       })
     }
     console.log("state", this.state)
@@ -330,16 +361,17 @@ var App = React.createClass({
   _displaySelectedTab: function(selectedTab) {
     if (selectedTab === 0) {
       return [<MTP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <MSP tag={this.state.mySP} options={this.state.options}/>]
+              <MSP tag={this.state.mySP} options={this.state.options} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
     } else if (selectedTab === 1) {
       return [<ATP completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <ASP tag={this.state.availSP} options={this.state.options}/>]
+              <ASP tag={this.state.availSP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>]
     } else if (selectedTab === 2) {
       return [<NTP/>, null]
     }
   },
 
   _mergeMasterTemplatesWithProjectTags: function(masterTemplates, projectTags) {
+    console.log("merging")
     var completeTagsArray = [];
     var completeTag = {};
     var counter = 0;
