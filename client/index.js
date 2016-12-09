@@ -433,7 +433,7 @@ var App = React.createClass({
         </ul>
         <div className="flex height--1-1">
           <div className="flex--1 soft-double--sides">
-            <SearchAndCustom searchInput={this.state.searchInput} changeSearchInput={this.changeSearchInput} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>
+            {this.state.selectedTab !== 2 ? <SearchAndCustom searchInput={this.state.searchInput} changeSearchInput={this.changeSearchInput} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/> : null}
             {DisplayedPage}
           </div>
           {SidePanel}
