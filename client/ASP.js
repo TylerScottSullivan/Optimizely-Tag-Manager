@@ -85,6 +85,7 @@ var ASP = React.createClass({
       success: function(newTagFromDB) {
       	//response back is new DB tag
       	console.log("response", newTagFromDB)
+        this.props.tag.added = true;
       	this.props.addTagToProjectTags(newTagFromDB)
       }.bind(this),
       error: function(err) {
