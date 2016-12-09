@@ -85,24 +85,34 @@ var App = React.createClass({
     var newProjectTags = [];
     var newCompleteTags = [];
 
-    newProjectTags = this.state.projectTags.concat(tag)
-    newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
-    if (tag.name === "custom") {
-      this.setState({
-        projectTags: newProjectTags,
-        completeTags: newCompleteTags
-      })
-    } else {
-      var newCallbackTriggers = [];
-      var newOptions = [];
-      newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
-      newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
-      this.setState({
-        projectTags: newProjectTags,
-        completeTags: newCompleteTags,
-        options: newOptions
-      })
-    }
+    var fetchTagsFromDB = fetch('/tag/' + window.location.search)
+                         .then(response => response.json())
+                         .then(response => {
+                           newProjectTags = response;
+                         })
+
+    Promise.all([fetchTagsFromDB]).then(response => {
+      newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
+      if (tag.name === "custom") {
+        this.setState({
+          projectTags: newProjectTags,
+          completeTags: newCompleteTags
+        })
+      } else {
+        var newCallbackTriggers = [];
+        var newOptions = [];
+        newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
+        newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
+        this.setState({
+          projectTags: newProjectTags,
+          completeTags: newCompleteTags,
+          options: newOptions
+        })
+      }
+    }).
+    catch((e) => {
+      console.log("Err:", e)
+    })
   },
 
   // updates selectedTab state if and only if a new tab is selected
@@ -361,7 +371,7 @@ var App = React.createClass({
   _displaySelectedTab: function(selectedTab) {
     if (selectedTab === 0) {
       return [<MTP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <MSP tag={this.state.mySP} options={this.state.options} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
+              <MSP tag={this.state.mySP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
     } else if (selectedTab === 1) {
       return [<ATP completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
               <ASP tag={this.state.availSP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>]

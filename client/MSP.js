@@ -130,9 +130,6 @@ var MSP = React.createClass({
 
 	_updateTag: function() {
 		console.log("VALIDATED");
-		this.setState({
-			updated: true
-		})
 
     var data = {};
 
@@ -150,6 +147,22 @@ var MSP = React.createClass({
     }
 
     data.active = this.state.active
+
+    return $.ajax({
+      url: '/tag/' + this.props.tag._id + window.location.search,
+      type: 'PUT',
+      data: data,
+      success: function(updatedTagFromDB) {
+        console.log("response", updatedTagFromDB)
+		 		this.setState({
+					updated: true
+				})
+      	this.props.addTagToProjectTags(updatedTagFromDB)
+      }.bind(this),
+      error: function(err) {
+        console.error("Err posting", err.toString());
+      }
+    });
 
     console.log("Data", data)
 	},

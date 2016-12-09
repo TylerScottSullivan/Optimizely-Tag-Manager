@@ -4,6 +4,11 @@ var React = require('react');
 var MTR = React.createClass({
 
 	_displayTrigger: function(addedTag, callBackCheck) {
+		console.log("callBackCheck", callBackCheck)
+		console.log("addedTag", addedTag)
+		console.log("addedTag.trackingTrigger", addedTag.trackingTrigger)
+		console.log("this.props.addedTag.name", this.props.addedTag.name)
+		// console.log("callBackCheck[addedTag.trackingTrigger][0]", callBackCheck[addedTag.trackingTrigger][0])
 		var displayNames = { "GA": "Google Universal Analytics",
 							 "GC": "Google Classic Analytics",
 							 "segment": "Segment",
@@ -19,21 +24,35 @@ var MTR = React.createClass({
 		else if (addedTag.trackingTriggerType === "onTrigger") {
 			if (Object.keys(callBackCheck).length < 1) {
 				return "Please Update Call"
-			} else if (!(added.trackingTrigger in callBackCheck)) {
+			} else if (!(addedTag.trackingTrigger in callBackCheck)) {
+				console.log("Gets to second if")
 				return "Please Update Call"				
-			} else if (added.trackingTrigger in callBackCheck) {
+			} else if (addedTag.trackingTrigger in callBackCheck) {
 				var count = 0;
-				for (var i = 0; i < callBackCheck[added.trackingTrigger].length; i++) {
-					if (callBackCheck[added.trackingTrigger][i] === this.props.addedTag.name) {
-						count++;
+				if(addedTag.name==="custom") {
+					for (var i = 0; i < callBackCheck[addedTag.trackingTrigger].length; i++) {
+						if (callBackCheck[addedTag.trackingTrigger][i] === this.props.addedTag.customId) {
+							count++;
+						}
+					}
+				} else {
+					for (var i = 0; i < callBackCheck[addedTag.trackingTrigger].length; i++) {
+						if (callBackCheck[addedTag.trackingTrigger][i] === this.props.addedTag.name) {
+							count++;
+						}
 					}
 				}
 				if (count === 0) {
+					console.log("Gets to third if")
 					return "Please Update Call"
+				} else {
+					return "On Callback - " + displayNames[addedTag.trackingTrigger]
 				}
-			} else {
-			return "On Callback - " + displayNames[addedTag.trackingTrigger]
-			}
+			} 
+			// else {
+			// 	console.log("getting here")
+			// 	return "On Callback - " + displayNames[addedTag.trackingTrigger]
+			// }
 		}
 		else {return "error"}
 	},
