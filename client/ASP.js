@@ -6,6 +6,7 @@ var TriggerOptions = require('./TriggerOptions');
 
 var ASP = React.createClass({
 	getInitialState: function() {
+      console.log("ASP HIT INITIAL STATE");
 	    return {
 	    	tokens: {},
 			  trigger: 'Select a Trigger:',
@@ -17,7 +18,7 @@ var ASP = React.createClass({
 	},
 
 	componentWillReceiveProps:function (nextProps) {
-
+    console.log("HIT WRP", nextProps)
 		//checks for if next props is a tag
 		if (Object.keys(nextProps.tag).length > 0) {
 	    nextProps.tag.tokens = nextProps.tag.tokens.map((token) => {
@@ -85,7 +86,7 @@ var ASP = React.createClass({
       success: function(newTagFromDB) {
       	//response back is new DB tag
       	console.log("response", newTagFromDB)
-        this.props.tag.added = true;
+        this.props.tag.added = true
       	this.props.addTagToProjectTags(newTagFromDB)
       }.bind(this),
       error: function(err) {

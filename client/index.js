@@ -408,6 +408,8 @@ var App = React.createClass({
 
     var DisplayedPage = this._displaySelectedTab(selectedTab)[0];
     var SidePanel = this._displaySelectedTab(selectedTab)[1];
+    console.log("Displayed Page", DisplayedPage);
+    console.log("SidePanel", SidePanel)
 
     console.log(this.state, "this state")
 

@@ -23,9 +23,12 @@ const customStyles = {
 };
 
 var MSP = React.createClass({
+
 	getInitialState: function() {
+		console.log("MSP HIT INITIAL STATE")
 		return {
 			optionsReady: false,
+			newProps: false,
 			updated: false,
 			deleted: false,
 
@@ -42,13 +45,48 @@ var MSP = React.createClass({
 	  }
 	},
 
+	componentWillMount: function() {
+		console.log("This MSP PROPS CWM", this.props)
+		// this.props.tag = null;
+	},
+
+	componentWillUnmount: function() {
+	  this.setState({
+			optionsReady: false,
+			updated: false,
+			deleted: false,
+
+			template: '',
+			changesToSnippet: '',
+			fields: {},
+			options: [],
+			trigger: 'Select a Trigger:',
+		  option: 'Trigger Options:',
+			active: false,
+
+			errors: {},
+			customError: {}	  	
+	  })
+	},
+
 	componentWillReceiveProps: function(nextProps) {
 		console.log("NEXT MSP PROPS", nextProps)
     if(!nextProps.tag._id) {
-      this.setState({optionsReady: true})
+      this.setState({
+      	optionsReady: false
+      })
     }
 
 		if (Object.keys(nextProps.tag).length > 0 && (this.props.tag._id !== nextProps.tag._id)) {
+			this.setState({
+				optionsReady: false,
+				newProps: true
+			})
+
+			var fields = nextProps.tag.fields.map((field) => {
+	      return Object.assign({}, field)
+	    })
+
 			fetch('/callbacks/' + nextProps.tag._id + window.location.search)
 		  .then((response) => response.json())
 		  .then((callBackObjects) => this._setTagOptions(callBackObjects, this.props.options))
@@ -59,7 +97,7 @@ var MSP = React.createClass({
 					deleted: false,
 
 					changesToSnippet: nextProps.tag.template,
-					fields: nextProps.tag.fields,
+					fields: fields,
 					options: newOptions,
 					trigger: 'Select a Trigger:',
 				  option: 'Trigger Options:',
@@ -227,6 +265,8 @@ var MSP = React.createClass({
 	},
 
 	render: function() {
+		console.log("MSP STATE", this.state);
+		console.log("MSP PROPS", this.props);
     if (this.state.deleted) {
       return (
         <div className="sidepanel background--faint">
@@ -238,6 +278,15 @@ var MSP = React.createClass({
         </div>
         )
     }
+
+ 	  if (!this.state.newProps)	{
+			return (
+		      <div className="sidepanel background--faint">
+		        <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
+		        <div> Select a Tag to view Details. </div>
+		      </div>
+		    )
+		}	
 
     if (!this.state.optionsReady) {
       return(
@@ -252,7 +301,8 @@ var MSP = React.createClass({
 		  var completeTokens;
 
 		  if (this.props.tag.tokens && this.props.tag.fields) {
-		  	completeTokens = this._mergeTagTokensAndFields(this.props.tag.tokens, this.props.tag.fields)
+		  	console.log("HITTING HERE UH OH")
+		  	completeTokens = this._mergeTagTokensAndFields(this.props.tag.tokens, this.state.fields)
 		  }
 			// console.log("This MSP Props", this.props);
 			console.log("This MSP State", this.state);
@@ -292,10 +342,10 @@ var MSP = React.createClass({
           :
         	null
           }
-
-          {completeTokens.map(function(token, i) { return <MIF key={i} index={i} token={token} value={this.state.fields[i].value} onTokenValueChange={this.changeTokenValue} errors={this.state.errors}/>}.bind(this))}
-          <TriggerOptions options={this.state.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option} errors={this.state.errors}/>
-        	<ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
+					
+					{completeTokens.map(function(token, i) { return <MIF key={i} index={i} token={token} value={this.state.fields[i].value} onTokenValueChange={this.changeTokenValue} errors={this.state.errors}/>}.bind(this))}
+     			<TriggerOptions options={this.state.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option} errors={this.state.errors}/>
+					<ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
 
           <div> <button className="btn-uniform-add button button--highlight" onClick={this.validate}>Update Tag</button> </div>
           <div> <button className="btn-uniform-del button button--highlight" onClick={this.deleteTag}>Delete</button> </div>
@@ -309,13 +359,6 @@ var MSP = React.createClass({
        	</div>
 	  	)
     }
-
-		return (
-	      <div className="sidepanel background--faint">
-	        <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
-	        <div> Select a Tag to view Details. </div>
-	      </div>
-	    )
 	}
 })
 
