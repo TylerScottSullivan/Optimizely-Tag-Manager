@@ -3,7 +3,7 @@ var React = require('react');
 
 var MTR = React.createClass({
 
-	_displayTrigger: function(addedTag) {
+	_displayTrigger: function(addedTag, callBackCheck) {
 		var displayNames = { "GA": "Google Universal Analytics",
 							 "GC": "Google Classic Analytics",
 							 "segment": "Segment",
@@ -16,12 +16,31 @@ var MTR = React.createClass({
 		else if (split[0] === "onDocumentReady") {return "On Document Ready"} 
 		else if (addedTag.trackingTriggerType === "onPageLoad") {return "On Page Load - " + addedTag.trackingTrigger} 
 		else if (addedTag.trackingTriggerType  === "onEvent") {return "On Event - " + addedTag.trackingTrigger}
-		else if (addedTag.trackingTriggerType === "onTrigger") {return "On Callback - " + displayNames[addedTag.trackingTrigger]}
+		else if (addedTag.trackingTriggerType === "onTrigger") {
+			if (Object.keys(callBackCheck).length < 1) {
+				return "Please Update Call"
+			} else if (!(added.trackingTrigger in callBackCheck)) {
+				return "Please Update Call"				
+			} else if (added.trackingTrigger in callBackCheck) {
+				var count = 0;
+				for (var i = 0; i < callBackCheck[added.trackingTrigger].length; i++) {
+					if (callBackCheck[added.trackingTrigger][i] === this.props.addedTag.name) {
+						count++;
+					}
+				}
+				if (count === 0) {
+					return "Please Update Call"
+				}
+			} else {
+			return "On Callback - " + displayNames[addedTag.trackingTrigger]
+			}
+		}
 		else {return "error"}
 	},
 
 	render: function() {
-		var trigger = this._displayTrigger(this.props.addedTag);
+		// console.log("callbackCheckk passed", this.props.callBackCheck)
+		var trigger = this._displayTrigger(this.props.addedTag, this.props.callBackCheck);
 		return (
 		 		<tr onClick = {this.props.handleRowClick}>
 		        <td id="row-centered"> <img src={this.props.addedTag.logo}/>< /td>

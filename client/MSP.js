@@ -45,30 +45,6 @@ var MSP = React.createClass({
 	  }
 	},
 
-	componentWillMount: function() {
-		console.log("This MSP PROPS CWM", this.props)
-		// this.props.tag = null;
-	},
-
-	componentWillUnmount: function() {
-	  this.setState({
-			optionsReady: false,
-			updated: false,
-			deleted: false,
-
-			template: '',
-			changesToSnippet: '',
-			fields: {},
-			options: [],
-			trigger: 'Select a Trigger:',
-		  option: 'Trigger Options:',
-			active: false,
-
-			errors: {},
-			customError: {}	  	
-	  })
-	},
-
 	componentWillReceiveProps: function(nextProps) {
 		console.log("NEXT MSP PROPS", nextProps)
     if(!nextProps.tag._id) {

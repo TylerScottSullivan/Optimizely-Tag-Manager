@@ -52,6 +52,18 @@ var MTP = React.createClass({
 		return addedTags;
 	},
 
+	_createCallBackCheck: function(projectTags) {
+		console.log("Project tags passed in", projectTags)
+		var callBackCheck = {};
+		for (var i = 0; i < projectTags.length; i++) {
+			if (projectTags[i].callbacks.length > 0) {
+				callBackCheck[projectTags[i].name] = projectTags[i].callbacks
+			}
+		}
+
+		return callBackCheck;
+	},
+
 	render: function() {
 
 		var tableHeaders = (
@@ -93,6 +105,8 @@ var MTP = React.createClass({
 			if (this.props.searchInput.length !== 0) {
 				addedTags = this.props._filterForSearchInput(this.props.searchInput, addedTags)
 			}
+			var callBackCheck = this._createCallBackCheck(this.props.projectTags)
+			console.log("callbackCheck in MTP", callBackCheck)
 
 
 			if (this.props.searchInput.length!==0 && addedTags.length === 0) {
@@ -119,7 +133,7 @@ var MTP = React.createClass({
 			          </thead>
 			          <tbody>
 			          {addedTags.map((tag, i) => {
-			          	return <MTR addedTag={tag} key={i} handleRowClick={() => this.props.handleRowClick(tag, i)}/> 
+			          	return <MTR addedTag={tag} key={i} callBackCheck={callBackCheck} handleRowClick={() => this.props.handleRowClick(tag, i)}/> 
 			          	})
 			      	  }
 			          </tbody>
