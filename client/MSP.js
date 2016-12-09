@@ -72,6 +72,7 @@ var MSP = React.createClass({
 					updated: false,
 					deleted: false,
 
+					template: nextProps.tag.template,
 					changesToSnippet: nextProps.tag.template,
 					fields: fields,
 					options: newOptions,
@@ -133,6 +134,24 @@ var MSP = React.createClass({
 			updated: true
 		})
 
+    var data = {};
+
+    data.template = this.state.template;
+
+    this.state.fields.map(function(field){
+  	   data[field.name] = field.value;
+       // data.fields.push({"name": field.name, "value": field.value})
+    })
+
+    if (this.state.trigger === 'onDocumentReady'|| this.state.trigger === 'inHeader') {
+       data.trackingTrigger = this.state.trigger + ',' + this.state.trigger;
+    } else if (this.state.trigger === 'onPageLoad' || this.state.trigger === 'onEvent' || this.state.trigger === 'onTrigger') {
+      data.trackingTrigger = this.state.trigger + ',' + this.state.option;
+    }
+
+    data.active = this.state.active
+
+    console.log("Data", data)
 	},
 
 
@@ -222,7 +241,10 @@ var MSP = React.createClass({
 	},
 
 	closeModal: function() {
-	  this.setState({modalIsOpen: false});
+	  this.setState({
+	  	changesToSnippet: this.props.tag.template,
+	  	modalIsOpen: false
+	  });
 	},
 
 	_mergeTagTokensAndFields: function(tokens, fields) {
