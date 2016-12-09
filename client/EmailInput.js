@@ -1,6 +1,11 @@
 var React = require('react');
 
 var EmailInput = React.createClass({
+	handleChange: function(e) {
+		var newValue = e.target.value;
+		this.props.onChange(newValue)
+	},
+
 	render: function () {
 		return (
 			<div>
@@ -8,7 +13,10 @@ var EmailInput = React.createClass({
 	        <label className="label">
 	            What is an email that we can reach you?
 	        </label>
-	        <input type="text" className="text-input" name='email'/>
+	        <input type="text" className="text-input" name='email' onChange={this.handleChange}/>
+          <div className='warning'>
+            {this.props.errors['email']}
+          </div>
 	        <div className="form-note">
 	          <p> We will update you upon the approval of your template. </p>
 	        </div>
