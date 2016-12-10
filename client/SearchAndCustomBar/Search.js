@@ -7,22 +7,20 @@ var Search = React.createClass({
 		this.props.onChange(newSearchInput);
 	},
 
-
+	// renders search input in SearchAndCustom
 	render: function() {
 		return(
-	          <li className="push-triple--right">
-	            <div className="button-group">
-	              <div className="search">
-	                <input 
-	                	type="text" 
-	                	className="text-input text-input--search width--200" 
-	                	placeholder="Search Tags by Name"
-	                	onChange={this.handleSearchInputChange}
-	                	value={this.props.searchInput}/>
-	              </div>
-	              {/*<button className="button" type="button">Search</button>*/}
-	            </div>
-	          </li>
+      <li className="push-triple--right">
+        <div className="button-group">
+          <div className="search">
+            <input type="text" 
+            	className="text-input text-input--search width--200" 
+            	placeholder="Search Tags by Name"
+            	onChange={this.handleSearchInputChange}
+            	value={this.props.searchInput}/>
+          </div>
+        </div>
+      </li>
 	    )
 	}
 })

@@ -45,12 +45,12 @@ var CustomTag = React.createClass({
   },
 
   componentWillReceiveProps: function(nextProps) {
-		console.log("HIT WILL RECEIVE PROPS")
 		this.setState({
 			projectDoneLoading: true
 		})
 	},
 
+  // validates form upon Create Custom Tag click, displays errors
   validate: function() {
   	var errors = {};
 
@@ -71,8 +71,8 @@ var CustomTag = React.createClass({
 
   },
 
+  // upon validation, adds custom tag to DB
   _addCustomTag: function() {
-  	console.log("VALIDATED")
   	var data = {};
     var index = Math.floor(Math.random()*10000000000);
 
@@ -89,15 +89,11 @@ var CustomTag = React.createClass({
     }
     data.active = this.state.active;
     
-    console.log("state", this.state)
-    console.log("data", data)
     return $.ajax({
       url: '/tag' + window.location.search,
       type: 'POST',
       data: data,
       success: function(newCustomTagFromDB) {
-      	//response back is new DB custom tag
-      	console.log("response", newCustomTagFromDB)
       	this.closeModal();
       	this.props.addTagToProjectTags(newCustomTagFromDB)
       }.bind(this),
@@ -151,6 +147,7 @@ var CustomTag = React.createClass({
     });
   },
 
+  // closes modal and sets state back to normal
   closeModal: function() {
     this.setState({
       modalIsOpen: false,
@@ -168,21 +165,22 @@ var CustomTag = React.createClass({
   },
 
   render: function () {
-  	console.log("modal state", this.state)
 
+    // displays loading message in modal
 	  if (!this.state.projectDoneLoading) {
 	  	return (
 		  	<li className="anchor--right">
 				<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>
-			      {/*shows a modal to input custom code*/}
+			     {/*shows a modal to input custom code*/}
 				  <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
-		          <h2 ref="subtitle">Create Custom Tag</h2>
-		          <div className='welcome'> Loading... </div> 
-		          </Modal>
+	          <h2 ref="subtitle">Create Custom Tag</h2>
+	          <div className='welcome'> Loading... </div> 
+          </Modal>
 			  </li>
 	  		)
 	  }
 
+    // displays modal to add a custom tag
 		return (
 		  <li className="anchor--right">
 				<button className="button button--highlight" onClick={this.openModal}>Create Custom Tag</button>

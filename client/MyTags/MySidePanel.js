@@ -326,6 +326,7 @@ var MySidePanel = React.createClass({
           {this.props.tag.name === "custom" ?
           <div>
             <button className="btn-uniform-add button button--highlight" onClick={this.openModal}> Edit Custom Code</button>
+            {/*shows a modal to input custom code*/}
             <Modal isOpen={this.state.modalIsOpen} onRequestClose={this.closeModal} style={customStyles}>
               <h2 ref="subtitle">Update Custom Tag</h2>
               <div className='modaltext'>
