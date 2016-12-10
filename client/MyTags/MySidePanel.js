@@ -316,7 +316,7 @@ var MySidePanel = React.createClass({
 
           <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
           <div className="flex">
-             <div> <img className='sidepanel-logo' src={this.props.tag.logo}/> </div>
+            <div> <img className='sidepanel-logo' src={this.props.tag.logo}/> </div>
             <div className='flex flex-v-center'> <div className = 'sidepanel-displayname'> {this.props.tag.displayName} </div> </div>
           </div>
           <div className='sd-headsmall deschead'> DESCRIPTION </div>

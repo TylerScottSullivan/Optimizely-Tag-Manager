@@ -1,10 +1,9 @@
 var React = require('react');
 
 var TakeCallBacksInput = React.createClass({
+
   handleHasCallBackChange: function(e) {
     var newValue;
-    console.log("hasCallBackChange handle")
-    console.log("target value", e.target.value)
     var value = e.target.value;
     if (value === "true") {
       newValue = true
@@ -30,8 +29,8 @@ var TakeCallBacksInput = React.createClass({
     this.props.onChangeType(newValue) 
   },
 
+  // renders has callback input, uses our callback input, and type options
 	render: function () {
-    console.log("this TCBI props", this.props)
 		return (
       <div>
     		<li className="form-field__item">

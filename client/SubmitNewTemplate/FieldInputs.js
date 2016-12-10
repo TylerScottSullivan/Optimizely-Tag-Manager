@@ -1,6 +1,7 @@
 var React = require('react');
 
 var FieldInputs = React.createClass({
+
   handleFieldNameChange: function(e) {
     var newValue = e.target.value;
     this.props.onChangeFieldName(newValue, this.props.index)
@@ -20,12 +21,8 @@ var FieldInputs = React.createClass({
     this.props.onDeleteField(this.props.index)
   },
 
+  // renders token name field, display name field, example field, and add and delete buttons
 	render: function () {
-    console.log("FieldInput Props", this.props)
-    console.log("field", this.props.field)
-    console.log("tokenName", this.props.field.tokenName)
-    console.log("displayName", this.props.field.tokenDisplayName)
-    console.log("example", this.props.field.tokenExample)
 		return (
       <div>
         <div className="form-note">{this.props.tokenHere}</div>

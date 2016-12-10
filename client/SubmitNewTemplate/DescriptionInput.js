@@ -6,13 +6,12 @@ var DescriptionInput = React.createClass({
     this.props.onChange(newValue)
   },
   
+  // renders description field
 	render: function () {
 		return (
 			<div>
         <li className="form-field__item">
-          <label className="label">
-              Description
-          </label>
+          <label className="label"> Description </label>
           <input type="text" className="text-input" name='description' onChange={this.handleChange}/>
           <div className='warning'>
             {this.props.errors['description']}

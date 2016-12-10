@@ -1,11 +1,13 @@
 var React = require('react');
 
 var DataBaseNameInput = React.createClass({
+
 	handleChange: function(e) {
 		var newValue = e.target.value;
 		this.props.onChange(newValue)
 	},
 	
+	// renders database name input field
 	render: function () {
 		return (
 			<div>

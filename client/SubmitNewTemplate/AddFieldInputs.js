@@ -3,8 +3,8 @@ var React = require('react');
 var FieldInputs = require('./FieldInputs');
 
 var AddFieldInputs = React.createClass({
+  // renders adding input fields to New Tempalate Page
 	render: function () {
-    console.log("this props AddFieldInputs", this.props)
 		return (
 			<div>
         <li className="form-field__item">
