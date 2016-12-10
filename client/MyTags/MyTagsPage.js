@@ -2,6 +2,7 @@ var React = require('react');
 var MyTableRows = require('./MyTableRows');
 
 var MyTagsPage = React.createClass({
+
 	getInitialState: function () {
 		return {
 			projectDoneLoading: false,
@@ -9,11 +10,9 @@ var MyTagsPage = React.createClass({
 		}
 	},
 
-	// if the props had already been received by the component,
-	// WillReceiveProps will not be called when tab is switched back to My Tags.
-	// This sets the appropriate state under such a scenario.
 	componentWillMount: function () {
-	   	if (this.props.projectTags.length !== 0) {
+		// if tags have not been loaded yet
+   	if (this.props.projectTags.length !== 0) {
 			this.setState({
 				projectDoneLoading: true,
 				projectHasTags: true
@@ -27,7 +26,8 @@ var MyTagsPage = React.createClass({
 	},
 
 	componentWillReceiveProps: function(nextProps) {
-	    if (nextProps.projectTags.length !== 0) {
+		// if tags have been loaded
+    if (nextProps.projectTags.length !== 0) {
 			this.setState({
 				projectDoneLoading: true,
 				projectHasTags: true
@@ -40,6 +40,7 @@ var MyTagsPage = React.createClass({
 		}
 	},
 
+	// returns only added tags
 	_filterForAddedTags: function(completeTags) {
 		var addedTags = [];
 
@@ -52,8 +53,8 @@ var MyTagsPage = React.createClass({
 		return addedTags;
 	},
 
+	// given project tags, creates an object to be used to check if all calls set to "On Trigger" are valid in MyTableRows
 	_createCallBackCheck: function(projectTags) {
-		console.log("Project tags passed in", projectTags)
 		var callBackCheck = {};
 		for (var i = 0; i < projectTags.length; i++) {
 			if (projectTags[i].callbacks.length > 0) {
@@ -83,6 +84,7 @@ var MyTagsPage = React.createClass({
 		        </div>
 			)
 
+		// displays loading message
 		if (!this.state.projectDoneLoading) {
 			return (
 				<div>
@@ -92,6 +94,7 @@ var MyTagsPage = React.createClass({
 				</div> 
 			)
 		} else if (this.state.projectDoneLoading && !this.state.projectHasTags) {
+			// if no tags have been added, displays welcome message
 			return (
 				<div>
 					{tableHeaders}
@@ -100,15 +103,15 @@ var MyTagsPage = React.createClass({
 				)
 		} else {
 
+			// readies tags to be displayed
 			var completeTags = this.props.completeTags;
 			var addedTags = this._filterForAddedTags(completeTags);
 			if (this.props.searchInput.length !== 0) {
 				addedTags = this.props._filterForSearchInput(this.props.searchInput, addedTags)
 			}
 			var callBackCheck = this._createCallBackCheck(this.props.projectTags)
-			console.log("callbackCheck in MyTagsPage", callBackCheck)
 
-
+			// displays no tags matching search message
 			if (this.props.searchInput.length!==0 && addedTags.length === 0) {
 				return (
 					<div>
@@ -118,6 +121,7 @@ var MyTagsPage = React.createClass({
 				)
 			}
 
+			// renders headers and maps tags in table in the My Tags tab
 			return (
 				<div> 
 					<h1 className='header1'> My Tags </h1>

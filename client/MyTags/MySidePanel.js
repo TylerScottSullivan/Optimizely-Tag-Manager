@@ -26,7 +26,6 @@ const customStyles = {
 var MySidePanel = React.createClass({
 
 	getInitialState: function() {
-		console.log("MySidePanel HIT INITIAL STATE")
 		return {
 			optionsReady: false,
 			newProps: false,
@@ -47,13 +46,13 @@ var MySidePanel = React.createClass({
 	},
 
 	componentWillReceiveProps: function(nextProps) {
-		console.log("NEXT MySidePanel PROPS", nextProps)
     if(!nextProps.tag._id) {
       this.setState({
       	optionsReady: false
       })
     }
 
+    // if next tag is different from current tag
 		if (Object.keys(nextProps.tag).length > 0 && (this.props.tag._id !== nextProps.tag._id)) {
 			this.setState({
 				optionsReady: false,
@@ -64,6 +63,7 @@ var MySidePanel = React.createClass({
 	      return Object.assign({}, field)
 	    })
 
+      // gets callbacks for this specific tag
 			fetch('/callbacks/' + nextProps.tag._id + window.location.search)
 		  .then((response) => response.json())
 		  .then((callBackObjects) => this._setTagOptions(callBackObjects, this.props.options))
@@ -89,10 +89,9 @@ var MySidePanel = React.createClass({
 		      
 	},
 
+  // sets all of the trigger options correctly for specific tag
 	_setTagOptions: function(callBackObjects, options) {
 		var newOptions;
-		console.log("Options", options);
-		console.log("callBackObjects", callBackObjects)
 		var callBackArray = [];
 		for(var i=0; i < callBackObjects.length; i++) {
 			callBackArray.push([callBackObjects[i].name, callBackObjects[i].displayName])
@@ -101,11 +100,10 @@ var MySidePanel = React.createClass({
 		options[2][1] = callBackArray;
 		newOptions = options;
 
-		console.log("new Options", newOptions)
-
 		return newOptions
 	},
 
+  // validates form on Update Tag click
 	validate: function() {
 		var errors = {};
 
@@ -129,16 +127,14 @@ var MySidePanel = React.createClass({
 
 	},
 
+  // updates tag after validation
 	_updateTag: function() {
-		console.log("VALIDATED");
-
     var data = {};
 
     data.template = this.state.template;
 
     this.state.fields.map(function(field){
   	   data[field.name] = field.value;
-       // data.fields.push({"name": field.name, "value": field.value})
     })
 
     if (this.state.trigger === 'onDocumentReady'|| this.state.trigger === 'inHeader') {
@@ -149,12 +145,12 @@ var MySidePanel = React.createClass({
 
     data.active = this.state.active
 
+    // updates tag in DB
     return $.ajax({
       url: '/tag/' + this.props.tag._id + window.location.search,
       type: 'PUT',
       data: data,
       success: function(updatedTagFromDB) {
-        console.log("response", updatedTagFromDB)
 		 		this.setState({
 					updated: true
 				})
@@ -164,11 +160,9 @@ var MySidePanel = React.createClass({
         console.error("Err posting", err.toString());
       }
     });
-
-    console.log("Data", data)
 	},
 
-
+  // deletes tag on Delete Tag click
 	deleteTag: function() {
 		var tag = this.props.tag;
 
@@ -176,7 +170,6 @@ var MySidePanel = React.createClass({
       url: '/tag/' + this.props.tag._id + window.location.search,
       type: 'DELETE',
       success: function(data) {
-  			console.log("data deleted", data)
   			this.setState({
 					deleted: true
 				})
@@ -190,10 +183,6 @@ var MySidePanel = React.createClass({
 	},
 
 	changeTokenValue: function(index, newValue) {
-		console.log("reaching here")
-		console.log("this state fields", this.state.fields)
-		console.log("this state fields index", this.state.fields[index]);
-		console.log("this state fields value", this.state.fields[index].value)
 		var fields = this.state.fields;
 		fields[index].value = newValue;
 		this.setState({
@@ -207,6 +196,7 @@ var MySidePanel = React.createClass({
 	    });
 	},
 
+  // validates the Custom Code modal
 	validateCustom: function() {
 		var customError = {};
 
@@ -225,6 +215,7 @@ var MySidePanel = React.createClass({
 
 	},
 
+  // updates Custom Code modal on Update Custom tag click
 	_updateCustom: function() {
     this.setState({
       template: this.state.changesToSnippet,
@@ -261,6 +252,7 @@ var MySidePanel = React.createClass({
 	  });
 	},
 
+  // merges token objects and field objects for a given tag
 	_mergeTagTokensAndFields: function(tokens, fields) {
     var completeTokens = [];
     var mergedObj = {};
@@ -277,8 +269,8 @@ var MySidePanel = React.createClass({
 	},
 
 	render: function() {
-		console.log("MySidePanel STATE", this.state);
-		console.log("MySidePanel PROPS", this.props);
+
+    // displays deleted notification
     if (this.state.deleted) {
       return (
         <div className="sidepanel background--faint">
@@ -291,6 +283,7 @@ var MySidePanel = React.createClass({
         )
     }
 
+    // displays if no tag is selected
  	  if (!this.state.newProps)	{
 			return (
 		      <div className="sidepanel background--faint">
@@ -300,6 +293,7 @@ var MySidePanel = React.createClass({
 		    )
 		}	
 
+    // if tag is selected but options aren't ready yet, displays loading
     if (!this.state.optionsReady) {
       return(
         <div className="sidepanel background--faint">
@@ -309,16 +303,14 @@ var MySidePanel = React.createClass({
 			 )
     }
 
+    // when tag is selected and options are ready, displays tag information
     if (this.state.optionsReady && Object.keys(this.props.tag).length !== 0) {
 		  var completeTokens;
 
 		  if (this.props.tag.tokens && this.props.tag.fields) {
-		  	console.log("HITTING HERE UH OH")
 		  	completeTokens = this._mergeTagTokensAndFields(this.props.tag.tokens, this.state.fields)
 		  }
-			// console.log("This MySidePanel Props", this.props);
-			console.log("This MySidePanel State", this.state);
-			console.log("This completeTokens", completeTokens)
+
 		  return (
         <div className="sidepanel background--faint">
 
@@ -375,21 +367,3 @@ var MySidePanel = React.createClass({
 })
 
 module.exports = MySidePanel;
-
-
-	// _displayCurrentTrigger: function(tag) {
-	// 	var displayNames = { "GA": "Google Universal Analytics",
-	// 											 "GC": "Google Classic Analytics",
-	// 											 "segment": "Segment",
-	// 											 "facebook": "Facebook Tracking Pixel",
-	// 											 "amplitude": "Amplitude" }
-
-	// 	var split = tag.trackingTrigger.split(',');
-		
-	// 	if (split[0] === "inHeader" ) { return ["In Header", 'Trigger Options:']}
-	// 	else if (split[0] === "onDocumentReady") {return ["On Document Ready", 'Trigger Options:']} 
-	// 	else if (tag.trackingTriggerType === "onPageLoad") {return ["On Page Load", tag.trackingTrigger]} 
-	// 	else if (tag.trackingTriggerType  === "onEvent") {return ["On Event", tag.trackingTrigger]}
-	// 	else if (tag.trackingTriggerType === "onTrigger") {return ["On Callback", displayNames[tag.trackingTrigger]]}
-	// 	else {return ["error", "error"]}
-	// },

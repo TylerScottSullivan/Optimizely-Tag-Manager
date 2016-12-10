@@ -3,12 +3,10 @@ var React = require('react');
 
 var MyTableRows = React.createClass({
 
+	// displays accurate call option in the table row
+	// if a tag was called on another tag, but said tag was deleted or no longer recognizes tag in the callback,
+	// then informs user to Update Call
 	_displayTrigger: function(addedTag, callBackCheck) {
-		console.log("callBackCheck", callBackCheck)
-		console.log("addedTag", addedTag)
-		console.log("addedTag.trackingTrigger", addedTag.trackingTrigger)
-		console.log("this.props.addedTag.name", this.props.addedTag.name)
-		// console.log("callBackCheck[addedTag.trackingTrigger][0]", callBackCheck[addedTag.trackingTrigger][0])
 		var displayNames = { "GA": "Google Universal Analytics",
 							 "GC": "Google Classic Analytics",
 							 "segment": "Segment",
@@ -25,7 +23,6 @@ var MyTableRows = React.createClass({
 			if (Object.keys(callBackCheck).length < 1) {
 				return "Please Update Call"
 			} else if (!(addedTag.trackingTrigger in callBackCheck)) {
-				console.log("Gets to second if")
 				return "Please Update Call"				
 			} else if (addedTag.trackingTrigger in callBackCheck) {
 				var count = 0;
@@ -43,39 +40,32 @@ var MyTableRows = React.createClass({
 					}
 				}
 				if (count === 0) {
-					console.log("Gets to third if")
 					return "Please Update Call"
 				} else {
 					return "On Callback - " + displayNames[addedTag.trackingTrigger]
 				}
 			} 
-			// else {
-			// 	console.log("getting here")
-			// 	return "On Callback - " + displayNames[addedTag.trackingTrigger]
-			// }
 		}
 		else {return "error"}
 	},
 
+	// renders tag rows on the My Tags tab
 	render: function() {
-		// console.log("callbackCheckk passed", this.props.callBackCheck)
 		var trigger = this._displayTrigger(this.props.addedTag, this.props.callBackCheck);
 		return (
-		 		<tr onClick = {this.props.handleRowClick}>
-		        <td id="row-centered"> <img src={this.props.addedTag.logo}/>< /td>
-		        <td id="row-centered">{this.props.addedTag.displayName}</td>
-		        <td id="row-centered">{this.props.addedTag.category} </td>
-		        <td id="row-centered"> {trigger} </td>
-		        <td id="row-centered">
-		          {/*statement checks for if addedTag is enabled or not*/}
-		          {this.props.addedTag.active ?
-		            <div> Enabled </div> : <div> Disabled </div>
-		          }
-		        </td>
-		     </tr>
+	 		<tr onClick = {this.props.handleRowClick}>
+	        <td id="row-centered"> <img src={this.props.addedTag.logo}/>< /td>
+	        <td id="row-centered">{this.props.addedTag.displayName}</td>
+	        <td id="row-centered">{this.props.addedTag.category} </td>
+	        <td id="row-centered"> {trigger} </td>
+	        <td id="row-centered">
+          {this.props.addedTag.active ?
+            <div> Enabled </div> : <div> Disabled </div>
+          }
+	        </td>
+	     </tr>
 		 )		
 	}
-
 
 })
 
