@@ -1,9 +1,9 @@
 var React = require('react');
 
+// displays non-active tabs
 function NonActiveTabs(props) {
-  console.log(props, "NonActiveTab")
   return (
-	<li className="tabs-nav__item" data-oui-tabs-nav-item onClick={props.onClick}> {props.name} </li> 
+		<li className="tabs-nav__item" data-oui-tabs-nav-item onClick={props.onClick}> {props.name} </li> 
   )
 }
 

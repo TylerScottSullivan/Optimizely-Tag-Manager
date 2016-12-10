@@ -1,10 +1,12 @@
 var React = require('react');
 
 var ToggleButton = React.createClass({
+	
 	handleToggleChange: function() {
 		this.props.onChange(!this.props.active)
 	},
 
+	// toggles Enabled / Disabled buttons
 	render: function() {
 	  	if (this.props.active) {
 	  		return (

@@ -1,9 +1,9 @@
 var React = require('react');
 
+//displays active tab
 function ActiveTab(props) {
-  console.log(props, "ActiveTab")
   return (
-	<li className="tabs-nav__item is-active" data-oui-tabs-nav-item onClick={props.onClick}> {props.name} </li> 
+		<li className="tabs-nav__item is-active" data-oui-tabs-nav-item onClick={props.onClick}> {props.name} </li> 
   )
 }
 

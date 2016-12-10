@@ -45,133 +45,12 @@ var App = React.createClass({
     }
   },
 
-  deleteTagFromProjectTags: function(tag) {
-    console.log("GETS TO BEGINNING OF DELETED TAGS")
-    var tagID = tag._id;
-    var newProjectTags = [];
-    var newCompleteTags = [];
-    for (var i = 0; i < this.state.projectTags.length; i++) {
-      if (this.state.projectTags[i]._id !== tagID) {
-        newProjectTags.push(this.state.projectTags[i])
-      }
-    }
-    console.log("GETS PAST FOUR LOOP")
-    newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
-    if (tag.name === "custom") {
-      console.log("GETS TO SETTING STATE INDEX")
-      this.setState({
-        projectTags: newProjectTags,
-        completeTags: newCompleteTags
-      })
-    } else {
-      console.log("GETS TO NON CUSTOM STATE HERE")
-      var newCallbackTriggers = [];
-      var newOptions = [];
-      newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
-      newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
-      this.setState({
-        projectTags: newProjectTags,
-        completeTags: newCompleteTags,
-        options: newOptions
-      })
-    }
-
-  },
-
-  addTagToProjectTags: function(tag) {
-    var newProjectTags = [];
-    var newCompleteTags = [];
-
-    var fetchTagsFromDB = fetch('/tag/' + window.location.search)
-                         .then(response => response.json())
-                         .then(response => {
-                           newProjectTags = response;
-                         })
-
-    Promise.all([fetchTagsFromDB]).then(response => {
-      newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
-      if (tag.name === "custom") {
-        this.setState({
-          projectTags: newProjectTags,
-          completeTags: newCompleteTags
-        })
-      } else {
-        var newCallbackTriggers = [];
-        var newOptions = [];
-        newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
-        newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
-        this.setState({
-          projectTags: newProjectTags,
-          completeTags: newCompleteTags,
-          options: newOptions
-        })
-      }
-    }).
-    catch((e) => {
-      console.log("Err:", e)
-    })
-  },
-
-  // updates selectedTab state if and only if a new tab is selected
-  changeTab: function(index) {
-    if (this.state.selectedTab !== index) {
-      this.setState({
-        selectedTab: index
-      })
-    };
-  },
-
-  changeMySidePanel: function(addedTag, index) {
-    console.log("tag selected", index, addedTag)
-    if (this.state.mySPIndex !== index || this.state.searchInput.length !== 0) {
-      this.setState({
-        mySP: addedTag,
-        mySPIndex: index
-      })
-    }
-    console.log("state", this.state)
-  },
-
-  changeAvailSidePanel: function(nonCustomTag, index) {
-    console.log("tag selected", index, nonCustomTag);
-    if (this.state.availSPIndex !== index || this.state.searchInput.length !== 0) {
-      console.log("HIT SET STATE INDEX")
-      this.setState({
-        availSP: nonCustomTag,
-        availSPIndex: index
-      })
-    }
-  },
-
-  changeSearchInput: function(newSearchInput) {
-    this.setState({
-      searchInput: newSearchInput
-    })
-  },
-
-  _filterForSearchInput: function(searchInput, tags) {
-    var displayedTags = [];
-    var re = new RegExp(searchInput, 'i');
-
-    for (var i = 0; i < tags.length; i++) {
-      if (tags[i].displayName.search(re) > -1) {
-        displayedTags.push(tags[i]);
-      }
-    }
-
-    return displayedTags
-  },
-
-  _setTriggerOptionProp: function(pages, events, callbackTriggers) {
-    var options = [];
-
-    options.push([["onPageLoad", "On Page Load"], pages]);
-    options.push([["onEvent", "On Event"], events]);
-    options.push([["onTrigger", "On Callback"], callbackTriggers])
-
-    return options
-  },
-
+  // gets master and project tags from DB
+  // gets pages and events from Optimizely user account
+  // merges tags to get complete tags
+  // gets callback triggers from complete tags
+  // gets options from pages, events, and callback triggers
+  // sets state
   componentDidMount: function() {
     var token;
     var masterTemplates;
@@ -182,35 +61,6 @@ var App = React.createClass({
     var callbackTriggers = [];
     var options = [];
 
-    fetch('/getToken' + window.location.search)
-    .then((response) => response.text())
-    .then(response => {
-      console.log("token response", response)
-      token = response;
-    })
-
-    // fetch('/master' + window.location.search)
-    // .then((response) => response.json())
-    // .then(response => {
-    //   masterTemplates = response;
-    //   console.log("response", response)}) 
-    // .then(() => fetch('/tag/' + window.location.search))
-    // .then(response => response.json())
-    // .then(response => {
-    //   projectTags = response;
-    //   console.log("tags", response)})
-    // .then(response => {
-    //   completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
-    //   this.setState({
-    //     token: token,
-    //     masterTemplates: masterTemplates,
-    //     projectTags: projectTags,
-    //     completeTags: completeTags
-    //   })
-    // })
-    // .catch((e) => {
-    //     console.log("Err: " , e);
-    // })
     var fetchMasterTemplates = fetch('/master' + window.location.search)
                               .then((response) => response.json())
                               .then(response => {
@@ -258,139 +108,19 @@ var App = React.createClass({
       console.log("Err:", e)
     })
 
-    //     fetch('/eventOptions' + window.location.search)
-    // .then((response) => response.json())
-    // .then(response => {
-    //   console.log('alone event options', response)
-    //   for (var i = 0; i < response.length; i++) {
-    //     events.push(response[i].name)
-    //   }
-    //   console.log("event options filtered", events)
-    // })
-
-    //  fetch('/master' + window.location.search)
-    // .then((response) => response.json())
-    // .then(response => {
-    //   masterTemplates = response;
-    //   console.log("response", response)}) 
-    // .then(() => fetch('/tag/' + window.location.search))
-    // .then(response => response.json())
-    // .then(response => {
-    //   projectTags = response;
-    //   console.log("tags", response)})
-    // .then(() => fetch('/pageOptions' + window.location.search))
-    // .then((response) => response.json())
-    // .then(response => {
-    //   console.log('pages', response)
-    //   for (var i = 0; i < response.length; i++) {
-    //     pages.push(response[i].name)
-    //   }
-    // }).then(() => fetch('/eventOptions' + window.location.search))
-    // .then((response) => response.json())
-    // .then(response => {
-    //   for (var i = 0; i < response.length; i++) {
-    //     events.push(response[i].name)
-    //   }
-    // }).then(response => {
-    //   completeTags = this._mergeMasterTemplatesWithProjectTags(masterTemplates, projectTags);
-    //   callbackTriggers = this._filterForCallbackTriggers(completeTags);
-    //   console.log("callbackTriggers", callbackTriggers)
-
-    //   this.setState({
-    //     token: token,
-    //     masterTemplates: masterTemplates,
-    //     projectTags: projectTags,
-    //     completeTags: completeTags,
-    //     pages: pages,
-    //     events: events,
-    //     callbackTriggers: callbackTriggers
-    //   })
-    // })
-    // .catch((e) => {
-    //     console.log("Err: " , e);
-    // })
-
-    ////// uncomment this one///////////////////
-    // $.ajax({
-    //   url: '/options/57fe44354624defb9ba9f6ea' + window.location.search,
-    //   type: 'GET',
-    //   success: function(data) {
-    //     console.log('get options successful', data);
-    //   }.bind(this),
-    //   error: function(err) {
-    //     console.error("Err posting", err.toString());
-    //   }
-    // });
-
-    //  $.ajax({
-    //   url: '/pageOptions' + window.location.search,
-    //   type: 'GET',
-    //   success: function(data) {
-    //     console.log('get options successful', data);
-    //   }.bind(this),
-    //   error: function(err) {
-    //     console.error("Err posting", err.toString());
-    //   }
-    // });   
-
-    // console.log("this state before pages ajax", this.state)
-    // $.ajax({
-    //   url: 'https://www.optimizelyapis.com/v2/pages?project_id=6919181723', 
-    //   method: 'GET',
-    //   headers: {
-    //        "Authorization": "Bearer " + "2:e9f48279X-k58liTfHe9l7QsHJpa3kuB0wAPx_WDrHxcz1hG_24",
-    //        "Content-Type": "application/json"
-    //   },
-    //   success: function(data) {
-    //     console.log('get page Options successful', data);
-    //   }.bind(this),
-    //   error: function(err) {
-    //     console.error("Err posting", err.toString());
-    //   }
-    // });
-
   },
 
-  _filterForCallbackTriggers: function(completeTags) {
-    var callbackTriggers = [];
-
-    for (var i = 0; i < completeTags.length; i++) {
-      if (completeTags[i].added && completeTags[i].hasCallback) {
-        callbackTriggers.push([completeTags[i].name, completeTags[i].displayName])
-      }
-    }
-
-    return callbackTriggers;
-  },
-
-
-  //given the tab selected, returns an array - [DisplayedPage, SidePanel]
-  _displaySelectedTab: function(selectedTab) {
-    if (selectedTab === 0) {
-      return [<MyTagsPage completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <MySidePanel tag={this.state.mySP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
-    } else if (selectedTab === 1) {
-      return [<AvailableTagsPage completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <AvailableSidePanel tag={this.state.availSP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>]
-    } else if (selectedTab === 2) {
-      return [<NewTemplatePage/>, null]
-    }
-  },
-
+  // given master tags and proejct tags, returns the combination of matching tags (complete tags)
   _mergeMasterTemplatesWithProjectTags: function(masterTemplates, projectTags) {
-    console.log("merging")
     var completeTagsArray = [];
     var completeTag = {};
     var counter = 0;
     var paired;
 
     for (var i = 0; i < masterTemplates.length; i++) {
-      // console.log("master i", masterTemplates[i].name)
       paired = false;
       for (var j = 0; j < projectTags.length; j++) {
-        // console.log("project j", projectTags[j].name);
         if (masterTemplates[i].name === projectTags[j].name) {
-          // console.log('joined');
           completeTag = $.extend({}, masterTemplates[i], projectTags[j]);
           completeTag.added = true;
           completeTagsArray.push(completeTag);
@@ -406,19 +136,172 @@ var App = React.createClass({
     }
 
     return completeTagsArray;
+  },
+
+  // returns callback triggers
+  _filterForCallbackTriggers: function(completeTags) {
+    var callbackTriggers = [];
+
+    for (var i = 0; i < completeTags.length; i++) {
+      if (completeTags[i].added && completeTags[i].hasCallback) {
+        callbackTriggers.push([completeTags[i].name, completeTags[i].displayName])
+      }
+    }
+
+    return callbackTriggers;
+  },
+
+  // sets correct call and trigger options given pages from Optimizely, events from Optimizely, and callbackTriggers from complete tags
+  _setTriggerOptionProp: function(pages, events, callbackTriggers) {
+    var options = [];
+
+    options.push([["onPageLoad", "On Page Load"], pages]);
+    options.push([["onEvent", "On Event"], events]);
+    options.push([["onTrigger", "On Callback"], callbackTriggers])
+
+    return options
+  },
+
+  // gets projectTags from DB again
+  addTagToProjectTags: function(tag) {
+    var newProjectTags = [];
+    var newCompleteTags = [];
+
+    var fetchTagsFromDB = fetch('/tag/' + window.location.search)
+                         .then(response => response.json())
+                         .then(response => {
+                           newProjectTags = response;
+                         })
+
+    Promise.all([fetchTagsFromDB]).then(response => {
+      // recombines tags and re-configuers options, then sets state
+      newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
+      if (tag.name === "custom") {
+        this.setState({
+          projectTags: newProjectTags,
+          completeTags: newCompleteTags
+        })
+      } else {
+        var newCallbackTriggers = [];
+        var newOptions = [];
+        newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
+        newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
+        this.setState({
+          projectTags: newProjectTags,
+          completeTags: newCompleteTags,
+          options: newOptions
+        })
+      }
+    }).
+    catch((e) => {
+      console.log("Err:", e)
+    })
+  },
+
+  // removes deleted tag from State's project tags
+  deleteTagFromProjectTags: function(tag) {
+    var tagID = tag._id;
+    var newProjectTags = [];
+    var newCompleteTags = [];
+
+    for (var i = 0; i < this.state.projectTags.length; i++) {
+      if (this.state.projectTags[i]._id !== tagID) {
+        newProjectTags.push(this.state.projectTags[i])
+      }
+    }
+
+    newCompleteTags = this._mergeMasterTemplatesWithProjectTags(this.state.masterTemplates, newProjectTags);
+    if (tag.name === "custom") {
+      this.setState({
+        projectTags: newProjectTags,
+        completeTags: newCompleteTags
+      })
+    } else {
+      // re-configures options and sets state
+      var newCallbackTriggers = [];
+      var newOptions = [];
+      newCallbackTriggers = this._filterForCallbackTriggers(newCompleteTags);
+      newOptions = this._setTriggerOptionProp(this.state.pages, this.state.events, newCallbackTriggers);
+      this.setState({
+        projectTags: newProjectTags,
+        completeTags: newCompleteTags,
+        options: newOptions
+      })
+    }
 
   },
 
+  // updates mySidePanel state based on row click
+  changeMySidePanel: function(addedTag, index) {
+    if (this.state.mySPIndex !== index || this.state.searchInput.length !== 0) {
+      this.setState({
+        mySP: addedTag,
+        mySPIndex: index
+      })
+    }
+  },
+
+  // updates available SidePanel state on row click
+  changeAvailSidePanel: function(nonCustomTag, index) {
+    if (this.state.availSPIndex !== index || this.state.searchInput.length !== 0) {
+      this.setState({
+        availSP: nonCustomTag,
+        availSPIndex: index
+      })
+    }
+  },
+
+  // sets state to current search input
+  changeSearchInput: function(newSearchInput) {
+    this.setState({
+      searchInput: newSearchInput
+    })
+  },
+
+  // filters tags based on search input
+  _filterForSearchInput: function(searchInput, tags) {
+    var displayedTags = [];
+    var re = new RegExp(searchInput, 'i');
+
+    for (var i = 0; i < tags.length; i++) {
+      if (tags[i].displayName.search(re) > -1) {
+        displayedTags.push(tags[i]);
+      }
+    }
+
+    return displayedTags
+  },
+
+  // updates selectedTab state if and only if a new tab is selected
+  changeTab: function(index) {
+    if (this.state.selectedTab !== index) {
+      this.setState({
+        selectedTab: index
+      })
+    };
+  },
+
+  //given the tab selected, returns an array - [DisplayedPage, SidePanel]
+  _displaySelectedTab: function(selectedTab) {
+    if (selectedTab === 0) {
+      return [<MyTagsPage completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
+              <MySidePanel tag={this.state.mySP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
+    } else if (selectedTab === 1) {
+      return [<AvailableTagsPage completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
+              <AvailableSidePanel tag={this.state.availSP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>]
+    } else if (selectedTab === 2) {
+      return [<NewTemplatePage/>, null]
+    }
+  },
+
   render: function() {
+
+    // renders selected tabs, pagess, and sidepanels
     var selectedTab = this.state.selectedTab;
     var TabNames = ['My Tags', 'Available Tags', 'Submit New Template'];
 
     var DisplayedPage = this._displaySelectedTab(selectedTab)[0];
     var SidePanel = this._displaySelectedTab(selectedTab)[1];
-    console.log("Displayed Page", DisplayedPage);
-    console.log("SidePanel", SidePanel)
-
-    console.log(this.state, "this state")
 
     return (
       <div className="tabs tabs--small tabs--sub" data-oui-tabs>

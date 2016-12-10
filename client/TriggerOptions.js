@@ -2,7 +2,7 @@ var React = require('react');
 
 var TriggerOptions = React.createClass({
 
-
+	// sets trigger options and call options correctly for given tag
 	_setTrackingTriggersAndOptions: function(options) {
 		var trackingTriggers = [];
 		var trackingOptions = {};
@@ -37,8 +37,8 @@ var TriggerOptions = React.createClass({
 		this.props.onOptionChange(newOption)
 	},
 
+	// renders trigger and call options
 	render: function() {
-		console.log('TRIGGER OPTIONS PROPS', this.props)
 		var tracks = this._setTrackingTriggersAndOptions(this.props.options);
 		var trackingTriggers = tracks[0];
 		var trackingOptions = tracks[1];
@@ -50,20 +50,17 @@ var TriggerOptions = React.createClass({
 		        	<div className="flex--1 sd-headsmall"> Called: </div>
 		        </div>
 
-
 		        <select className="form-control" name='trackingTrigger' value={this.props.currentTrigger} onChange={this.handleTriggerChange}>
-
 		        	<option selected> Select a Trigger: </option> 
 		        	{trackingTriggers.map((trigger, i) => {
 		        		return <option key={i} value={trigger[0]}> {trigger[1]} </option>
 		        	})}
-
 		        </select>
 
         	  <div className='warning'>
             	{this.props.errors['trigger']}
           	  </div>
-	        </div> 
+	        	</div> 
 
 	        { (this.props.currentTrigger === 'onPageLoad' || this.props.currentTrigger === 'onEvent') ?
 	           <div className="margin-width">
@@ -72,7 +69,6 @@ var TriggerOptions = React.createClass({
 	            </div>
 
 	            <select className="form-control" name='specificTrigger' value={this.props.currentOption} onChange={this.handleOptionChange}>
-	              
 	              <option selected> Trigger Options: </option>
 	            	{trackingOptions[this.props.currentTrigger].map((option, i) => {
 	              	return <option key={i} value={option}>{option}</option>
@@ -94,12 +90,10 @@ var TriggerOptions = React.createClass({
 	            </div>
 
 	            <select className="form-control" name='specificTrigger' value={this.props.currentOption} onChange={this.handleOptionChange}>
-	              
 	              <option selected> Trigger Options: </option>
 	            	{trackingOptions[this.props.currentTrigger].map((option, i) => {
 	              	return <option key={i} value={option[0]}>{option[1]}</option>
 	              })}
-
 	          	</select>
 	          	
 	        	  <div className='warning'>
@@ -108,7 +102,6 @@ var TriggerOptions = React.createClass({
 	          </div>
 	        : null
 	      	}
-
         </div>
 		)
 	}
