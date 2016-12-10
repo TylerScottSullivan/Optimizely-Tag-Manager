@@ -1,7 +1,7 @@
 var React = require('react');
-var MTR = require('./MTR');
+var MyTableRows = require('./MyTableRows');
 
-var MTP = React.createClass({
+var MyTagsPage = React.createClass({
 	getInitialState: function () {
 		return {
 			projectDoneLoading: false,
@@ -106,7 +106,7 @@ var MTP = React.createClass({
 				addedTags = this.props._filterForSearchInput(this.props.searchInput, addedTags)
 			}
 			var callBackCheck = this._createCallBackCheck(this.props.projectTags)
-			console.log("callbackCheck in MTP", callBackCheck)
+			console.log("callbackCheck in MyTagsPage", callBackCheck)
 
 
 			if (this.props.searchInput.length!==0 && addedTags.length === 0) {
@@ -133,7 +133,7 @@ var MTP = React.createClass({
 			          </thead>
 			          <tbody>
 			          {addedTags.map((tag, i) => {
-			          	return <MTR addedTag={tag} key={i} callBackCheck={callBackCheck} handleRowClick={() => this.props.handleRowClick(tag, i)}/> 
+			          	return <MyTableRows addedTag={tag} key={i} callBackCheck={callBackCheck} handleRowClick={() => this.props.handleRowClick(tag, i)}/> 
 			          	})
 			      	  }
 			          </tbody>
@@ -145,5 +145,5 @@ var MTP = React.createClass({
 
 })
 
-module.exports = MTP;
+module.exports = MyTagsPage;
 

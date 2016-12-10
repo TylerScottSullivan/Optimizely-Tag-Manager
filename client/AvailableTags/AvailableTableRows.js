@@ -1,6 +1,6 @@
 var React = require('react');
 
-function ATR(props) {
+function AvailableTableRows(props) {
     return (
       <tr onClick={props.handleRowClick}>
         <td id="row-centered"> <img src={props.nonCustomTag.logo}/></td>
@@ -15,4 +15,4 @@ function ATR(props) {
       </tr>
     )
 }
-module.exports = ATR;
+module.exports = AvailableTableRows;

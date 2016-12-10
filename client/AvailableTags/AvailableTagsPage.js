@@ -1,7 +1,7 @@
 var React = require('react');
-var ATR = require('./ATR');
+var AvailableTableRows = require('./AvailableTableRows');
 
-var ATP = React.createClass({
+var AvailableTagsPage = React.createClass({
 	getInitialState: function () {
 		return {
 			projectDoneLoading: false
@@ -97,7 +97,7 @@ var ATP = React.createClass({
 			          </thead>
 			          <tbody>
 		              {nonCustomTags.map((tag, i) => {
-		                return <ATR nonCustomTag={tag} key={i} handleRowClick={() => this.props.handleRowClick(tag, i)}/>
+		                return <AvailableTableRows nonCustomTag={tag} key={i} handleRowClick={() => this.props.handleRowClick(tag, i)}/>
 		                })
 		              }
 			          </tbody>
@@ -108,6 +108,6 @@ var ATP = React.createClass({
 	}
 })
 
-module.exports = ATP;
+module.exports = AvailableTagsPage;
 
 //&nbsp;&nbsp;

@@ -1,13 +1,14 @@
 var React = require('react');
 
 import AceEditor from 'react-ace';
+
 var react = require('react-ace');
 var Modal = require('react-modal');
 
 var DisplayName = require('./DisplayName');
 var CustomDescription = require('./CustomDescription');
-var TriggerOptions = require('./TriggerOptions');
-var ToggleButton = require('./ToggleButton');
+var TriggerOptions = require('../TriggerOptions');
+var ToggleButton = require('../ToggleButton');
 
 // styles for modal
 const customStyles = {

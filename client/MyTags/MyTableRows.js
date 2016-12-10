@@ -1,7 +1,7 @@
 var React = require('react');
 
 
-var MTR = React.createClass({
+var MyTableRows = React.createClass({
 
 	_displayTrigger: function(addedTag, callBackCheck) {
 		console.log("callBackCheck", callBackCheck)
@@ -79,4 +79,4 @@ var MTR = React.createClass({
 
 })
 
-module.exports = MTR;
+module.exports = MyTableRows;

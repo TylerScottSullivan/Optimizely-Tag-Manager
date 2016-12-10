@@ -1,6 +1,7 @@
 var React = require('react');
 
 import AceEditor from 'react-ace';
+
 var react = require('react-ace');
 
 var DisplayNameInput = require('./DisplayNameInput');
@@ -11,7 +12,7 @@ var AddFieldInputs = require('./AddFieldInputs');
 var EmailInput = require('./EmailInput');
 
 
-var NTP = React.createClass({
+var NewTemplatePage = React.createClass({
 	getInitialState: function () {
 	    return {
 	      displayName: '',
@@ -333,5 +334,5 @@ var NTP = React.createClass({
 	}
 })
 
-module.exports = NTP;
+module.exports = NewTemplatePage;
 

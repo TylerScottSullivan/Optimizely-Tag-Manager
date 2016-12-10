@@ -1,12 +1,13 @@
 var React = require('react');
 
 import AceEditor from 'react-ace';
+
 var react = require('react-ace');
 var Modal = require('react-modal');
 
-var ToggleButton = require('./ToggleButton');
-var TriggerOptions = require('./TriggerOptions');
-var MIF = require('./MIF');
+var ToggleButton = require('../ToggleButton');
+var TriggerOptions = require('../TriggerOptions');
+var MyInputFields = require('./MyInputFields');
 
 // styles for modal
 const customStyles = {
@@ -22,10 +23,10 @@ const customStyles = {
   }
 };
 
-var MSP = React.createClass({
+var MySidePanel = React.createClass({
 
 	getInitialState: function() {
-		console.log("MSP HIT INITIAL STATE")
+		console.log("MySidePanel HIT INITIAL STATE")
 		return {
 			optionsReady: false,
 			newProps: false,
@@ -46,7 +47,7 @@ var MSP = React.createClass({
 	},
 
 	componentWillReceiveProps: function(nextProps) {
-		console.log("NEXT MSP PROPS", nextProps)
+		console.log("NEXT MySidePanel PROPS", nextProps)
     if(!nextProps.tag._id) {
       this.setState({
       	optionsReady: false
@@ -276,8 +277,8 @@ var MSP = React.createClass({
 	},
 
 	render: function() {
-		console.log("MSP STATE", this.state);
-		console.log("MSP PROPS", this.props);
+		console.log("MySidePanel STATE", this.state);
+		console.log("MySidePanel PROPS", this.props);
     if (this.state.deleted) {
       return (
         <div className="sidepanel background--faint">
@@ -315,8 +316,8 @@ var MSP = React.createClass({
 		  	console.log("HITTING HERE UH OH")
 		  	completeTokens = this._mergeTagTokensAndFields(this.props.tag.tokens, this.state.fields)
 		  }
-			// console.log("This MSP Props", this.props);
-			console.log("This MSP State", this.state);
+			// console.log("This MySidePanel Props", this.props);
+			console.log("This MySidePanel State", this.state);
 			console.log("This completeTokens", completeTokens)
 		  return (
         <div className="sidepanel background--faint">
@@ -354,7 +355,7 @@ var MSP = React.createClass({
         	null
           }
 					
-					{completeTokens.map(function(token, i) { return <MIF key={i} index={i} token={token} value={this.state.fields[i].value} onTokenValueChange={this.changeTokenValue} errors={this.state.errors}/>}.bind(this))}
+					{completeTokens.map(function(token, i) { return <MyInputFields key={i} index={i} token={token} value={this.state.fields[i].value} onTokenValueChange={this.changeTokenValue} errors={this.state.errors}/>}.bind(this))}
      			<TriggerOptions options={this.state.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option} errors={this.state.errors}/>
 					<ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
 
@@ -373,7 +374,7 @@ var MSP = React.createClass({
 	}
 })
 
-module.exports = MSP;
+module.exports = MySidePanel;
 
 
 	// _displayCurrentTrigger: function(tag) {

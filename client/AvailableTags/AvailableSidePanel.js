@@ -1,12 +1,12 @@
 var React = require('react');
 
-var AIF = require('./AIF');
-var ToggleButton = require('./ToggleButton');
-var TriggerOptions = require('./TriggerOptions');
+var AvailableInputFields = require('./AvailableInputFields');
+var ToggleButton = require('../ToggleButton');
+var TriggerOptions = require('../TriggerOptions');
 
-var ASP = React.createClass({
+var AvailableSidePanel = React.createClass({
 	getInitialState: function() {
-      console.log("ASP HIT INITIAL STATE");
+      console.log("AvailableSidePanel HIT INITIAL STATE");
 	    return {
 	    	tokens: {},
 			  trigger: 'Select a Trigger:',
@@ -123,7 +123,7 @@ var ASP = React.createClass({
 
 	render: function() {
     // if row has been selected, displays sidepanel information
-    console.log("This ASP state", this.state)
+    console.log("This AvailableSidePanel state", this.state)
 		if (Object.keys(this.props.tag).length !== 0) {
 
 			return (
@@ -137,7 +137,7 @@ var ASP = React.createClass({
           <div className='tagdesc'>{this.props.tag.tagDescription}</div>
         	<label className="label label--rule"></label>
 
-        	{this.props.tag.tokens.map((token, i) => { return <AIF key={i} index={i} token={token} onTokenValueChange={this.changeTokenValue} errors={this.state.errors}/> })}
+        	{this.props.tag.tokens.map((token, i) => { return <AvailableInputFields key={i} index={i} token={token} onTokenValueChange={this.changeTokenValue} errors={this.state.errors}/> })}
         	<TriggerOptions options={this.props.options} onTriggerChange={this.changeTrigger} onOptionChange={this.changeOption} currentTrigger={this.state.trigger} currentOption={this.state.option} errors={this.state.errors}/>
         	<ToggleButton onChange={this.changeToggleButton} active={this.state.active}/>
 
@@ -173,5 +173,5 @@ var ASP = React.createClass({
   }
 })
 
-module.exports = ASP;
+module.exports = AvailableSidePanel;
 

@@ -2,8 +2,6 @@ var React = require('react');
 var ReactDOM = require('react-dom');
 var Modal = require('react-modal');
 
-var _ = require('underscore');
-
 // code editor 
 var react = require('react-ace');
 
@@ -11,17 +9,16 @@ var react = require('react-ace');
 import brace from 'brace';
 import AceEditor from 'react-ace';
 import 'brace/mode/javascript';
-import 'brace/theme/github';
 import 'brace/theme/tomorrow';
 
-var ATP = require('./ATP');
-var MTP = require('./MTP');
-var NTP = require('./NTP');
-var ActiveTab = require('./ActiveTab');
-var NonActiveTabs = require('./NonActiveTabs');
-var SearchAndCustom = require('./SearchAndCustom');
-var ASP = require('./ASP');
-var MSP = require('./MSP');
+var AvailableTagsPage = require('./AvailableTags/AvailableTagsPage');
+var MyTagsPage = require('./MyTags/MyTagsPage');
+var NewTemplatePage = require('./SubmitNewTemplate/NewTemplatePage');
+var ActiveTab = require('./Tabs/ActiveTab');
+var NonActiveTabs = require('./Tabs/NonActiveTabs');
+var SearchAndCustom = require('./SearchAndCustomBar/SearchAndCustom');
+var AvailableSidePanel = require('./AvailableTags/AvailableSidePanel');
+var MySidePanel = require('./MyTags/MySidePanel');
 
 var App = React.createClass({
 
@@ -370,13 +367,13 @@ var App = React.createClass({
   //given the tab selected, returns an array - [DisplayedPage, SidePanel]
   _displaySelectedTab: function(selectedTab) {
     if (selectedTab === 0) {
-      return [<MTP completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <MSP tag={this.state.mySP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
+      return [<MyTagsPage completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
+              <MySidePanel tag={this.state.mySP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
     } else if (selectedTab === 1) {
-      return [<ATP completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
-              <ASP tag={this.state.availSP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>]
+      return [<AvailableTagsPage completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
+              <AvailableSidePanel tag={this.state.availSP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags}/>]
     } else if (selectedTab === 2) {
-      return [<NTP/>, null]
+      return [<NewTemplatePage/>, null]
     }
   },
 
