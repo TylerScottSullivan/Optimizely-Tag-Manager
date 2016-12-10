@@ -19,11 +19,11 @@ router.use(function(req, res, next) {
   //setting req.optimizely up for future use
   req.optimizely = userContext.context.environment;
   req.token = userContext.context.client.access_token;
-  console.log("GETS HERE")
   next();
 });
 
 
+// gets pages from Optimizely project
 router.get('/pageOptions', function(req, res, next) {
   var options = {
       method: 'GET',
@@ -42,6 +42,7 @@ router.get('/pageOptions', function(req, res, next) {
   })
 });
 
+// gets events from Optimizely project
 router.get('/eventOptions', function(req, res, next) {
   var options = {
       method: 'GET',   
@@ -61,9 +62,8 @@ router.get('/eventOptions', function(req, res, next) {
 
 });
 
-
+// gets acceptable callback options for a given tag
 router.get('/callbacks/:tagid', function(req, res, next) {
-  console.log("ITS MAKING IT TO HERE")
   var utils = new Utils();
   utils.body = req.body;
   utils.body.projectId = req.optimizely.current_project;
@@ -77,10 +77,9 @@ router.get('/callbacks/:tagid', function(req, res, next) {
   Project.findOne({'projectId': req.optimizely.current_project})
          .then(utils.getTagOptions.bind(utils))
          .then(utils.restrictOptions.bind(utils))
-         // .then(utils.addProjectOptions.bind(utils))
          .then(function(response) {
             res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(response)); //send an array of options
+            res.send(JSON.stringify(response)); 
          })
          .catch(function(err) {
            console.log("Error at the end of /options", err)
@@ -159,13 +158,6 @@ router.get('/master', (req, res, next) => {
   })
 })
 
-router.get('/getToken', function(req, res, next) {
-  console.log("HELLO THIS IS HAPPENING", req.token)
-  res.send(req.token);
-})
-
-
-
 // GET: gets all current tags, find project by project id, return all tags from a current project
 router.get('/tag', (req, res, next) => {
   var utils = new Utils();
@@ -203,34 +195,6 @@ router.put('/tag/:tagid', (req, res, next) => {
          })
 })
 
-
-//getting the options for a tag
-router.get('/options/:tagid', function(req, res, next) {
-  var utils = new Utils();
-  utils.body = req.body;
-  utils.body.projectId = req.optimizely.current_project;
-  utils.body.token = req.token;
-  if (req.params.tagid === "0") {
-    utils.tagid = null;
-  }
-  else {
-    utils.tagid = req.params.tagid;
-  }
-  Project.findOne({'projectId': req.optimizely.current_project})
-         .then(utils.getTagOptions.bind(utils))
-         .then(utils.restrictOptions.bind(utils))
-         .then(utils.getOptions.bind(utils))
-         .then(utils.getPageOptions.bind(utils))
-         .then(utils.addProjectOptions.bind(utils))
-         .then(function(response) {
-            res.setHeader('Content-Type', 'application/json');
-            res.send(JSON.stringify(response)); //send an array of options
-         })
-         .catch(function(err) {
-           console.log("Error at the end of /options", err)
-         })
-})
-
 //renders template form
 router.get('/template', function(req, res, next){
   res.render('template')
@@ -238,7 +202,6 @@ router.get('/template', function(req, res, next){
 
 //creates a new template
 router.post('/template', function(req, res, next) {
-  console.log("REACHING HERE PLEASE DO THIS");
   var tokens = [];
 
   //pushing token values
@@ -276,7 +239,6 @@ router.post('/template', function(req, res, next) {
           }
         })
         .then(function(master) {
-          console.log("DID WORK YAY")
           res.status(200).send('Approved.')
         })
         .catch(function(err) {

@@ -12,7 +12,6 @@ var Handlebars = require('handlebars');
 var utils = {
   addCallbacksBool: false,
   body: null,
-  //oldCallback: null,
   project: null,
   tag: null,
   tagid: null,
@@ -51,23 +50,6 @@ var utils = {
     } else {
       return myTag;
     }
-  },
-  addProjectOptions: function(pages) {
-    //adds page and event names to the tagNames for /options
-    if (!pages) {
-      pages = "[]"
-    }
-
-    var pageNames = JSON.parse(pages).map(function(item) {
-      return "onPageLoad," + item.name;
-    })
-
-    var eventNames = JSON.parse(this.events).map(function(item) {
-      return "onEvent," + item.name;
-    })
-
-    var toReturn = this.tagNames.concat(pageNames);
-    return toReturn.concat(eventNames);
   },
   buildJavascript: function(response) {
     //builds final Javascript to be used in PUT API call to optimizely servers
@@ -317,55 +299,6 @@ var utils = {
         "Content-Type": "application/json"
       }
     });
-  },
-  getOptions: function(tags) {
-    //sets this.tag names to all possible tag names formatted properly i.e. onTrigger,[name or customId]
-    this.tagNames = tags.map(function(item) {
-      if (item.name === 'custom') {
-        return "onTrigger," + item.customId;
-      }
-      else {
-        return "onTrigger," + item.name;
-      }
-    });
-
-
-    //inHeader/onDocumentReady should intuitively come first
-    this.tagNames.unshift("inHeader,inHeader");
-    this.tagNames.unshift("onDocumentReady,onDocumentReady");
-
-    //save current tags
-    this.tags = tags;
-
-    //make call to optimizely for all events associated with the id
-    var token = this.body.token;
-    return rp({
-         uri: "https://www.optimizelyapis.com/v2/events?project_id=" + this.body.projectId,
-         method: 'GET',
-         headers: {
-           "Authorization": "Bearer " + token,
-           "Content-Type": "application/json"
-         }
-       })
-
-  },
-  getPageOptions: function(events) {
-    if (!events) {
-      events = "[]";
-    }
-    //saves events
-    this.events = events;
-
-    //makes call for all pages associated with project
-    var token = this.body.token;
-    return rp({
-         url: "https://www.optimizelyapis.com/v2/pages?project_id=" + this.body.projectId,
-         method: 'GET',
-         headers: {
-           "Authorization": "Bearer " + token,
-           "Content-Type": "application/json"
-         }
-       })
   },
   getProject: function(projectId, tagid) {
     if (tagid) {
