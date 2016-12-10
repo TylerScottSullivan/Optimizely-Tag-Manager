@@ -38,7 +38,6 @@ a {
   margin-left: 400px;
 }
 
-
 .header1 {
 	padding: 15px 0px 5px 10px;
 	font-size: 20px;
@@ -48,25 +47,27 @@ a {
 	min-width: 450px;
 	max-width: 600px;
 }
+
 #mytablerow-cat-width {
 	min-width: 100px;
 	max-width: 100px;
 }
+
 #mytablerow-tt-width {
 	min-width: 310px;
 	max-width: 310px;
 }
+
 #mytablerow-status-width{
 	min-width: 100px;
 	max-width: 100px;
 }
-#availtablerow-logo-width {
 
-}
 #availtablerow-name-width {
 	min-width: 450px;
 	max-width: 600px;
 }
+
 #availtablerow-cat-width {
 	min-width: 468px;
 	width: 468px;
@@ -104,7 +105,6 @@ a {
 	flex-direction: column;
 	justify-content: center;
 }
-
 
 .sp-headbig {
 	font-size: 15px;
@@ -247,11 +247,9 @@ textarea {
 	margin-top: 8px;
 }
 
-
 .no-bottom-margin  {
 	margin-bottom: 0px !important;
 }
-
 
 /*pace*/
 .pace {
