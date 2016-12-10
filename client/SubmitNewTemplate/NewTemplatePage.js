@@ -250,7 +250,6 @@ var NewTemplatePage = React.createClass({
   },
 
 	render: function () {
-
     // renders message if form was submitted successfully
 		if (this.state.submitted) {
 	    return (
@@ -263,7 +262,7 @@ var NewTemplatePage = React.createClass({
         </div>
 	    )
 	  } else {
-    // renders form
+      // renders form
 	  	return (
         <div className="height--1-1">
 			  	<div className="flex height--1-1">
