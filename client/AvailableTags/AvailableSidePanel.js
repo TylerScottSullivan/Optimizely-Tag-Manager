@@ -6,7 +6,6 @@ var TriggerOptions = require('../TriggerOptions');
 
 var AvailableSidePanel = React.createClass({
 	getInitialState: function() {
-      console.log("AvailableSidePanel HIT INITIAL STATE");
 	    return {
 	    	tokens: {},
 			  trigger: 'Select a Trigger:',
@@ -18,13 +17,13 @@ var AvailableSidePanel = React.createClass({
 	},
 
 	componentWillReceiveProps:function (nextProps) {
-    console.log("HIT WRP", nextProps)
-		//checks for if next props is a tag
+    // if nextProps is a tag, resets State
 		if (Object.keys(nextProps.tag).length > 0) {
+
+      // sets value field for each token
 	    nextProps.tag.tokens = nextProps.tag.tokens.map((token) => {
 	      return Object.assign({}, token, {value: ''})
 	    })
-
 			this.setState({
 				tokens: nextProps.tag.tokens,
 				trigger: 'Select a Trigger:',
@@ -36,6 +35,7 @@ var AvailableSidePanel = React.createClass({
 		}
 	},
 
+  // validates form on Add Tag button click - if form has errors, displays them
 	validate: function() {
 		var errors = {};
 
@@ -50,6 +50,7 @@ var AvailableSidePanel = React.createClass({
     	errors['option'] = 'Option selection is required.'
     }
 
+    // if no errors, calls _addTag
     if (Object.keys(errors).length === 0) {
     	this.setState({ errors: {} });
     	this._addTag();
@@ -58,10 +59,11 @@ var AvailableSidePanel = React.createClass({
     }
 	},
 
+  // adds tag to DB
 	_addTag: function() {
-		console.log("VALIDATED");
 		var data = {};
 
+    // sets data for add tag ajax call
     data.name = this.props.tag.name;
     data.tagDescription = this.props.tag.tagDescription;
     data.template = this.props.tag.template;
@@ -77,15 +79,12 @@ var AvailableSidePanel = React.createClass({
     }
     data.active = this.state.active
 
-    console.log("state", this.state)
-    console.log("data", data)
     return $.ajax({
       url: '/tag' + window.location.search,
       type: 'POST',
       data: data,
       success: function(newTagFromDB) {
-      	//response back is new DB tag
-      	console.log("response", newTagFromDB)
+      	//displays added notification, rerenders panels
         this.props.tag.added = true
       	this.props.addTagToProjectTags(newTagFromDB)
       }.bind(this),
@@ -121,11 +120,9 @@ var AvailableSidePanel = React.createClass({
   	})
   },
 
+  // renders side panel on Available Tags tab, displays tag if clicked from table row
 	render: function() {
-    // if row has been selected, displays sidepanel information
-    console.log("This AvailableSidePanel state", this.state)
 		if (Object.keys(this.props.tag).length !== 0) {
-
 			return (
 				<div className="sidepanel background--faint">
           <h2 className="push-double--bottom sp-headbig">TAG DETAILS</h2>
@@ -158,7 +155,7 @@ var AvailableSidePanel = React.createClass({
       )
 
     } else {
-  
+      // if no tag has been selected
       return (
         <div>
           <div className="sidepanel background--faint">
