@@ -5,6 +5,7 @@ var DataBaseNameInput = React.createClass({
 		var newValue = e.target.value;
 		this.props.onChange(newValue)
 	},
+	
 	render: function () {
 		return (
 			<div>

@@ -19,6 +19,7 @@ router.use(function(req, res, next) {
   //setting req.optimizely up for future use
   req.optimizely = userContext.context.environment;
   req.token = userContext.context.client.access_token;
+  console.log("GETS HERE")
   next();
 });
 
@@ -237,6 +238,7 @@ router.get('/template', function(req, res, next){
 
 //creates a new template
 router.post('/template', function(req, res, next) {
+  console.log("REACHING HERE PLEASE DO THIS");
   var tokens = [];
 
   //pushing token values
@@ -274,9 +276,11 @@ router.post('/template', function(req, res, next) {
           }
         })
         .then(function(master) {
+          console.log("DID WORK YAY")
           res.status(200).send('Approved.')
         })
         .catch(function(err) {
+          console.log("ERROR IN POSTING", err)
           next(err);
         });
 });
