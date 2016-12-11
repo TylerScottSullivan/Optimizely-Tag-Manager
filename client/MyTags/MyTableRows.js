@@ -4,7 +4,7 @@ var React = require('react');
 var MyTableRows = React.createClass({
 
 	// displays accurate call option in the table row
-	// if a tag was called on another tag, but said tag was deleted or no longer recognizes tag in the callback,
+	// if a tag was called on another tag, page, or event, but said tag/page/event was deleted or said tag no longer recognizes tag in the callback,
 	// then informs user to Update Call
 	_displayTrigger: function(addedTag, callBackCheck) {
 		var displayNames = { "GA": "Google Universal Analytics",
@@ -17,8 +17,20 @@ var MyTableRows = React.createClass({
 		
 		if (split[0] === "inHeader" ) { return "In Header"}
 		else if (split[0] === "onDocumentReady") {return "On Document Ready"} 
-		else if (addedTag.trackingTriggerType === "onPageLoad") {return "On Page Load - " + addedTag.trackingTrigger} 
-		else if (addedTag.trackingTriggerType  === "onEvent") {return "On Event - " + addedTag.trackingTrigger}
+		else if (addedTag.trackingTriggerType === "onPageLoad") {
+			if (this.props.options[0][1].includes(addedTag.trackingTrigger)) {
+				return "On Page Load - " + addedTag.trackingTrigger
+			} else {
+				return "Please Update Call"
+			}
+		} 
+		else if (addedTag.trackingTriggerType  === "onEvent") {
+			if (this.props.options[1][1].includes(addedTag.trackingTrigger)) {
+				return "On Event - " + addedTag.trackingTrigger
+			} else {
+				return "Please Update Call"
+			}
+		}
 		else if (addedTag.trackingTriggerType === "onTrigger") {
 			if (Object.keys(callBackCheck).length < 1) {
 				return "Please Update Call"

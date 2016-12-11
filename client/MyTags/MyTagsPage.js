@@ -102,7 +102,6 @@ var MyTagsPage = React.createClass({
 				</div>
 				)
 		} else {
-
 			// readies tags to be displayed
 			var completeTags = this.props.completeTags;
 			var addedTags = this._filterForAddedTags(completeTags);
@@ -137,7 +136,7 @@ var MyTagsPage = React.createClass({
 			          </thead>
 			          <tbody>
 			          {addedTags.map((tag, i) => {
-			          	return <MyTableRows addedTag={tag} key={i} callBackCheck={callBackCheck} handleRowClick={() => this.props.handleRowClick(tag, i)}/> 
+			          	return <MyTableRows addedTag={tag} key={i} callBackCheck={callBackCheck} options={this.props.options} handleRowClick={() => this.props.handleRowClick(tag, i)}/> 
 			          	})
 			      	  }
 			          </tbody>

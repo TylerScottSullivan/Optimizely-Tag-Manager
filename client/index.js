@@ -284,7 +284,7 @@ var App = React.createClass({
   //given the tab selected, returns an array - [DisplayedPage, SidePanel]
   _displaySelectedTab: function(selectedTab) {
     if (selectedTab === 0) {
-      return [<MyTagsPage completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
+      return [<MyTagsPage completeTags={this.state.completeTags} projectTags={this.state.projectTags} handleRowClick={this.changeMySidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} options={this.state.options}/>, 
               <MySidePanel tag={this.state.mySP} options={this.state.options} addTagToProjectTags={this.addTagToProjectTags} deleteTagFromProjectTags={this.deleteTagFromProjectTags}/>]
     } else if (selectedTab === 1) {
       return [<AvailableTagsPage completeTags={this.state.completeTags} handleRowClick={this.changeAvailSidePanel} _filterForSearchInput={this._filterForSearchInput} searchInput={this.state.searchInput} />, 
