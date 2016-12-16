@@ -7,19 +7,15 @@ a {
   color: #00B7FF;
 }
 
-.bottom-margin {
-	margin: 0 0 15px 0;
+textarea {
+	resize: none;
 }
 
-.flex-wide {
-	display: flex;
-	flex-direction: row;
+td {
+	height: 50px;
 }
 
-.margin-width {
-	margin: 0 0 0 10px;
-	width: 300px;
-}
+/*notification css*/
 .welcome {
   padding-top: 5%;
   font-size: 15px;
@@ -28,21 +24,80 @@ a {
   text-align: center;
 }
 
-.newTemplate {
-  margin-top: 20px;
-  margin-left: 50px;
-  margin-bottom: 50px
+.redbox {
+	margin: 15px 0;
+	padding: 10px;
+	background-color: #F9E3E4;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #C60C0C;
 }
 
-#addField {
-  margin-left: 400px;
+.yellowbox {
+	margin: 15px 0;
+	padding: 10px;
+	background-color: #FCF8E3;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #FFD40C;
 }
 
-.header1 {
-	padding: 15px 0px 5px 10px;
+.greenbox {
+	margin: 15px 0;
+	padding: 10px;
+	background-color: #E9F6C3;
+	border-color: black;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 2px;
+	border-color: #97C70A;
+}
+
+/*error*/
+
+.validation {
+  border-color: red;
+}
+
+.warning {
+  color: red
+}
+
+/*sidepanel css*/
+.sidepanel {
+	width: 360px;
+	position: relative;
+	height: 800px;
+	padding: 0 10px 0 20px;
+}
+
+.sidepanel-logo {
+	min-width: 100px;
+	height: 100px;
+}
+
+.sidepanel-displayname {
 	font-size: 20px;
+	vertical-align: middle;
+	width: 250px;
+	padding: 10px;
 }
 
+.sp-headbig {
+	font-size: 15px;
+	font-weight: 700;
+}
+
+.sd-headsmall {
+	font-weight: 700;
+	margin: 10px 0 5px 0;
+}
+
+/*stable table widths*/
 #mytablerow-dn-width {
 	min-width: 450px;
 	max-width: 600px;
@@ -72,53 +127,18 @@ a {
 	min-width: 468px;
 	width: 468px;
 	max-width: 468px;
-
 }
+
 #availtablerow-status-width {
 	min-width: 100px;
 	max-width: 100px;
 }
 
-.sidepanel {
-	width: 360px;
-	position: relative;
-	height: 800px;
-	padding: 0 10px 0 20px;
-}
-
-.sidepanel-logo {
-	min-width: 100px;
-	height: 100px;
-}
-
-.sidepanel-displayname {
-	font-size: 20px;
+#row-centered {
 	vertical-align: middle;
-	width: 250px;
-	padding: 10px;
-}
-.flex {
-	display: flex;
 }
 
-.flex-v-center {
-	flex-direction: column;
-	justify-content: center;
-}
-
-.sp-headbig {
-	font-size: 15px;
-	font-weight: 700;
-}
-
-.sd-headsmall {
-	font-weight: 700;
-	margin: 10px 0 5px 0;
-}
-
-td {
-	height: 50px;
-}
+/*inputs, buttons, modals*/
 
 .text-input-styled {
 	border-color: #a6a6a6;
@@ -135,16 +155,101 @@ td {
 	width: 200px;
 }
 
-#row-centered {
-	vertical-align: middle;
-}
-
 .modaltext {
 	margin: 10px 0 0 10px;
 }
 
 .editor {
 	margin: 10px 0;
+}
+
+.modaltextarea {
+	height: 100px;
+	width: 620px;
+	margin: 5px 0;
+}
+
+.deschead {
+	margin-top: 15px;
+}
+
+.tagdesc {
+	margin-bottom: 8px;
+}
+
+.togglebutton {
+	margin: 20px 0 0 0;
+}
+
+.pixels {
+	margin-top: 8px;
+}
+
+.header1 {
+	padding: 15px 0px 5px 10px;
+	font-size: 20px;
+}
+
+/*new template*/
+
+.newTemplate {
+  margin-top: 20px;
+  margin-left: 50px;
+  margin-bottom: 50px
+}
+
+#addField {
+  margin-left: 400px;
+}
+
+/*rules*/
+
+.scroll {
+	height: 800px;
+	overflow-y: auto;
+}
+
+.white-font {
+	color: white;
+}
+
+.no-bottom-margin  {
+	margin-bottom: 0px !important;
+}
+
+.bottom-margin {
+	margin: 0 0 15px 0;
+}
+
+.right-margin {
+	margin-right: 15px;
+}
+
+.margin-width {
+	margin: 0 0 0 10px;
+	width: 300px;
+}
+
+.width-600 {
+	width: 600px;
+}
+
+.justified {
+	text-align: justify;
+}
+
+.flex {
+	display: flex;
+}
+
+.flex-v-center {
+	flex-direction: column;
+	justify-content: center;
+}
+
+.flex-wide {
+	display: flex;
+	flex-direction: row;
 }
 
 .space-between {
@@ -157,99 +262,6 @@ td {
 	justify-content: flex-end;
 }
 
-.modaltextarea {
-	height: 100px;
-	width: 620px;
-	margin: 5px 0;
-}
-
-.right-margin {
-	margin-right: 15px;
-}
-
-textarea {
-	resize: none;
-}
-
-.deschead {
-	margin-top: 15px;
-
-}
-
-.tagdesc {
-	margin-bottom: 8px;
-}
-
-.togglebutton {
-	margin: 20px 0 0 0;
-}
-
-.greenbox {
-	margin: 15px 0;
-	padding: 10px;
-	background-color: #E9F6C3;
-	border-color: black;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 2px;
-	border-color: #97C70A;
-}
-
-.validation {
-  border-color: red;
-}
-
-.warning {
-  color: red
-}
-
-.redbox {
-	margin: 15px 0;
-	padding: 10px;
-	background-color: #F9E3E4;
-	border-color: black;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 2px;
-	border-color: #C60C0C;
-}
-
-.yellowbox {
-	margin: 15px 0;
-	padding: 10px;
-	background-color: #FCF8E3;
-	border-color: black;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 2px;
-	border-color: #FFD40C;
-}
-
-
-.scroll {
-	height: 800px;
-	overflow-y: auto;
-}
-
-.width-600 {
-	width: 600px;
-}
-
-.justified {
-	text-align: justify;
-}
-
-.white-font {
-	color: white;
-}
-
-.pixels {
-	margin-top: 8px;
-}
-
-.no-bottom-margin  {
-	margin-bottom: 0px !important;
-}
 
 /*pace*/
 .pace {
